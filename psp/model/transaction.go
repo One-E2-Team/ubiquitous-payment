@@ -9,7 +9,7 @@ type Transaction struct {
 	ID                    primitive.ObjectID `bson:"_id" json:"id,omitempty"`
 	PSPId                 string             `json:"pspId"`
 	WebShopID             string             `json:"webShopID"`
-	Amount                int                `json:"amount"`
+	Amount                float32            `json:"amount"`
 	Currency              string             `json:"Currency"`
 	SuccessURL            string             `json:"successURL"`
 	FailURL               string             `json:"failURL"`

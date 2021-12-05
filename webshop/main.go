@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"time"
@@ -109,6 +109,8 @@ func initHandler(wsService *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods("GET")
+	router.HandleFunc("/api/products", handler.CreateProduct).Methods("POST")
+	router.HandleFunc("/api/products/{id}", handler.UpdateProduct).Methods("PUT")
 	fmt.Println("Starting server..")
 	host := "localhost"
 	port := "81"
