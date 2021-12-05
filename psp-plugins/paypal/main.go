@@ -5,7 +5,7 @@ import "fmt"
 type plugin struct {
 }
 
-func Test() string {
+func (p plugin) Test() string {
 	fmt.Println("Plug-in plug-out wasaaaaaaaaaa")
 	return "ups"
 }
