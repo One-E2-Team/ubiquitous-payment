@@ -1,0 +1,47 @@
+version: '3.9'
+services:
+
+  rdb:
+    container_name: db_mysql
+    image: mysql
+    restart: always
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${RDB_PASSWORD}
+    ports:
+      - 3306:3306
+    volumes: 
+      - type: volume
+        source: data_rdb
+        target: /var/lib/mysql
+
+  mongo:
+    container_name: nosqldb_mongo1
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${NOSQLDB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${NOSQLDB_PASSWORD}
+    volumes:
+      - type: volume
+        source: data_nodql
+        target: /data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${NOSQLDB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${NOSQLDB_PASSWORD}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  data_rdb:
+  data_nodql:
