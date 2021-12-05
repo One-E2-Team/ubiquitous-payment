@@ -3,6 +3,8 @@ package psputil
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"plugin"
 )
 
@@ -14,7 +16,13 @@ var plugins = make(map[string]Plugin, 0)
 
 func loadPlugin(pluginName string) (Plugin, error) {
 	var p Plugin = nil
-	plug, err := plugin.Open(fmt.Sprintf("../temp/%s.so", pluginName))
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+	fmt.Println(exPath)
+	plug, err := plugin.Open(fmt.Sprintf("temp/%s.so", pluginName))
 	if err != nil {
 		return p, err
 	}
