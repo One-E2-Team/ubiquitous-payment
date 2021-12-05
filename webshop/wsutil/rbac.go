@@ -1,9 +1,21 @@
-package util
+package wsutil
 
 import (
 	"net/http"
 	"strconv"
+	"ubiquitous-payment/util"
+	"ubiquitous-payment/webshop/service"
 )
+
+type RbacService struct {
+	WSService *service.Service
+}
+
+var rbacService RbacService
+
+func InitRbacService(wsService *service.Service) {
+	rbacService = RbacService{WSService: wsService}
+}
 
 func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, returnCollection bool) func(http.ResponseWriter, *http.Request) {
 	finalHandler := func(pass bool) func(http.ResponseWriter, *http.Request) {
@@ -25,7 +37,7 @@ func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, re
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("initiator", "NO_TOKEN")
 		var handleFunc func(http.ResponseWriter, *http.Request)
-		id := GetLoggedUserIDFromToken(request)
+		id := util.GetLoggedUserIDFromToken(request)
 		if id == 0 {
 			writer.Header().Set("initiator", "UNAUTHORIZED")
 			handleFunc = finalHandler(false)
@@ -56,7 +68,7 @@ func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, re
 func GetUserPrivileges(id uint) ([]string, bool) {
 	var privileges []string
 
-	// needs implementation
+	privileges = *rbacService.WSService.GetPrivileges(id)
 
 	return privileges, true
 }

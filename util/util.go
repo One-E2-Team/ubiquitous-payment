@@ -35,3 +35,7 @@ func String2Uint(input string) uint {
 	}
 	return uint(u64)
 }
+
+func GetLoggingStringFromID(id uint) string {
+	return "profileId: '" + Uint2String(id) + "'"
+}
