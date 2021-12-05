@@ -3,7 +3,7 @@ package model
 type OrderStatus int
 
 const (
-	PLACES OrderStatus = iota
+	PLACED OrderStatus = iota
 	CANCELLED
 	FULFILLED
 	FAILED

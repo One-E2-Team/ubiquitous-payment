@@ -12,6 +12,7 @@ import (
 	"ubiquitous-payment/webshop/model"
 	"ubiquitous-payment/webshop/repository"
 	"ubiquitous-payment/webshop/service"
+	"ubiquitous-payment/webshop/wsutil"
 )
 
 func initDB() *gorm.DB {
@@ -127,8 +128,9 @@ func handleFunc(handler *handler.Handler) {
 
 func main() {
 	db := initDB()
-	pspRepo := initRepo(db)
-	pspService := initService(pspRepo)
-	pspHandler := initHandler(pspService)
-	handleFunc(pspHandler)
+	wsRepo := initRepo(db)
+	wsService := initService(wsRepo)
+	wsutil.InitRbacService(wsService)
+	wsHandler := initHandler(wsService)
+	handleFunc(wsHandler)
 }
