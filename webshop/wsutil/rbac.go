@@ -43,32 +43,17 @@ func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, re
 			handleFunc = finalHandler(false)
 		} else {
 			writer.Header().Set("initiator", strconv.Itoa(int(id)))
-			validPrivileges, ok := GetUserPrivileges(id)
-			if !ok {
-				handleFunc = finalHandler(false)
-			} else {
-				valid := false
-				for _, val := range validPrivileges {
-					if val == privilege {
-						valid = true
-						break
-					}
-				}
-				if valid {
-					handleFunc = finalHandler(true)
-				} else {
-					handleFunc = finalHandler(false)
-				}
-			}
+			handleFunc = finalHandler(isPrivilegeValid(privilege, *rbacService.WSService.GetPrivileges(id)))
 		}
 		handleFunc(writer, request)
 	}
 }
 
-func GetUserPrivileges(id uint) ([]string, bool) {
-	var privileges []string
-
-	privileges = *rbacService.WSService.GetPrivileges(id)
-
-	return privileges, true
+func isPrivilegeValid(privilege string, validPrivileges []string) bool {
+	for _, val := range validPrivileges {
+		if val == privilege {
+			return true
+		}
+	}
+	return false
 }
