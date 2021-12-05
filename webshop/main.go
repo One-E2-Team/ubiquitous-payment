@@ -3,14 +3,98 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
+	"gorm.io/driver/mysql"
 	"net/http"
+	"os"
+	"time"
 	"ubiquitous-payment/webshop/handler"
+	"ubiquitous-payment/webshop/model"
 	"ubiquitous-payment/webshop/repository"
 	"ubiquitous-payment/webshop/service"
 )
 
-func initRepo() *repository.Repository {
-	return &repository.Repository{}
+func initDB() *gorm.DB {
+	var (
+		db  *gorm.DB
+		err error
+	)
+	time.Sleep(5 * time.Second)
+	var dbHost, dbPort, dbUsername, dbPassword = "localhost", "3306", "root", "root"
+	_, ok := os.LookupEnv("DOCKER_ENV_SET_PROD")
+	if ok {
+		dbHost = "rdb"
+		dbPort = "3306"
+		dbUsername = os.Getenv("RDB_USERNAME")
+		dbPassword = os.Getenv("RDB_PASSWORD")
+	}
+	for {
+		db, err = gorm.Open(mysql.Open(dbUsername + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/webshop?charset=utf8mb4&parseTime=True&loc=Local"))
+
+		if err != nil {
+			fmt.Println("Cannot connect to database! Sleeping 10s and then retrying....")
+			time.Sleep(10 * time.Second)
+		} else {
+			fmt.Println("Connected to the database.")
+			break
+		}
+	}
+
+	err = db.AutoMigrate(&model.Privilege{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.Role{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.User{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.Profile{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.Account{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.Order{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.PaymentType{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.Product{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.PSPOrder{})
+	if err != nil {
+		return nil
+	}
+
+	err = db.AutoMigrate(&model.WebShop{})
+	if err != nil {
+		return nil
+	}
+
+	return db
+}
+
+func initRepo(database *gorm.DB) *repository.Repository {
+	return &repository.Repository{RelationalDatabase: database}
 }
 
 func initService(wsRepo *repository.Repository) *service.Service {
@@ -42,7 +126,8 @@ func handleFunc(handler *handler.Handler) {
 }
 
 func main() {
-	pspRepo := initRepo()
+	db := initDB()
+	pspRepo := initRepo(db)
 	pspService := initService(pspRepo)
 	pspHandler := initHandler(pspService)
 	handleFunc(pspHandler)
