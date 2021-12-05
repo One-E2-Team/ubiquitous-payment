@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"ubiquitous-payment/webshop/model"
 )
 
@@ -13,6 +14,9 @@ func (service *Service) UpdateProduct(productID uint, updatedProduct model.Produ
 	product, err := service.WSRepository.GetProduct(productID)
 	if err != nil {
 		return err
+	}
+	if !product.IsActive {
+		return errors.New("cannot update deactivated product")
 	}
 	if product.Price != updatedProduct.Price {
 		product.Deactivate()
