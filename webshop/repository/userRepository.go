@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"ubiquitous-payment/webshop/model"
 )
 
@@ -20,4 +21,30 @@ func (repo *Repository) GetUserByEmail(email string) (*model.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (repo *Repository) CreateProfile(profile *model.Profile) error {
+	result := repo.RelationalDatabase.Create(profile)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("ProfileVertex not created")
+	}
+	fmt.Println("Profile created")
+	return nil
+}
+
+func (repo *Repository) CreateUser(user *model.User) error {
+	result := repo.RelationalDatabase.Create(user)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("user not created")
+	}
+	fmt.Println("User created")
+	return nil
+}
+
+func (repo *Repository) GetRoleByName(name string) (*model.Role, error) {
+	role := &model.Role{}
+	if err := repo.RelationalDatabase.Table("roles").First(&role, "name = ?", name).Error; err != nil {
+		return nil, err
+	}
+	return role, nil
 }
