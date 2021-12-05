@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/handler"
 	"ubiquitous-payment/webshop/model"
 	"ubiquitous-payment/webshop/repository"
@@ -108,9 +109,9 @@ func initHandler(wsService *service.Service) *handler.Handler {
 
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/test", handler.Test).Methods("GET")
-	router.HandleFunc("/api/products", handler.CreateProduct).Methods("POST")
-	router.HandleFunc("/api/products/{id}", handler.UpdateProduct).Methods("PUT")
+	router.HandleFunc("/test", handler.Test).Methods(util.HttpGet)
+	router.HandleFunc("/api/products", handler.CreateProduct).Methods(util.HttpPost)
+	router.HandleFunc("/api/products/{id}", handler.UpdateProduct).Methods(util.HttpPut)
 	fmt.Println("Starting server..")
 	host := "localhost"
 	port := "81"
