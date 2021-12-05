@@ -21,6 +21,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${NOSQLDB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${NOSQLDB_PASSWORD}
+    ports:
+      - 27017:27017
     volumes:
       - type: volume
         source: data_nodql
