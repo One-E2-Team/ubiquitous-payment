@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 	"ubiquitous-payment/psp/handler"
+	"ubiquitous-payment/psp/psputil"
 	"ubiquitous-payment/psp/repository"
 	"ubiquitous-payment/psp/service"
 )
@@ -87,7 +88,17 @@ func closeConnection(client *mongo.Client) {
 	fmt.Println("Connection to MongoDB closed.")
 }
 
+func testPlugin(pluginName string) {
+	p, err := psputil.GetPlugin(pluginName)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(p.Test())
+	}
+}
+
 func main() {
+	testPlugin("paypal")
 	client := initDB()
 	defer closeConnection(client)
 	pspRepo := initRepo(client)
