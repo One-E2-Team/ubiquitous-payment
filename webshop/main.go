@@ -110,8 +110,12 @@ func initHandler(wsService *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(util.HttpGet)
-	router.HandleFunc("/api/products", handler.CreateProduct).Methods(util.HttpPost)
-	router.HandleFunc("/api/products/{id}", handler.UpdateProduct).Methods(util.HttpPut)
+	router.HandleFunc("/api/login", handler.LogIn).Methods(util.HttpPost)
+	router.HandleFunc("/api/users", handler.Register).Methods(util.HttpPost)
+	router.HandleFunc("/api/products",
+		wsutil.RBAC(handler.CreateProduct, "CREATE_PRODUCT", false)).Methods(util.HttpPost)
+	router.HandleFunc("/api/products/{id}",
+		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(util.HttpPut)
 	fmt.Println("Starting server..")
 	host := "localhost"
 	port := "81"
