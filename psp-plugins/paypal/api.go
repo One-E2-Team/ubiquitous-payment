@@ -123,18 +123,6 @@ func getAccessToken() (string, error) {
 	return accessToken, nil
 }
 
-type Payload struct {
-	Intent        string          `json:"intent"`
-	PurchaseUnits []PurchaseUnits `json:"purchase_units"`
-}
-type Amount struct {
-	CurrencyCode string `json:"currency_code"`
-	Value        string `json:"value"`
-}
-type PurchaseUnits struct {
-	Amount Amount `json:"amount"`
-}
-
 func CallPayPalAPI(method string, url string, data interface{}) (map[string]interface{}, error) {
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
