@@ -14,7 +14,7 @@ services:
     command: --init-file /data/application/init.sql
     ports:
       - 3306:3306
-    volumes: 
+    volumes:
       - type: volume
         source: data_rdb
         target: /var/lib/mysql
@@ -33,7 +33,44 @@ services:
       - type: volume
         source: data_nodql
         target: /data/db
-      - ./conf/dev/mysql:/docker-entrypoint-initdb.d
+
+  webshop:
+    container_name: webshop_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_DEV: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: webshop
+    ports:
+      - 1080:8080
+    depends_on:
+      - rdb
+
+  psp:
+    container_name: psp_container
+    restart: always
+    environment:
+      NOSQLDB_USERNAME: ${NOSQLDB_USERNAME}
+      NOSQLDB_PASSWORD: ${NOSQLDB_PASSWORD}
+      DOCKER_ENV_SET_DEV: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: psp
+    volumes:
+      - ./temp:/ubiquitous-payment/temp
+    ports:
+      - 1081:8080
+    depends_on:
+      - mongo
 
   mongo-express:
     image: mongo-express

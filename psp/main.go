@@ -12,10 +12,14 @@ import (
 	"ubiquitous-payment/psp/psputil"
 	"ubiquitous-payment/psp/repository"
 	"ubiquitous-payment/psp/service"
+	"ubiquitous-payment/util"
 )
 
 func initDB() *mongo.Client {
 	var dbHost, dbPort, dbUsername, dbPassword = "localhost", "27017", "root", "root"
+	if util.DockerChecker() {
+		dbHost, dbPort, dbUsername, dbPassword = util.NosqlDockerVars()
+	}
 	clientOptions := options.Client().ApplyURI("mongodb://" + dbUsername + ":" + dbPassword + "@" + dbHost + ":" + dbPort)
 	for {
 		client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -63,8 +67,7 @@ func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods("GET")
 	fmt.Println("Starting server..")
-	host := "localhost"
-	port := "81"
+	host, port := util.GetPSPHostAndPort()
 	var err error
 	err = http.ListenAndServe(host+":"+port, router)
 	/*host, port := util.GetConnectionHostAndPort()
