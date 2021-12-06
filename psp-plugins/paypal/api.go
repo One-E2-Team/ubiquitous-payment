@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -79,7 +82,12 @@ func getNewAccessToken() error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(resp.Body)
 
 	data := make(map[string]interface{})
 	err = json.NewDecoder(resp.Body).Decode(&data)
@@ -105,7 +113,7 @@ func getNewAccessToken() error {
 	return nil
 }
 
-func GetAccessToken() (string, error) {
+func getAccessToken() (string, error) {
 	if hasExpired() {
 		err := getNewAccessToken()
 		if err != nil {
@@ -114,3 +122,55 @@ func GetAccessToken() (string, error) {
 	}
 	return accessToken, nil
 }
+
+type Payload struct {
+	Intent        string          `json:"intent"`
+	PurchaseUnits []PurchaseUnits `json:"purchase_units"`
+}
+type Amount struct {
+	CurrencyCode string `json:"currency_code"`
+	Value        string `json:"value"`
+}
+type PurchaseUnits struct {
+	Amount Amount `json:"amount"`
+}
+
+func CallPayPalAPI(method string, url string, data interface{}) (map[string]interface{}, error) {
+	payloadBytes, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	body := bytes.NewReader(payloadBytes)
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	token, err := getAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(resp.Body)
+
+	responseJson := make(map[string]interface{})
+	err = json.NewDecoder(resp.Body).Decode(&responseJson)
+	if err != nil {
+		return nil, err
+	}
+
+	return responseJson, nil
+}
+
+const OrdersApiUrl = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
