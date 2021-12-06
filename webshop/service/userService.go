@@ -62,7 +62,7 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDto)
 
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
-		f, err := os.Open("../common_pass.txt")
+		f, err := os.Open("common_pass.txt")
 		if err != nil {
 			fmt.Println(err)
 			return false
