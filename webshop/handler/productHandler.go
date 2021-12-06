@@ -18,10 +18,10 @@ func (handler *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	loggedUserId := util.GetLoggedUserIDFromToken(r)
-	//if loggedUserId == 0 {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	return
-	//}
+	if loggedUserId == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	err = handler.WSService.CreateProduct(mapper.ProductDTOToProduct(request, loggedUserId))
 	if err != nil {
@@ -48,4 +48,14 @@ func (handler *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (handler *Handler) GetActiveProducts(w http.ResponseWriter, r *http.Request) {
+	result, err := handler.WSService.GetActiveProducts()
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	util.MarshalResult(w, result)
+	return
 }

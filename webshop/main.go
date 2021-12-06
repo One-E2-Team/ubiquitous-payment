@@ -112,6 +112,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/test", handler.Test).Methods(util.HttpGet)
 	router.HandleFunc("/api/login", handler.LogIn).Methods(util.HttpPost)
 	router.HandleFunc("/api/users", handler.Register).Methods(util.HttpPost)
+	router.HandleFunc("/api/products", handler.GetActiveProducts).Methods(util.HttpGet)
 	router.HandleFunc("/api/products",
 		wsutil.RBAC(handler.CreateProduct, "CREATE_PRODUCT", false)).Methods(util.HttpPost)
 	router.HandleFunc("/api/products/{id}",

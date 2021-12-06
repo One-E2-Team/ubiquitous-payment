@@ -29,3 +29,7 @@ func (service *Service) UpdateProduct(productID uint, updatedProduct model.Produ
 	product.Update(updatedProduct)
 	return service.WSRepository.UpdateProduct(product)
 }
+
+func (service *Service) GetActiveProducts() ([]model.Product, error) {
+	return service.WSRepository.GetActiveProducts()
+}

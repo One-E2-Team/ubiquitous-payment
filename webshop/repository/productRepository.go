@@ -24,3 +24,9 @@ func (repo *Repository) GetProduct(productID uint) (*model.Product, error) {
 func (repo *Repository) UpdateProduct(product *model.Product) error {
 	return repo.RelationalDatabase.Save(product).Error
 }
+
+func (repo *Repository) GetActiveProducts() ([]model.Product, error) {
+	var products []model.Product
+	result := repo.RelationalDatabase.Table("products").Select("*").Where("is_active=1").Find(&products)
+	return products, result.Error
+}
