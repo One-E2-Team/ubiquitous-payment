@@ -15,6 +15,10 @@ func DockerChecker() bool {
 	return ok || ok1
 }
 
+func GetPSPProtocol() string {
+	return "http"
+}
+
 func GetPSPHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8001"
 	if DockerChecker() {

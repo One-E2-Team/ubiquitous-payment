@@ -7,10 +7,12 @@ import (
 )
 
 const (
-	HttpGet    = "GET"
-	HttpPost   = "POST"
-	HttpPut    = "PUT"
-	HttpDelete = "DELETE"
+	HttpGet         = "GET"
+	HttpPost        = "POST"
+	HttpPut         = "PUT"
+	HttpDelete      = "DELETE"
+	ContentType     = "Content-Type"
+	ApplicationJson = "application/json"
 )
 
 func HandleErrorInHandler(err error, responseWriter http.ResponseWriter) {
@@ -18,7 +20,7 @@ func HandleErrorInHandler(err error, responseWriter http.ResponseWriter) {
 	responseWriter.WriteHeader(http.StatusBadRequest)
 }
 
-func MarshalResult(w http.ResponseWriter, result interface{}){
+func MarshalResult(w http.ResponseWriter, result interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	js, err := json.Marshal(result)
 	if err != nil {
