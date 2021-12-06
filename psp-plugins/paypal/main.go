@@ -11,3 +11,7 @@ func (p plugin) Test() string {
 }
 
 var Plugin plugin
+
+func main() {
+	GetAccessToken()
+}

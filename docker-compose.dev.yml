@@ -54,6 +54,8 @@ services:
     container_name: psp_container
     restart: always
     environment:
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
       NOSQLDB_USERNAME: ${NOSQLDB_USERNAME}
       NOSQLDB_PASSWORD: ${NOSQLDB_PASSWORD}
       DOCKER_ENV_SET_DEV: ""
