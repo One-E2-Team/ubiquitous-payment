@@ -6,7 +6,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"net/http"
-	"os"
 	"time"
 	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/handler"
@@ -23,12 +22,8 @@ func initDB() *gorm.DB {
 	)
 	time.Sleep(5 * time.Second)
 	var dbHost, dbPort, dbUsername, dbPassword = "localhost", "3306", "root", "root"
-	_, ok := os.LookupEnv("DOCKER_ENV_SET_PROD")
-	if ok {
-		dbHost = "rdb"
-		dbPort = "3306"
-		dbUsername = os.Getenv("RDB_USERNAME")
-		dbPassword = os.Getenv("RDB_PASSWORD")
+	if util.DockerChecker() {
+		dbHost, dbPort, dbUsername, dbPassword = util.RDBDockerVars()
 	}
 	for {
 		db, err = gorm.Open(mysql.Open(dbUsername + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/webshop?charset=utf8mb4&parseTime=True&loc=Local"))
@@ -118,8 +113,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/products/{id}",
 		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(util.HttpPut)
 	fmt.Println("Starting server..")
-	host := "localhost"
-	port := "81"
+	host, port := util.GetWebShopHostAndPort()
 	var err error
 	err = http.ListenAndServe(host+":"+port, router)
 	/*host, port := util.GetConnectionHostAndPort()
