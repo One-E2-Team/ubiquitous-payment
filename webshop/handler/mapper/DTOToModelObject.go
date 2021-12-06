@@ -11,7 +11,6 @@ func ProductDTOToProduct(productDto dto.ProductDTO, loggedMerchantId uint) model
 		Price:             productDto.Price,
 		Currency:          productDto.Currency,
 		Description:       productDto.Description,
-		MediaPath:         "", // TODO: save picture
 		IsActive:          true,
 		NumOfInstallments: productDto.NumOfInstallments,
 		MerchantProfileId: loggedMerchantId,

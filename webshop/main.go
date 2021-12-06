@@ -21,12 +21,9 @@ func initDB() *gorm.DB {
 		err error
 	)
 	time.Sleep(5 * time.Second)
-	var dbHost, dbPort, dbUsername, dbPassword = "localhost", "3306", "root", "root"
-	if util.DockerChecker() {
-		dbHost, dbPort, dbUsername, dbPassword = util.RDBDockerVars()
-	}
+	rdb := util.GetRDBData()
 	for {
-		db, err = gorm.Open(mysql.Open(dbUsername + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/webshop?charset=utf8mb4&parseTime=True&loc=Local"))
+		db, err = gorm.Open(mysql.Open(rdb.Username + ":" + rdb.Password + "@tcp(" + rdb.Host + ":" + rdb.Port + ")/webshop?charset=utf8mb4&parseTime=True&loc=Local"))
 
 		if err != nil {
 			fmt.Println("Cannot connect to database! Sleeping 10s and then retrying....")

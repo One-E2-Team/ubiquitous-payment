@@ -16,11 +16,8 @@ import (
 )
 
 func initDB() *mongo.Client {
-	var dbHost, dbPort, dbUsername, dbPassword = "localhost", "27017", "root", "root"
-	if util.DockerChecker() {
-		dbHost, dbPort, dbUsername, dbPassword = util.NosqlDockerVars()
-	}
-	clientOptions := options.Client().ApplyURI("mongodb://" + dbUsername + ":" + dbPassword + "@" + dbHost + ":" + dbPort)
+	noSQL := util.GetNoSQLData()
+	clientOptions := options.Client().ApplyURI("mongodb://" + noSQL.Username + ":" + noSQL.Password + "@" + noSQL.Host + ":" + noSQL.Port)
 	for {
 		client, err := mongo.Connect(context.TODO(), clientOptions)
 

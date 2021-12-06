@@ -10,11 +10,6 @@ import (
 )
 
 func (handler *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	loggedUserId := util.GetLoggedUserIDFromToken(r)
-	if loggedUserId == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	if err := r.ParseMultipartForm(0); err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
@@ -26,7 +21,7 @@ func (handler *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	err = handler.WSService.CreateProduct(mapper.ProductDTOToProduct(request, loggedUserId), r)
+	err = handler.WSService.CreateProduct(mapper.ProductDTOToProduct(request, util.GetLoggedUserIDFromToken(r)), r)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
@@ -45,7 +40,7 @@ func (handler *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathVars := mux.Vars(r)
-	err = handler.WSService.UpdateProduct(util.String2Uint(pathVars["id"]), mapper.ProductDTOToProduct(request, 0))
+	err = handler.WSService.UpdateProduct(util.String2Uint(pathVars["id"]), mapper.ProductDTOToProduct(request, util.GetLoggedUserIDFromToken(r)))
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
