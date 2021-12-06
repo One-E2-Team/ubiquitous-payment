@@ -10,20 +10,23 @@ import (
 )
 
 func (handler *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	var request dto.ProductDTO
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		util.HandleErrorInHandler(err, w)
-		return
-	}
-
 	loggedUserId := util.GetLoggedUserIDFromToken(r)
 	if loggedUserId == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	err = handler.WSService.CreateProduct(mapper.ProductDTOToProduct(request, loggedUserId))
+	if err := r.ParseMultipartForm(0); err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	var request dto.ProductDTO
+	data := r.MultipartForm.Value["data"]
+	err := json.Unmarshal([]byte(data[0]), &request)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	err = handler.WSService.CreateProduct(mapper.ProductDTOToProduct(request, loggedUserId), r)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
