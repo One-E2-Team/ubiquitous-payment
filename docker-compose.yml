@@ -6,8 +6,6 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_USER: ${RDB_USERNAME}
-      MYSQL_PASSWORD: ${RDB_PASSWORD}
       MYSQL_ROOT_USER: ${RDB_USERNAME}
       MYSQL_ROOT_PASSWORD: ${RDB_PASSWORD}
       MYSQL_DATABASE: webshop
