@@ -11,5 +11,4 @@ type PSPOrder struct {
 	Timestamp   	time.Time      `json:"timestamp"`
 	OrderId			uint           `json:"orderId" gorm:"not null"`
 	OrderStatus		OrderStatus	   `json:"orderStatus"`
-
 }
