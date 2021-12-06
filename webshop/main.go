@@ -34,52 +34,16 @@ func initDB() *gorm.DB {
 		}
 	}
 
-	err = db.AutoMigrate(&model.Privilege{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.Role{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.User{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.Profile{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.Account{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.Order{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.PaymentType{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.Product{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.PSPOrder{})
-	if err != nil {
-		return nil
-	}
-
-	err = db.AutoMigrate(&model.WebShop{})
+	err = db.AutoMigrate(&model.Privilege{},
+		&model.Role{},
+		&model.User{},
+		&model.Profile{},
+		&model.Account{},
+		&model.Order{},
+		&model.PaymentType{},
+		&model.Product{},
+		&model.PSPOrder{},
+		&model.WebShop{})
 	if err != nil {
 		return nil
 	}
