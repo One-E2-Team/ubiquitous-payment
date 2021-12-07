@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// TODO: potentially move to wsutil
-
 const ExpiresIn = 86400
 
 var TokenSecret = ""
@@ -43,7 +41,7 @@ func CreateToken(userId uint, issuer string) (string, error) {
 	return token.SignedString([]byte(TokenSecret))
 }
 
-func GetToken(header http.Header) (string, error) {
+func getToken(header http.Header) (string, error) {
 	reqToken := header.Get("Authorization")
 	splitToken := strings.Split(reqToken, "Bearer ")
 	if len(splitToken) != 2 {
@@ -56,7 +54,7 @@ func GetLoggedUserIDFromToken(r *http.Request) uint {
 	if TokenSecret == "" {
 		initPublicToken()
 	}
-	tokenString, err := GetToken(r.Header)
+	tokenString, err := getToken(r.Header)
 	if err != nil {
 		var err1 error
 		tokenString, err1 = getTokenFromParams(r.URL.String())

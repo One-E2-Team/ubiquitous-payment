@@ -1,4 +1,4 @@
-package wsutil
+package util
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"ubiquitous-payment/util"
 )
 
 var pspJwt string
@@ -48,7 +47,7 @@ func ValidatePSPToken(r *http.Request, webShops []string) bool {
 	if PSPTokenSecret == "" {
 		initPSPToken()
 	}
-	tokenString, err := util.GetToken(r.Header)
+	tokenString, err := getToken(r.Header)
 	if err != nil {
 		fmt.Println(err)
 		return false
