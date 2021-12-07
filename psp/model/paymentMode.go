@@ -9,8 +9,8 @@ const (
 	RECURRING
 )
 
-func GetPaymentModeType(postType string) PaymentMode {
-	if strings.ToLower(postType) == "RECURRING" {
+func GetPaymentMode(paymentMode string) PaymentMode {
+	if strings.ToUpper(paymentMode) == "RECURRING" {
 		return RECURRING
 	}
 	return ONE_TIME

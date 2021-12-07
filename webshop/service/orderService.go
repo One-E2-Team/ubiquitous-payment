@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"net/http"
 	"time"
 	"ubiquitous-payment/util"
@@ -18,13 +19,13 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) error {
 	if err != nil {
 		return err
 	}
-	order := &model.Order{Timestamp: time.Now(), BuyerProfileId: loggedUserId, ProductId: productID}
+	order := &model.Order{Timestamp: time.Now(), UUID: uuid.NewString(), BuyerProfileId: loggedUserId, ProductId: productID}
 	err = service.WSRepository.CreateOrder(order)
 	if err != nil {
 		return err
 	}
 	_, err = service.getRedirectLinkFromPsp(product, order, pspId)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	pspOrder := &model.PSPOrder{PSPId: pspId, OrderId: order.ID, Timestamp: time.Now(), OrderStatus: model.PLACED}
@@ -54,7 +55,7 @@ func (service *Service) getOrderIdFromPSP() (string, error) {
 
 func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *model.Order, pspId string) (string, error) {
 	paymentData, err := service.getPaymentData(product.MerchantProfileId)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -62,14 +63,14 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	message["pspOrderId"] = pspId
 	message["amount"] = product.Price
 	message["currency"] = product.Currency
+	message["paymentMode"] = "ONE_TIME"
+	message["isSubscription"] = "false"
+	message["recurringType"] = ""
 	switch product.NumOfInstallments {
 	case 0:
-		message["paymentMode"] = "ONE_TIME"
-		message["recurringType"] = ""
-		message["recurringTimes"] = "SUBSCRIPTION"
+		message["recurringTimes"] = "0"
+		message["isSubscription"] = "true"
 	case 1:
-		message["paymentMode"] = "ONE_TIME"
-		message["recurringType"] = ""
 		message["recurringTimes"] = "1"
 	default:
 		message["paymentMode"] = "RECURRING"
@@ -78,8 +79,10 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	}
 	message["paymentTo"] = paymentData
 	message["successUrl"] = ""
-	message["failedUrl"] = ""
+	message["failUrl"] = ""
 	message["errorUrl"] = ""
+	message["merchantTimestamp"] = order.Timestamp
+	message["merchantOrderId"] = order.UUID
 
 	data, _ := json.Marshal(message)
 	pspHost, pspPort := util.GetPSPHostAndPort()
@@ -104,13 +107,13 @@ func (service *Service) getPaymentData(merchantId uint) (map[string]interface{},
 		return nil, err
 	}
 	validPaymentTypes, err := service.WSRepository.GetValidPaymentTypes()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	ret := make(map[string]interface{})
-	for _,pt:=range validPaymentTypes{
-		for _, acc:= range merchantAccounts{
-			if pt.ID == acc.PaymentTypeId{
+	for _, pt := range validPaymentTypes {
+		for _, acc := range merchantAccounts {
+			if pt.ID == acc.PaymentTypeId {
 				ret[pt.Name] = [2]string{acc.AccountID, acc.Secret}
 				continue
 			}

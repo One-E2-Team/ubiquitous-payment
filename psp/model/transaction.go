@@ -14,7 +14,7 @@ type Transaction struct {
 	SuccessURL            string             `json:"successURL"`
 	FailURL               string             `json:"failURL"`
 	ErrorURL              string             `json:"errorURL"`
-	MerchantOrderID       int                `json:"merchantOrderID"`
+	MerchantOrderID       string             `json:"merchantOrderID"`
 	MerchantTimestamp     time.Time          `json:"merchantTimestamp"`
 	PaymentMode           PaymentMode        `json:"paymentMode"`
 	Recurring             *Recurring         `json:"recurring"`
