@@ -26,7 +26,7 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO) (string, error)
 	t.Amount = dto.Amount
 	t.Currency = dto.Currency
 	t.SuccessURL = dto.SuccessUrl
-	t.FailURL = dto.FailedUrl
+	t.FailURL = dto.FailUrl
 	t.ErrorURL = dto.ErrorUrl
 	t.MerchantOrderID = dto.MerchantOrderId
 	t.MerchantTimestamp = dto.MerchantTimestamp
