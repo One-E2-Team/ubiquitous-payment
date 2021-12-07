@@ -73,6 +73,8 @@ func handleFunc(handler *handler.Handler) {
 		wsutil.RBAC(handler.CreateProduct, "CREATE_PRODUCT", false)).Methods(util.HttpPost)
 	router.HandleFunc("/api/products/{id}",
 		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(util.HttpPut)
+	router.HandleFunc("/api/orders/{id}",
+		wsutil.RBAC(handler.CreateOrder, "CREATE_ORDER", false)).Methods(util.HttpPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error

@@ -20,7 +20,7 @@ func GetPSPProtocol() string {
 }
 
 func GetPSPHostAndPort() (string, string) {
-	var pspHost, pspPort = "localhost", "8001"
+	var pspHost, pspPort = "localhost", "8002"
 	if DockerChecker() {
 		pspHost = "psp"
 		pspPort = "8080"

@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -28,4 +29,18 @@ func MarshalResult(w http.ResponseWriter, result interface{}) {
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(js)
+}
+
+func UnmarshalResponse(resp *http.Response, result interface{}) error {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
+	if err = json.Unmarshal(body, &result); err != nil {
+		return  err
+	}
+	return nil
 }

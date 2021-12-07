@@ -12,9 +12,5 @@ func (handler *Handler) GetNewOrderId(w http.ResponseWriter, r *http.Request) {
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	_, err = w.Write([]byte(orderId))
-	if err != nil {
-		return
-	}
-	w.WriteHeader(http.StatusOK)
+	util.MarshalResult(w, orderId)
 }

@@ -13,14 +13,24 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) error {
 	if err != nil {
 		return err
 	}
-	orderId, err := service.getOrderIdFrom()
-	fmt.Println(orderId)
-	// TODO: create webShopOrder
+	pspId, err := service.getOrderIdFromPSP()
+	if err != nil {
+		return err
+	}
 	order := &model.Order{Timestamp: time.Now(), BuyerProfileId: loggedUserId, ProductId: productID}
-	return service.WSRepository.CreateOrder(order)
+	err = service.WSRepository.CreateOrder(order)
+	if err != nil {
+		return err
+	}
+	pspOrder := &model.PSPOrder{PSPId: pspId, OrderId: order.ID, Timestamp: time.Now(), OrderStatus: model.PLACED}
+	err = service.WSRepository.CreatePspOrder(pspOrder)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (service *Service) getOrderIdFrom() (string, error) {
+func (service *Service) getOrderIdFromPSP() (string, error) {
 	pspHost, pspPort := util.GetPSPHostAndPort()
 	resp, err := util.PSPRequest(http.MethodGet,
 		util.GetPSPProtocol()+"://"+pspHost+":"+pspPort+"/api/psp/order-id",
@@ -29,7 +39,10 @@ func (service *Service) getOrderIdFrom() (string, error) {
 		fmt.Println(err)
 		return "", err
 	}
-	fmt.Println(resp)
-	// TODO: extract id from response
-	return "Good", nil
+	var orderId string
+	err = util.UnmarshalResponse(resp, &orderId)
+	if err != nil {
+		return "", err
+	}
+	return orderId, nil
 }
