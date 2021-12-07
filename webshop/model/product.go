@@ -14,6 +14,7 @@ type Product struct {
 	IsActive          bool    `json:"isActive" gorm:"not null"`
 	NumOfInstallments uint    `json:"numOfInstallments"`
 	MerchantProfileId uint    `json:"merchantProfileId"`
+	RecurringType	  RecurringType `json:"recurringType"`
 }
 
 func (product *Product) Deactivate() {

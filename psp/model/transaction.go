@@ -18,6 +18,7 @@ type Transaction struct {
 	MerchantTimestamp     time.Time          `json:"merchantTimestamp"`
 	PaymentMode           PaymentMode        `json:"paymentMode"`
 	Recurring             *Recurring         `json:"recurring"`
+	IsSubscription        bool               `json:"isSubscription"`
 	TransactionStatus     TransactionStatus  `json:"transactionStatus"`
 	AvailablePaymentTypes []PaymentType      `json:"availablePaymentTypes"`
 	SelectedPaymentType   PaymentType        `json:"selectedPaymentType"`

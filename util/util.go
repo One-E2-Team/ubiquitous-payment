@@ -39,3 +39,12 @@ func String2Uint(input string) uint {
 func GetLoggingStringFromID(id uint) string {
 	return "profileId: '" + Uint2String(id) + "'"
 }
+
+func Contains(element interface{}, list []interface{}) bool{
+	for _, el := range list{
+		if el == element{
+			return true
+		}
+	}
+	return false
+}
