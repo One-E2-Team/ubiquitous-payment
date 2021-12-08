@@ -23,3 +23,10 @@ func (repo *Repository) GetTransactionByPspId(pspId string) (*model.Transaction,
 	err := transactionsCollection.FindOne(emptyContext, filter).Decode(&result)
 	return &result, err
 }
+
+func (repo *Repository) UpdateTransaction(transaction *model.Transaction) error {
+	transactionsCollection := repo.getCollection(transactionsCollectionName)
+	filter := bson.D{{"pspid", transaction.PSPId}}
+	_, err := transactionsCollection.ReplaceOne(emptyContext,filter,transaction)
+	return err
+}
