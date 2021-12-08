@@ -6,10 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"plugin"
+	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
 type Plugin interface {
 	Test() string
+	SupportsPlanPayment() bool
+	ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error)
 }
 
 var plugins = make(map[string]Plugin, 0)

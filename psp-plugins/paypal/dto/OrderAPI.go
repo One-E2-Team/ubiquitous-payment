@@ -55,10 +55,10 @@ const (
 	PayNow   UserAction = "PAY_NOW"
 )
 
-func (o *Order) DefaultInit(pspOdrerID string, payeeID string, payeeSecret string, currency string, amount string, webshop string, returnUrl string, cancelUrl string) Order {
+func (o *Order) DefaultInit(pspOdrderID string, orderID string, payeeID string, payeeSecret string, currency string, amount string, webshop string, returnUrl string, cancelUrl string) Order {
 	o.Intent = Capture
 	o.PurchaseUnits = append(o.PurchaseUnits, PurchaseUnit{
-		ReferenceId: pspOdrerID,
+		ReferenceId: orderID,
 		Amount: Amount{
 			CurrencyCode: currency,
 			Value:        amount,
@@ -67,7 +67,7 @@ func (o *Order) DefaultInit(pspOdrerID string, payeeID string, payeeSecret strin
 			Email:            payeeID,
 			MerchantIdSecret: payeeSecret,
 		},
-		InvoiceId: pspOdrerID,
+		InvoiceId: pspOdrderID,
 	})
 	o.ApplicationContext = ApplicationContext{
 		BrandName:   webshop,

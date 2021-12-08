@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"ubiquitous-payment/psp-plugins/paypal/dto"
+	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
 type plugin struct {
@@ -15,10 +16,14 @@ func (p plugin) Test() string {
 	return "ups"
 }
 
-func (p plugin) ExecuteTransaction(data dto.TransactionDTO) (dto.TransactionCreatedDTO, error) {
-	var ret = dto.TransactionCreatedDTO{}
+func (p plugin) SupportsPlanPayment() bool {
+	return true
+}
+
+func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
+	var ret = pspdto.TransactionCreatedDTO{}
 	var paypalOrder = dto.Order{}
-	response, err := CallPayPalAPI(http.MethodPost, OrdersApiUrl, paypalOrder.DefaultInit(data.PspTransactionId,
+	response, err := CallPayPalAPI(http.MethodPost, OrdersApiUrl, paypalOrder.DefaultInit(data.PspTransactionId, data.OrderId,
 		data.PayeeId, data.PayeeSecret, data.Currency, data.Amount, data.ClientBusinessName,
 		data.SuccessUrl, data.FailUrl))
 	if err != nil {
