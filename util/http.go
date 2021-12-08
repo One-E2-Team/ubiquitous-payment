@@ -31,7 +31,11 @@ func MarshalResult(w http.ResponseWriter, result interface{}) {
 	_, _ = w.Write(js)
 }
 
-func UnmarshalResponse(resp *http.Response, result interface{}) error {
+func UnmarshalRequest(request *http.Request, resultObject interface{}) error {
+	return json.NewDecoder(request.Body).Decode(&resultObject)
+}
+
+func UnmarshalResponse(resp *http.Response, resultObject interface{}) error {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
@@ -39,7 +43,7 @@ func UnmarshalResponse(resp *http.Response, result interface{}) error {
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
 	}(resp.Body)
-	if err = json.Unmarshal(body, &result); err != nil {
+	if err = json.Unmarshal(body, &resultObject); err != nil {
 		return err
 	}
 	return nil

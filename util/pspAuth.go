@@ -16,7 +16,7 @@ const PSPExpiresIn = 86400000
 var PSPTokenSecret = ""
 
 type PSPTokenClaims struct {
-	WebShop string `json:"webShop"`
+	WebShopName string `json:"webShop"`
 	jwt.StandardClaims
 }
 
@@ -33,7 +33,7 @@ func SetupPSPAuth(webShop string) error {
 	if PSPTokenSecret == "" {
 		initPSPToken()
 	}
-	claims := PSPTokenClaims{WebShop: webShop, StandardClaims: jwt.StandardClaims{
+	claims := PSPTokenClaims{WebShopName: webShop, StandardClaims: jwt.StandardClaims{
 		ExpiresAt: time.Now().Unix() + PSPExpiresIn,
 		IssuedAt:  time.Now().Unix(),
 	}}
@@ -61,7 +61,7 @@ func ValidatePSPToken(r *http.Request, webShops []string) bool {
 	}
 	if claims, ok := token.Claims.(*PSPTokenClaims); ok && token.Valid {
 		for _, webShop := range webShops {
-			if claims.WebShop == webShop {
+			if claims.WebShopName == webShop {
 				return true
 			}
 		}
@@ -69,6 +69,33 @@ func ValidatePSPToken(r *http.Request, webShops []string) bool {
 	}
 	fmt.Println(err)
 	return false
+}
+
+func GetWebShopNameFromToken(r *http.Request) string {
+	if PSPTokenSecret == "" {
+		initPSPToken()
+	}
+	tokenString, err := getToken(r.Header)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return getWebShopNameFromPureToken(tokenString)
+}
+
+func getWebShopNameFromPureToken(pureToken string) string {
+	token, err := jwt.ParseWithClaims(pureToken, &PSPTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(PSPTokenSecret), nil
+	})
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	if claims, ok := token.Claims.(*PSPTokenClaims); ok && token.Valid {
+		return claims.WebShopName
+	}
+	fmt.Println("error during parsing PSP token")
+	return ""
 }
 
 func PSPRequest(method string, path string, data []byte, headers map[string]string) (*http.Response, error) {

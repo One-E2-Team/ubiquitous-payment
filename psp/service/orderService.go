@@ -17,12 +17,12 @@ func (service *Service) CreateEmptyTransaction() (string, error) {
 	return orderId, nil
 }
 
-func (service *Service) FillTransaction(dto dto.WebShopOrderDTO) (string, error) {
+func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName string) (string, error) {
 	t, err := service.PSPRepository.GetTransactionByPspId(dto.PspOrderId)
 	if err != nil {
 		return "", err
 	}
-	//TODO: WebshopId from token
+	t.WebShopID = webShopName
 	t.Amount = dto.Amount
 	t.Currency = dto.Currency
 	t.SuccessURL = dto.SuccessUrl
