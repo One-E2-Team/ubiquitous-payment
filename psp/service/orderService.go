@@ -44,7 +44,20 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 		return "", err
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
+	//TODO: redirect link for choosing PSP payment
 	return "", err
+}
+
+func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {
+	paymentTypes, err := service.PSPRepository.GetAvailablePaymentTypes(transactionID)
+	if err != nil {
+		return nil, err
+	}
+	var paymentTypeNames []string
+	for _, paymentType := range paymentTypes {
+		paymentTypeNames = append(paymentTypeNames, paymentType.Name)
+	}
+	return paymentTypeNames, nil
 }
 
 func (service *Service) extractAccounts(paymentData map[string][]string) ([]model.Account, []model.PaymentType, error) {

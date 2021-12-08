@@ -9,7 +9,8 @@ const (
 	PaymentTypesCollectionName = "paymentTypes"
 	AccountsCollectionName     = "accounts"
 
-	PspIdFieldName = "pspid"
+	PSPIDFieldName = "pspid"
+	IDFieldName    = "_id"
 )
 
 var EmptyContext = context.TODO()
