@@ -1,21 +1,23 @@
 package dto
 
+import "ubiquitous-payment/psp-plugins/pspdto"
+
 type Subscription struct {
 	PlanId             string             `json:"plan_id"`
 	InvoiceId          string             `json:"custom_id"`
 	ApplicationContext ApplicationContext `json:"application_context"`
 }
 
-func (s *Subscription) DefaultInit(planId string, pspOrderId string, webshop string, returnUrl string, cancelUrl string) Subscription {
+func (s *Subscription) Init(planId string, t pspdto.TransactionDTO) Subscription {
 	s.PlanId = planId
-	s.InvoiceId = pspOrderId
+	s.InvoiceId = t.PspTransactionId
 	s.ApplicationContext = ApplicationContext{
-		BrandName:   webshop,
+		BrandName:   t.ClientBusinessName,
 		Locale:      "en-RS",
 		LandingPage: Login,
 		UserAction:  PayNow,
-		ReturnUrl:   returnUrl,
-		CancelUrl:   cancelUrl,
+		ReturnUrl:   t.SuccessUrl,
+		CancelUrl:   t.FailUrl,
 	}
 	return *s
 }
