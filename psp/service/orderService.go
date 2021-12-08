@@ -17,12 +17,12 @@ func (service *Service) CreateEmptyTransaction() (string, error) {
 	return orderId, nil
 }
 
-func (service *Service) FillTransaction(dto dto.WebShopOrderDTO) (string, error) {
+func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName string) (string, error) {
 	t, err := service.PSPRepository.GetTransactionByPspId(dto.PspOrderId)
 	if err != nil {
 		return "", err
 	}
-	//TODO: WebshopId from token
+	t.WebShopID = webShopName
 	t.Amount = dto.Amount
 	t.Currency = dto.Currency
 	t.SuccessURL = dto.SuccessUrl
@@ -40,27 +40,40 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO) (string, error)
 	}
 	t.IsSubscription = dto.IsSubscription
 	t.MerchantAccounts, t.AvailablePaymentTypes, err = service.extractAccounts(dto.PaymentTo)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
+	//TODO: redirect link for choosing PSP payment
 	return "", err
+}
+
+func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {
+	paymentTypes, err := service.PSPRepository.GetAvailablePaymentTypes(transactionID)
+	if err != nil {
+		return nil, err
+	}
+	var paymentTypeNames []string
+	for _, paymentType := range paymentTypes {
+		paymentTypeNames = append(paymentTypeNames, paymentType.Name)
+	}
+	return paymentTypeNames, nil
 }
 
 func (service *Service) extractAccounts(paymentData map[string][]string) ([]model.Account, []model.PaymentType, error) {
 	accounts := make([]model.Account, 0)
 	avPaymentTypes := make([]model.PaymentType, 0)
 	allPaymentTypes, err := service.PSPRepository.GetAllPaymentTypes()
-	if err != nil{
+	if err != nil {
 		return nil, nil, err
 	}
-	for name, accData := range paymentData{
-		for _, pt := range allPaymentTypes{
-			if name == pt.Name{
+	for name, accData := range paymentData {
+		for _, pt := range allPaymentTypes {
+			if name == pt.Name {
 				acc := model.Account{ID: primitive.NewObjectID(), AccountID: accData[0],
 					Secret: accData[1], PaymentType: pt}
 				accounts = append(accounts, acc)
-				if !paymentTypeListContaint(pt, avPaymentTypes){
+				if !paymentTypeListContains(pt, avPaymentTypes) {
 					avPaymentTypes = append(avPaymentTypes, pt)
 				}
 			}
@@ -69,9 +82,9 @@ func (service *Service) extractAccounts(paymentData map[string][]string) ([]mode
 	return accounts, avPaymentTypes, err
 }
 
-func paymentTypeListContaint(paymentType model.PaymentType,list []model.PaymentType) bool{
-	for _, pt := range list{
-		if pt.Name == paymentType.Name{
+func paymentTypeListContains(paymentType model.PaymentType, list []model.PaymentType) bool {
+	for _, pt := range list {
+		if pt.Name == paymentType.Name {
 			return true
 		}
 	}

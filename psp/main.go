@@ -33,15 +33,10 @@ func initDB() *mongo.Client {
 }
 
 func initCollections(client *mongo.Client) {
-	const webshopsCollectionName = "psp-clients"
-	const transactionsCollectionName = "psp-transactions"
-	const paymentTypesCollectionName = "paymentTypes"
-	const accountsCollectionName = "accounts"
-	const pspDbName = "psp-db"
-	createCollection(client, pspDbName, webshopsCollectionName)
-	createCollection(client, pspDbName, transactionsCollectionName)
-	createCollection(client, pspDbName, paymentTypesCollectionName)
-	createCollection(client, pspDbName, accountsCollectionName)
+	createCollection(client, psputil.PspDbName, psputil.WebShopCollectionName)
+	createCollection(client, psputil.PspDbName, psputil.TransactionsCollectionName)
+	createCollection(client, psputil.PspDbName, psputil.PaymentTypesCollectionName)
+	createCollection(client, psputil.PspDbName, psputil.AccountsCollectionName)
 }
 
 func createCollection(client *mongo.Client, dbName string, collectionName string) {
@@ -66,9 +61,10 @@ func initHandler(pspService *service.Service) *handler.Handler {
 
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/test", handler.Test).Methods(util.HttpGet)
-	router.HandleFunc("/api/psp/order-id", util.PSPAuth(handler.GetNewOrderId, []string{"test"})).Methods(util.HttpGet)
-	router.HandleFunc("/api/order", util.PSPAuth(handler.FillTransaction, []string{"test"})).Methods(util.HttpPost)
+	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/order-id", util.PSPAuth(handler.GetNewOrderId, []string{"test"})).Methods(http.MethodGet)
+	router.HandleFunc("/api/order", util.PSPAuth(handler.FillTransaction, []string{"test"})).Methods(http.MethodPost)
+	router.HandleFunc("/api/psp/payments/{transactionID}", handler.GetAvailablePaymentTypeNames).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error

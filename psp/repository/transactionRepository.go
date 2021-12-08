@@ -1,32 +1,36 @@
 package repository
 
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"ubiquitous-payment/psp/model"
+	"ubiquitous-payment/psp/psputil"
 )
 
-const transactionsCollectionName = "psp-transactions"
-
-var emptyContext = context.TODO()
-
 func (repo *Repository) CreateTransaction(transaction *model.Transaction) error {
-	transactionsCollection := repo.getCollection(transactionsCollectionName)
-	_, err := transactionsCollection.InsertOne(emptyContext, transaction)
+	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
+	_, err := transactionsCollection.InsertOne(psputil.EmptyContext, transaction)
 	return err
 }
 
-func (repo *Repository) GetTransactionByPspId(pspId string) (*model.Transaction,error) {
-	transactionsCollection := repo.getCollection(transactionsCollectionName)
-	filter := bson.D{{"pspid", pspId}}
+func (repo *Repository) GetTransactionByPspId(pspId string) (*model.Transaction, error) {
+	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
+	filter := bson.D{{psputil.PSPIDFieldName, pspId}}
 	var result model.Transaction
-	err := transactionsCollection.FindOne(emptyContext, filter).Decode(&result)
+	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&result)
 	return &result, err
 }
 
 func (repo *Repository) UpdateTransaction(transaction *model.Transaction) error {
-	transactionsCollection := repo.getCollection(transactionsCollectionName)
-	filter := bson.D{{"pspid", transaction.PSPId}}
-	_, err := transactionsCollection.ReplaceOne(emptyContext,filter,transaction)
+	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
+	filter := bson.D{{psputil.PSPIDFieldName, transaction.PSPId}}
+	_, err := transactionsCollection.ReplaceOne(psputil.EmptyContext, filter, transaction)
 	return err
+}
+
+func (repo *Repository) GetAvailablePaymentTypes(transactionID string) ([]model.PaymentType, error) {
+	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
+	filter := bson.D{{psputil.IDFieldName, transactionID}}
+	var transaction model.Transaction
+	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&transaction)
+	return transaction.AvailablePaymentTypes, err
 }
