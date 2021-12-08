@@ -35,9 +35,13 @@ func initDB() *mongo.Client {
 func initCollections(client *mongo.Client) {
 	const webshopsCollectionName = "psp-clients"
 	const transactionsCollectionName = "psp-transactions"
+	const paymentTypesCollectionName = "paymentTypes"
+	const accountsCollectionName = "accounts"
 	const pspDbName = "psp-db"
 	createCollection(client, pspDbName, webshopsCollectionName)
 	createCollection(client, pspDbName, transactionsCollectionName)
+	createCollection(client, pspDbName, paymentTypesCollectionName)
+	createCollection(client, pspDbName, accountsCollectionName)
 }
 
 func createCollection(client *mongo.Client, dbName string, collectionName string) {

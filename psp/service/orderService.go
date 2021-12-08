@@ -39,6 +39,41 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO) (string, error)
 		}
 	}
 	t.IsSubscription = dto.IsSubscription
+	t.MerchantAccounts, t.AvailablePaymentTypes, err = service.extractAccounts(dto.PaymentTo)
+	if err != nil{
+		return "", err
+	}
+	err = service.PSPRepository.UpdateTransaction(t)
+	return "", err
+}
 
-	return "", nil
+func (service *Service) extractAccounts(paymentData map[string][]string) ([]model.Account, []model.PaymentType, error) {
+	accounts := make([]model.Account, 0)
+	avPaymentTypes := make([]model.PaymentType, 0)
+	allPaymentTypes, err := service.PSPRepository.GetAllPaymentTypes()
+	if err != nil{
+		return nil, nil, err
+	}
+	for name, accData := range paymentData{
+		for _, pt := range allPaymentTypes{
+			if name == pt.Name{
+				acc := model.Account{ID: primitive.NewObjectID(), AccountID: accData[0],
+					Secret: accData[1], PaymentType: pt}
+				accounts = append(accounts, acc)
+				if !paymentTypeListContaint(pt, avPaymentTypes){
+					avPaymentTypes = append(avPaymentTypes, pt)
+				}
+			}
+		}
+	}
+	return accounts, avPaymentTypes, err
+}
+
+func paymentTypeListContaint(paymentType model.PaymentType,list []model.PaymentType) bool{
+	for _, pt := range list{
+		if pt.Name == paymentType.Name{
+			return true
+		}
+	}
+	return false
 }
