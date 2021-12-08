@@ -1,20 +1,21 @@
 package pspdto
 
 type TransactionDTO struct {
-	PspTransactionId     string
-	OrderId              string
-	PayeeId              string
-	PayeeSecret          string
-	Currency             string
-	Amount               string
-	ClientBusinessName   string
-	SuccessUrl           string
-	FailUrl              string
-	ErrorUrl             string
-	PricingPlan          bool
-	PaymentInterval      int
-	NumberOfInstallments int
-	InstallmentUnit      InstallmentUnit
+	PspTransactionId            string
+	OrderId                     string
+	PayeeId                     string
+	PayeeSecret                 string
+	Currency                    string
+	Amount                      string
+	ClientBusinessName          string
+	SuccessUrl                  string
+	FailUrl                     string
+	ErrorUrl                    string
+	PricingPlan                 bool
+	PaymentInterval             int
+	NumberOfInstallments        int
+	InstallmentUnit             InstallmentUnit
+	InstallmentDelayedTimeUnits int
 }
 
 type InstallmentUnit string

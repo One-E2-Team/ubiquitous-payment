@@ -78,3 +78,36 @@ const (
 	ContinuePlan SetupFeeFailureAction = "CONTINUE"
 	Cancel       SetupFeeFailureAction = "CANCEL"
 )
+
+func (p *Plan) DefaultInit(pspOrderId string, orderId string, currency string, amount string) Plan {
+	p.ProductId = orderId
+	p.PlanName = pspOrderId
+	p.PlanStatus = Active
+	p.BillingCycles = append(p.BillingCycles, BillingCycle{
+		PricingScheme: PricingScheme{
+			Version: 0,
+			FixedPrice: FixedPrice{
+				CurrencyCode: currency,
+				Value:        amount,
+			},
+			PricingModel: Volume,
+		},
+		Frequency: Frequency{
+			IntervalUnit:  "",
+			IntervalCount: 0,
+		},
+		TenureType:  "",
+		Sequence:    0,
+		TotalCycles: 0,
+	})
+	p.PaymentPreferences = PaymentPreferences{
+		AutoBillOutstanding: false,
+		SetupFee: SetupFee{
+			CurrencyCode: "",
+			Value:        "",
+		},
+		SetupFeeFailureAction:   "",
+		FailurePaymentThreshold: 0,
+	}
+	return *p
+}
