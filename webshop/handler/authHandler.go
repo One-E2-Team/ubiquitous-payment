@@ -42,5 +42,5 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(respJson)
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(util.ContentType, util.ApplicationJson)
 }

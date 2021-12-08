@@ -3,6 +3,7 @@ package service
 import (
 	"bufio"
 	"fmt"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 	"net/http"
@@ -12,10 +13,9 @@ import (
 	"time"
 	"ubiquitous-payment/webshop/dto"
 	"ubiquitous-payment/webshop/model"
-	"github.com/google/uuid"
 )
 
-func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDto) error {
+func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDTO) error {
 	var err error
 
 	v := validator.New()
@@ -50,7 +50,7 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDto)
 		return err
 	}
 	user := model.User{ProfileId: profile.ID, Email: dto.Email, Username: dto.Username,
-		Password: hashAndSalt(dto.Password),IsDeleted: false, IsValidated: false, ValidationUuid: uuid.NewString(),
+		Password: hashAndSalt(dto.Password), IsDeleted: false, IsValidated: false, ValidationUuid: uuid.NewString(),
 		ValidationExpire: time.Now().Add(1 * time.Hour), Roles: []model.Role{*role}}
 
 	err = service.WSRepository.CreateUser(&user)

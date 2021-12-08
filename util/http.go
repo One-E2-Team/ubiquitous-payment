@@ -22,7 +22,7 @@ func HandleErrorInHandler(err error, responseWriter http.ResponseWriter) {
 }
 
 func MarshalResult(w http.ResponseWriter, result interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(ContentType, ApplicationJson)
 	js, err := json.Marshal(result)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -40,7 +40,7 @@ func UnmarshalResponse(resp *http.Response, result interface{}) error {
 		_ = Body.Close()
 	}(resp.Body)
 	if err = json.Unmarshal(body, &result); err != nil {
-		return  err
+		return err
 	}
 	return nil
 }
