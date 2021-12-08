@@ -8,10 +8,6 @@ import (
 )
 
 const (
-	HttpGet         = "GET"
-	HttpPost        = "POST"
-	HttpPut         = "PUT"
-	HttpDelete      = "DELETE"
 	ContentType     = "Content-Type"
 	ApplicationJson = "application/json"
 )

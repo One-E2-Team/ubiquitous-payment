@@ -65,16 +65,16 @@ func initHandler(wsService *service.Service) *handler.Handler {
 
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/test", handler.Test).Methods(util.HttpGet)
-	router.HandleFunc("/api/login", handler.LogIn).Methods(util.HttpPost)
-	router.HandleFunc("/api/users", handler.Register).Methods(util.HttpPost)
-	router.HandleFunc("/api/products", handler.GetActiveProducts).Methods(util.HttpGet)
+	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
+	router.HandleFunc("/api/users", handler.Register).Methods(http.MethodPost)
+	router.HandleFunc("/api/products", handler.GetActiveProducts).Methods(http.MethodGet)
 	router.HandleFunc("/api/products",
-		wsutil.RBAC(handler.CreateProduct, "CREATE_PRODUCT", false)).Methods(util.HttpPost)
+		wsutil.RBAC(handler.CreateProduct, "CREATE_PRODUCT", false)).Methods(http.MethodPost)
 	router.HandleFunc("/api/products/{id}",
-		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(util.HttpPut)
+		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(http.MethodPut)
 	router.HandleFunc("/api/orders/{id}",
-		wsutil.RBAC(handler.CreateOrder, "CREATE_ORDER", false)).Methods(util.HttpPost)
+		wsutil.RBAC(handler.CreateOrder, "CREATE_ORDER", false)).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error
