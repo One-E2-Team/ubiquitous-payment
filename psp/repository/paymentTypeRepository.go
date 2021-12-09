@@ -19,3 +19,12 @@ func (repo *Repository) GetAllPaymentTypes() ([]model.PaymentType, error) {
 	}
 	return ret, err
 }
+
+func (repo *Repository) GetPaymentTypeByName(paymentName string) (*model.PaymentType, error) {
+	paymentTypeCollection := repo.getCollection(psputil.PaymentTypesCollectionName)
+	filter := bson.D{{"name", paymentName}}
+	var result model.PaymentType
+	err := paymentTypeCollection.FindOne(psputil.EmptyContext, filter).Decode(&result)
+	return &result, err
+}
+

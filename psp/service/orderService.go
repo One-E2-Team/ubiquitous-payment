@@ -48,6 +48,20 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 	return "", err
 }
 
+func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) error {
+	t, err := service.PSPRepository.GetTransactionById(request.ID)
+	if err != nil {
+		return err
+	}
+	pt, err := service.PSPRepository.GetPaymentTypeByName(request.PaymentTypeName)
+	if err != nil {
+		return nil
+	}
+	t.SelectedPaymentType = *pt
+	err = service.PSPRepository.UpdateTransaction(t)
+	return err
+}
+
 func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {
 	paymentTypes, err := service.PSPRepository.GetAvailablePaymentTypes(transactionID)
 	if err != nil {

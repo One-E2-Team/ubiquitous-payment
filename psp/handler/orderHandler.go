@@ -43,3 +43,15 @@ func (handler *Handler) GetAvailablePaymentTypeNames(w http.ResponseWriter, r *h
 	}
 	util.MarshalResult(w, payments)
 }
+
+func (handler *Handler) SelectPaymentType(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(util.ContentType, util.ApplicationJson)
+	var request dto.SelectedPaymentTypeDTO
+	err := util.UnmarshalRequest(r, &request)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	err = handler.PSPService.SelectPaymentType(request)
+	//util.MarshalResult(w, payments)
+}

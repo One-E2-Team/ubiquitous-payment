@@ -2,6 +2,7 @@ package repository
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"ubiquitous-payment/psp/model"
 	"ubiquitous-payment/psp/psputil"
 )
@@ -33,4 +34,12 @@ func (repo *Repository) GetAvailablePaymentTypes(transactionID string) ([]model.
 	var transaction model.Transaction
 	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&transaction)
 	return transaction.AvailablePaymentTypes, err
+}
+
+func (repo *Repository) GetTransactionById(id primitive.ObjectID) (*model.Transaction, error) {
+	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
+	filter := bson.D{{psputil.IDFieldName, id}}
+	var result model.Transaction
+	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&result)
+	return &result, err
 }
