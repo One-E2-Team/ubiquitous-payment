@@ -66,10 +66,10 @@ const (
 )
 
 type PaymentPreferences struct {
-	AutoBillOutstanding     bool                  `json:"auto_bill_outstanding"`
-	SetupFee                SetupFee              `json:"setup_fee"`
-	SetupFeeFailureAction   SetupFeeFailureAction `json:"setup_fee_failure_action"`
-	FailurePaymentThreshold int                   `json:"payment_failure_threshold"`
+	AutoBillOutstanding bool `json:"auto_bill_outstanding"`
+	//SetupFee                SetupFee              `json:"setup_fee"`
+	//SetupFeeFailureAction   SetupFeeFailureAction `json:"setup_fee_failure_action"`
+	//FailurePaymentThreshold int                   `json:"payment_failure_threshold"`
 }
 
 type SetupFee FixedPrice
@@ -81,10 +81,31 @@ const (
 	Cancel       SetupFeeFailureAction = "CANCEL"
 )
 
-func (p *Plan) DefaultInit(t pspdto.TransactionDTO) Plan {
+func (p *Plan) Init(t pspdto.TransactionDTO) Plan {
 	p.ProductId = t.OrderId
 	p.PlanName = t.PspTransactionId
 	p.PlanStatus = Active
+	sequence := 1
+	if t.InstallmentDelayedTimeUnits != 0 {
+		sequence = 2
+		p.BillingCycles = append(p.BillingCycles, BillingCycle{
+			PricingScheme: PricingScheme{
+				Version: 0,
+				FixedPrice: FixedPrice{
+					CurrencyCode: "0",
+					Value:        "USD",
+				},
+				PricingModel: Volume,
+			},
+			Frequency: Frequency{
+				IntervalUnit:  IntervalUnit(t.InstallmentUnit),
+				IntervalCount: t.PaymentInterval,
+			},
+			TenureType:  Regular,
+			Sequence:    1,
+			TotalCycles: t.InstallmentDelayedTimeUnits,
+		})
+	}
 	p.BillingCycles = append(p.BillingCycles, BillingCycle{
 		PricingScheme: PricingScheme{
 			Version: 0,
@@ -96,20 +117,20 @@ func (p *Plan) DefaultInit(t pspdto.TransactionDTO) Plan {
 		},
 		Frequency: Frequency{
 			IntervalUnit:  IntervalUnit(t.InstallmentUnit),
-			IntervalCount: 0,
+			IntervalCount: t.PaymentInterval,
 		},
 		TenureType:  Regular,
-		Sequence:    0,
-		TotalCycles: 0,
+		Sequence:    sequence,
+		TotalCycles: t.NumberOfInstallments,
 	})
 	p.PaymentPreferences = PaymentPreferences{
-		AutoBillOutstanding: false,
-		SetupFee: SetupFee{
-			CurrencyCode: "",
-			Value:        "",
-		},
-		SetupFeeFailureAction:   "",
-		FailurePaymentThreshold: 0,
+		AutoBillOutstanding: true, /*
+			SetupFee: SetupFee{
+				CurrencyCode: "",
+				Value:        "",
+			},
+			SetupFeeFailureAction:   "",
+			FailurePaymentThreshold: 0,*/
 	}
 	return *p
 }

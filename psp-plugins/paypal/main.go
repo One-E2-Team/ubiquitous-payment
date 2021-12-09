@@ -19,7 +19,11 @@ func (p plugin) SupportsPlanPayment() bool {
 }
 
 func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
-	return transactions.ExecuteOrder(data)
+	if data.PricingPlan {
+		return transactions.ExecuteSubscription(data)
+	} else {
+		return transactions.ExecuteOrder(data)
+	}
 }
 
 var Plugin plugin
