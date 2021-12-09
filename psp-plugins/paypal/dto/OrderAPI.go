@@ -1,5 +1,7 @@
 package dto
 
+import "ubiquitous-payment/psp-plugins/pspdto"
+
 type Order struct {
 	Intent             Intent             `json:"intent"`
 	PurchaseUnits      []PurchaseUnit     `json:"purchase_units"`
@@ -55,27 +57,27 @@ const (
 	PayNow   UserAction = "PAY_NOW"
 )
 
-func (o *Order) DefaultInit(pspOdrderID string, orderID string, payeeID string, payeeSecret string, currency string, amount string, webshop string, returnUrl string, cancelUrl string) Order {
+func (o *Order) Init(t pspdto.TransactionDTO) Order {
 	o.Intent = Capture
 	o.PurchaseUnits = append(o.PurchaseUnits, PurchaseUnit{
-		ReferenceId: orderID,
+		ReferenceId: t.OrderId,
 		Amount: Amount{
-			CurrencyCode: currency,
-			Value:        amount,
+			CurrencyCode: t.Currency,
+			Value:        t.Amount,
 		},
 		Payee: Payee{
-			Email:            payeeID,
-			MerchantIdSecret: payeeSecret,
+			Email:            t.PayeeId,
+			MerchantIdSecret: t.PayeeSecret,
 		},
-		InvoiceId: pspOdrderID,
+		InvoiceId: t.PspTransactionId,
 	})
 	o.ApplicationContext = ApplicationContext{
-		BrandName:   webshop,
+		BrandName:   t.ClientBusinessName,
 		Locale:      "en-RS",
 		LandingPage: Login,
 		UserAction:  PayNow,
-		ReturnUrl:   returnUrl,
-		CancelUrl:   cancelUrl,
+		ReturnUrl:   t.SuccessUrl,
+		CancelUrl:   t.FailUrl,
 	}
 	return *o
 }

@@ -1,5 +1,7 @@
 package dto
 
+import "ubiquitous-payment/psp-plugins/pspdto"
+
 type Plan struct {
 	ProductId          string             `json:"product_id"`
 	PlanName           string             `json:"name"`
@@ -78,3 +80,36 @@ const (
 	ContinuePlan SetupFeeFailureAction = "CONTINUE"
 	Cancel       SetupFeeFailureAction = "CANCEL"
 )
+
+func (p *Plan) DefaultInit(t pspdto.TransactionDTO) Plan {
+	p.ProductId = t.OrderId
+	p.PlanName = t.PspTransactionId
+	p.PlanStatus = Active
+	p.BillingCycles = append(p.BillingCycles, BillingCycle{
+		PricingScheme: PricingScheme{
+			Version: 0,
+			FixedPrice: FixedPrice{
+				CurrencyCode: t.Currency,
+				Value:        t.Amount,
+			},
+			PricingModel: Volume,
+		},
+		Frequency: Frequency{
+			IntervalUnit:  IntervalUnit(t.InstallmentUnit),
+			IntervalCount: 0,
+		},
+		TenureType:  Regular,
+		Sequence:    0,
+		TotalCycles: 0,
+	})
+	p.PaymentPreferences = PaymentPreferences{
+		AutoBillOutstanding: false,
+		SetupFee: SetupFee{
+			CurrencyCode: "",
+			Value:        "",
+		},
+		SetupFeeFailureAction:   "",
+		FailurePaymentThreshold: 0,
+	}
+	return *p
+}
