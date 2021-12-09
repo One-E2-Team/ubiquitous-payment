@@ -27,16 +27,33 @@ func ExecuteOrder(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, err
 }
 
 func ExecuteSubscription(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
-	planId, err := createPlan(data)
+	productId, err := createRandomProduct()
+	if err != nil {
+		return pspdto.TransactionCreatedDTO{}, err
+	}
+	planId, err := createPlan(productId, data)
 	if err != nil {
 		return pspdto.TransactionCreatedDTO{}, err
 	}
 	return createSubscription(planId, data)
 }
 
-func createPlan(data pspdto.TransactionDTO) (string, error) {
+func createRandomProduct() (string, error) {
+	var product = dto.Product{}
+	response, err := CallPayPalAPI(http.MethodPost, CatalogProductApiUrl, product.Init())
+	if err != nil {
+		return "", err
+	}
+	id, ok := response["id"].(string)
+	if !ok {
+		return "", errors.New("could not convert plan id")
+	}
+	return id, nil
+}
+
+func createPlan(productId string, data pspdto.TransactionDTO) (string, error) {
 	var plan = dto.Plan{}
-	response, err := CallPayPalAPI(http.MethodPost, PlansApiUrl, plan.Init(data))
+	response, err := CallPayPalAPI(http.MethodPost, PlansApiUrl, plan.Init(productId, data))
 	if err != nil {
 		return "", err
 	}

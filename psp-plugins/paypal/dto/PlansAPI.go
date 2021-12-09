@@ -27,22 +27,14 @@ type BillingCycle struct {
 }
 
 type PricingScheme struct {
-	Version      int          `json:"version"`
-	FixedPrice   FixedPrice   `json:"fixed_price"`
-	PricingModel PricingModel `json:"pricing_model"`
+	Version    int        `json:"version"`
+	FixedPrice FixedPrice `json:"fixed_price"`
 }
 
 type FixedPrice struct {
 	CurrencyCode string `json:"currency_code"`
 	Value        string `json:"value"`
 }
-
-type PricingModel string
-
-const (
-	Volume PricingModel = "VOLUME"
-	Tiered PricingModel = "TIERED"
-)
 
 type Frequency struct {
 	IntervalUnit  IntervalUnit `json:"interval_unit"`
@@ -81,8 +73,8 @@ const (
 	Cancel       SetupFeeFailureAction = "CANCEL"
 )
 
-func (p *Plan) Init(t pspdto.TransactionDTO) Plan {
-	p.ProductId = t.OrderId
+func (p *Plan) Init(productId string, t pspdto.TransactionDTO) Plan {
+	p.ProductId = productId
 	p.PlanName = t.PspTransactionId
 	p.PlanStatus = Active
 	sequence := 1
@@ -92,16 +84,16 @@ func (p *Plan) Init(t pspdto.TransactionDTO) Plan {
 			PricingScheme: PricingScheme{
 				Version: 0,
 				FixedPrice: FixedPrice{
-					CurrencyCode: "0",
-					Value:        "USD",
+					CurrencyCode: "USD",
+					Value:        "0",
 				},
-				PricingModel: Volume,
+				//PricingModel: Volume,
 			},
 			Frequency: Frequency{
 				IntervalUnit:  IntervalUnit(t.InstallmentUnit),
 				IntervalCount: t.PaymentInterval,
 			},
-			TenureType:  Regular,
+			TenureType:  Trial,
 			Sequence:    1,
 			TotalCycles: t.InstallmentDelayedTimeUnits,
 		})
@@ -113,7 +105,7 @@ func (p *Plan) Init(t pspdto.TransactionDTO) Plan {
 				CurrencyCode: t.Currency,
 				Value:        t.Amount,
 			},
-			PricingModel: Volume,
+			//PricingModel: Volume,
 		},
 		Frequency: Frequency{
 			IntervalUnit:  IntervalUnit(t.InstallmentUnit),

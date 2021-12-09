@@ -169,3 +169,4 @@ func CallPayPalAPI(method string, url string, data interface{}) (map[string]inte
 const OrdersApiUrl = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
 const PlansApiUrl = "https://api-m.sandbox.paypal.com/v1/billing/plans"
 const SubscriptionsApiUrl = "https://api-m.sandbox.paypal.com/v1/billing/subscriptions"
+const CatalogProductApiUrl = "https://api-m.sandbox.paypal.com/v1/catalogs/products"
