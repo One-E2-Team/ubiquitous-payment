@@ -59,3 +59,26 @@ func (handler *Handler) SelectPaymentType(w http.ResponseWriter, r *http.Request
 	}
 	util.MarshalResult(w, redirectUrl)
 }
+
+func (handler *Handler) UpdateTransactionSuccess(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(util.ContentType, util.ApplicationJson)
+	externalId := r.FormValue("token")
+	retUrl, err := handler.PSPService.UpdateTransactionSuccess(externalId)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	http.Redirect(w, r, retUrl, http.StatusSeeOther)
+}
+
+func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(util.ContentType, util.ApplicationJson)
+	externalId := r.FormValue("token")
+	retUrl, err := handler.PSPService.UpdateTransactionFail(externalId)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	http.Redirect(w, r, retUrl, http.StatusSeeOther)
+}
+

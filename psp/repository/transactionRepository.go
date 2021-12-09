@@ -47,3 +47,11 @@ func (repo *Repository) GetTransactionById(id primitive.ObjectID) (*model.Transa
 	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&result)
 	return &result, err
 }
+
+func (repo *Repository) GetTransactionByExternalId(externalId string) (*model.Transaction, error) {
+	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
+	filter := bson.D{{"externaltransactionid", externalId}}
+	var result model.Transaction
+	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&result)
+	return &result, err
+}

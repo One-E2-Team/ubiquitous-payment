@@ -3,7 +3,8 @@ package model
 type TransactionStatus int
 
 const (
-	FULLFILLED TransactionStatus = iota
+	WAITING TransactionStatus = iota
+	FULLFILLED
 	FAILED
 	ERROR
 )
