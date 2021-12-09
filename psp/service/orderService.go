@@ -1,11 +1,9 @@
 package service
 
 import (
-	"errors"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"strconv"
-	"ubiquitous-payment/psp-plugins/pspdto"
+	"ubiquitous-payment/psp-plugins/pspdto/mapper"
 	"ubiquitous-payment/psp/dto"
 	"ubiquitous-payment/psp/model"
 	"ubiquitous-payment/psp/psputil"
@@ -49,12 +47,12 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
 	pspFrontHost, pspFrontPort := util.GetPSPFrontHostAndPort()
-	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" +pspFrontPort + "/transaction/" + t.ID.Hex(), err
+	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/transaction/" + t.ID.Hex(), err
 }
 
 func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (string, error) {
 	id, err := primitive.ObjectIDFromHex(request.ID)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	t, err := service.PSPRepository.GetTransactionById(id)
@@ -67,79 +65,38 @@ func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (s
 	}
 	t.SelectedPaymentType = *pt
 	err = service.PSPRepository.UpdateTransaction(t)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	redirectUrl, err := service.ExecuteTransaction(t)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
-	return redirectUrl,nil
+	return redirectUrl, nil
 }
 
-func (service *Service) ExecuteTransaction(t *model.Transaction) (string, error){
+func (service *Service) ExecuteTransaction(t *model.Transaction) (string, error) {
 	plugin, err := psputil.GetPlugin(t.SelectedPaymentType.Name)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
-	pricingPlan := false
-	if (t.PaymentMode == model.ONE_TIME && t.IsSubscription) || (t.PaymentMode == model.RECURRING){
-		if !plugin.SupportsPlanPayment(){
-			return "", errors.New("plugin does not support pricing plan")
-		}
-		pricingPlan = true
-	}
-	var selectedAccount model.Account
-	for _, acc := range t.MerchantAccounts{
-		if acc.PaymentType.Name == t.SelectedPaymentType.Name{
-			selectedAccount = acc
-			break
-		}
-	}
-	var installmentUnit pspdto.InstallmentUnit
-	switch model.GetRecurringString(t.Recurring.Type){
-	case "MONTHLY":
-		installmentUnit = pspdto.Month
-	case "YEARLY":
-		installmentUnit = pspdto.Year
-	default:
-		installmentUnit = ""
-	}
-	pspHost, pspPort := util.GetPSPHostAndPort()
-	initialUrl := util.GetPSPProtocol() + "://" + pspHost + ":" + pspPort + "/api/psp"
-	transactionDto := pspdto.TransactionDTO{
-		PspTransactionId:            t.PSPId,
-		OrderId:                     t.MerchantOrderID,
-		PayeeId:                     selectedAccount.AccountID,
-		PayeeSecret:                 selectedAccount.Secret,
-		Currency:                    t.Currency,
-		Amount:                      strconv.FormatFloat(float64(t.Amount), 'f', 2, 64),
-		ClientBusinessName:          t.WebShopID,
-		SuccessUrl:                  initialUrl + "/payment-success",
-		FailUrl:                     initialUrl + "/payment-fail",
-		ErrorUrl:                    t.ErrorURL,
-		PricingPlan:                 pricingPlan,
-		PaymentInterval:             1,
-		NumberOfInstallments:        int(t.Recurring.InstallmentCount),
-		InstallmentUnit:             installmentUnit,
-		InstallmentDelayedTimeUnits: int(t.Recurring.DelayedInstallmentCount),
-	}
-	result, err := plugin.ExecuteTransaction(transactionDto)
-	if err != nil{
+	transactionDTO, err := mapper.TransactionToTransactionDTO(*t, plugin)
+	result, err := plugin.ExecuteTransaction(transactionDTO)
+	if err != nil {
 		t.TransactionStatus = model.FAILED
-		service.PSPRepository.UpdateTransaction(t)
+		_ = service.PSPRepository.UpdateTransaction(t)
 		return "", err
 	}
 	t.ExternalTransactionId = result.TransactionId
 	err = service.PSPRepository.UpdateTransaction(t)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	return result.RedirectUrl, nil
 }
 
 func (service *Service) UpdateTransactionSuccess(transactionID string) (string, error) {
-	return service.updateTransactionStatus(transactionID, model.FULLFILLED)
+	return service.updateTransactionStatus(transactionID, model.FULFILLED)
 }
 
 func (service *Service) UpdateTransactionFail(transactionID string) (string, error) {
@@ -148,18 +105,11 @@ func (service *Service) UpdateTransactionFail(transactionID string) (string, err
 
 func (service *Service) updateTransactionStatus(externalId string, status model.TransactionStatus) (string, error) {
 	t, err := service.PSPRepository.GetTransactionByExternalId(externalId)
-	if err != nil{
+	if err != nil {
 		return "", nil
 	}
 	t.TransactionStatus = status
-	var retUrl string
-	switch status {
-	case model.FULLFILLED:
-		retUrl = t.SuccessURL
-	default:
-		retUrl = t.FailURL
-	}
-	return retUrl ,service.PSPRepository.UpdateTransaction(t)
+	return t.GetURLByStatus(), service.PSPRepository.UpdateTransaction(t)
 }
 
 func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {

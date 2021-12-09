@@ -4,7 +4,7 @@ type TransactionStatus int
 
 const (
 	WAITING TransactionStatus = iota
-	FULLFILLED
+	FULFILLED
 	FAILED
 	ERROR
 )
