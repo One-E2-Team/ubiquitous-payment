@@ -1,6 +1,9 @@
 package model
 
-import "strings"
+import (
+	"strings"
+	"ubiquitous-payment/psp-plugins/pspdto"
+)
 
 type RecurringType int
 
@@ -16,9 +19,11 @@ func GetRecurringType(recurringType string) RecurringType {
 	return MONTHLY
 }
 
-func GetRecurringString(recurringType RecurringType) string {
-	if recurringType == MONTHLY{
-		return "MONTHLY"
+func GetInstallmentUnitByRecurringType(recurringType RecurringType) pspdto.InstallmentUnit {
+	switch recurringType {
+	case YEARLY:
+		return pspdto.Year
+	default:
+		return pspdto.Month
 	}
-	return "YEARLY"
 }
