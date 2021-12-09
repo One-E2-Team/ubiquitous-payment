@@ -38,3 +38,19 @@ func ExecuteOrder(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, err
 	}
 	return ret, nil
 }
+
+func ExecuteSubscription(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
+	planId, err := createPlan(data)
+	if err != nil {
+		return pspdto.TransactionCreatedDTO{}, err
+	}
+	return createSubscription(planId, data)
+}
+
+func createPlan(data pspdto.TransactionDTO) (string, error) {
+	return "", nil
+}
+
+func createSubscription(planId string, data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
+	return pspdto.TransactionCreatedDTO{}, nil
+}
