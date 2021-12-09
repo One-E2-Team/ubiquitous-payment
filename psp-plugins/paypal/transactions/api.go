@@ -142,6 +142,11 @@ func CallPayPalAPI(method string, url string, data interface{}) (map[string]inte
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	resp, err := http.DefaultClient.Do(req)
+
+	if resp.StatusCode != 200 && resp.StatusCode != 201 {
+		return nil, errors.New("response is not http 200 or http 201")
+	}
+
 	if err != nil {
 		return nil, err
 	}

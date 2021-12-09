@@ -81,7 +81,7 @@ const (
 	Cancel       SetupFeeFailureAction = "CANCEL"
 )
 
-func (p *Plan) DefaultInit(t pspdto.TransactionDTO) Plan {
+func (p *Plan) Init(t pspdto.TransactionDTO) Plan {
 	p.ProductId = t.OrderId
 	p.PlanName = t.PspTransactionId
 	p.PlanStatus = Active
