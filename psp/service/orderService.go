@@ -1,10 +1,14 @@
 package service
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strconv"
+	"ubiquitous-payment/psp-plugins/pspdto"
 	"ubiquitous-payment/psp/dto"
 	"ubiquitous-payment/psp/model"
+	"ubiquitous-payment/psp/psputil"
 	"ubiquitous-payment/util"
 )
 
@@ -35,7 +39,7 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 		t.Recurring = nil
 	} else {
 		t.Recurring = &model.Recurring{ID: primitive.NewObjectID(), Type: model.GetRecurringType(dto.RecurringType),
-			InstallmentCount: util.String2Uint(dto.RecurringTimes), DelayedInstallmentCount: 0,
+			InstallmentCount: util.String2Uint(dto.RecurringTimes), DelayedInstallmentCount: dto.DelayedInstallments,
 		}
 	}
 	t.IsSubscription = dto.IsSubscription
@@ -44,22 +48,90 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 		return "", err
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
-	//TODO: redirect link for choosing PSP payment
-	return "", err
+	pspFrontHost, pspFrontPort := util.GetPSPFrontHostAndPort()
+	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" +pspFrontPort + "/transaction/" + t.ID.Hex(), err
 }
 
-func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) error {
-	t, err := service.PSPRepository.GetTransactionById(request.ID)
+func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (string, error) {
+	id, err := primitive.ObjectIDFromHex(request.ID)
+	if err != nil{
+		return "", err
+	}
+	t, err := service.PSPRepository.GetTransactionById(id)
 	if err != nil {
-		return err
+		return "", err
 	}
 	pt, err := service.PSPRepository.GetPaymentTypeByName(request.PaymentTypeName)
 	if err != nil {
-		return nil
+		return "", nil
 	}
 	t.SelectedPaymentType = *pt
 	err = service.PSPRepository.UpdateTransaction(t)
-	return err
+	if err != nil{
+		return "", err
+	}
+	redirectUrl, err := service.ExecuteTransaction(t)
+	if err != nil{
+		return "", err
+	}
+	return redirectUrl,nil
+}
+
+func (service *Service) ExecuteTransaction(t *model.Transaction) (string, error){
+	plugin, err := psputil.GetPlugin(t.SelectedPaymentType.Name)
+	if err != nil{
+		return "", err
+	}
+	pricingPlan := false
+	if (t.PaymentMode == model.ONE_TIME && t.IsSubscription) || (t.PaymentMode == model.RECURRING){
+		if !plugin.SupportsPlanPayment(){
+			return "", errors.New("plugin does not support pricing plan")
+		}
+		pricingPlan = true
+	}
+	var selectedAccount model.Account
+	for _, acc := range t.MerchantAccounts{
+		if acc.PaymentType.Name == t.SelectedPaymentType.Name{
+			selectedAccount = acc
+			break
+		}
+	}
+	var installmentUnit pspdto.InstallmentUnit
+	switch model.GetRecurringString(t.Recurring.Type){
+	case "MONTHLY":
+		installmentUnit = pspdto.Month
+	case "YEARLY":
+		installmentUnit = pspdto.Year
+	default:
+		installmentUnit = ""
+	}
+	transactionDto := pspdto.TransactionDTO{
+		PspTransactionId:            t.PSPId,
+		OrderId:                     t.MerchantOrderID,
+		PayeeId:                     selectedAccount.AccountID,
+		PayeeSecret:                 selectedAccount.Secret,
+		Currency:                    t.Currency,
+		Amount:                      strconv.FormatFloat(float64(t.Amount), 'f', 2, 64),
+		ClientBusinessName:          t.WebShopID,
+		SuccessUrl:                  t.SuccessURL,
+		FailUrl:                     t.FailURL,
+		ErrorUrl:                    t.ErrorURL,
+		PricingPlan:                 pricingPlan,
+		PaymentInterval:             1,
+		NumberOfInstallments:        int(t.Recurring.InstallmentCount),
+		InstallmentUnit:             installmentUnit,
+		InstallmentDelayedTimeUnits: int(t.Recurring.DelayedInstallmentCount),
+	}
+	result, err := plugin.ExecuteTransaction(transactionDto)
+	if err != nil{
+		return "", err
+	}
+	t.ExternalTransactionId = result.TransactionId
+	err = service.PSPRepository.UpdateTransaction(t)
+	if err != nil{
+		return "", err
+	}
+	return result.RedirectUrl, nil
 }
 
 func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {

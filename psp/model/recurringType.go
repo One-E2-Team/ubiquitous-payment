@@ -15,3 +15,10 @@ func GetRecurringType(recurringType string) RecurringType {
 	}
 	return MONTHLY
 }
+
+func GetRecurringString(recurringType RecurringType) string {
+	if recurringType == MONTHLY{
+		return "MONTHLY"
+	}
+	return "YEARLY"
+}

@@ -65,6 +65,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/order-id", util.PSPAuth(handler.GetNewOrderId, []string{"test"})).Methods(http.MethodGet)
 	router.HandleFunc("/api/order", util.PSPAuth(handler.FillTransaction, []string{"test"})).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payments/{transactionID}", handler.GetAvailablePaymentTypeNames).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/select-payment", handler.SelectPaymentType).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error

@@ -52,6 +52,10 @@ func (handler *Handler) SelectPaymentType(w http.ResponseWriter, r *http.Request
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	err = handler.PSPService.SelectPaymentType(request)
-	//util.MarshalResult(w, payments)
+	redirectUrl, err := handler.PSPService.SelectPaymentType(request)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	util.MarshalResult(w, redirectUrl)
 }

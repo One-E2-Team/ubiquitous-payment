@@ -1,4 +1,4 @@
-package main
+package transactions
 
 import (
 	"errors"
@@ -24,12 +24,24 @@ func ExecuteOrder(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, err
 		return ret, errors.New("could not convert final transaction links")
 	}
 	for _, l := range linkObjects {
-		link, ok := l.(map[string]string)
+		link, ok := l.(map[string]interface{})
 		if !ok {
 			return ret, errors.New("could not convert final transaction link object")
 		}
-		if link["method"] == "GET" && link["rel"] == "approve" {
-			ret.RedirectUrl = link["href"]
+		method, ok := link["method"].(string)
+		if !ok {
+			return ret, errors.New("could not convert final transaction link internal object data - method")
+		}
+		rel, ok := link["rel"].(string)
+		if !ok {
+			return ret, errors.New("could not convert final transaction link internal object data - rel")
+		}
+		href, ok := link["href"].(string)
+		if !ok {
+			return ret, errors.New("could not convert final transaction link internal object data - href")
+		}
+		if method == "GET" && rel == "approve" {
+			ret.RedirectUrl = href
 			break
 		}
 	}
