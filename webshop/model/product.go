@@ -13,6 +13,7 @@ type Product struct {
 	MediaPath         string  `json:"mediaPath"`
 	IsActive          bool    `json:"isActive" gorm:"not null"`
 	NumOfInstallments uint    `json:"numOfInstallments"`
+	DelayedInstallments uint    `json:"delayedInstallments"`
 	MerchantProfileId uint    `json:"merchantProfileId"`
 	RecurringType	  RecurringType `json:"recurringType"`
 }

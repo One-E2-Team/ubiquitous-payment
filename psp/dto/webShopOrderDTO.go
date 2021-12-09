@@ -16,4 +16,5 @@ type WebShopOrderDTO struct {
 	ErrorUrl          string                 `json:"errorUrl"`
 	MerchantTimestamp time.Time              `json:"merchantTimestamp"`
 	MerchantOrderId   string                 `json:"merchantOrderId"`
+	DelayedInstallments   uint               `json:"delayedInstallments"`
 }

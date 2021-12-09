@@ -66,6 +66,7 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	message["paymentMode"] = "ONE_TIME"
 	message["isSubscription"] = false
 	message["recurringType"] = ""
+	message["delayedInstallments"] = product.DelayedInstallments
 	switch product.NumOfInstallments {
 	case 0:
 		message["recurringTimes"] = "0"

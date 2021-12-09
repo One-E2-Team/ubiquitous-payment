@@ -28,6 +28,15 @@ func GetPSPHostAndPort() (string, string) {
 	return pspHost, pspPort
 }
 
+func GetPSPFrontHostAndPort() (string, string) {
+	var pspHost, pspPort = "localhost", "8002"
+	if DockerChecker() {
+		pspHost = "psp"
+		pspPort = "8080"
+	}
+	return pspHost, pspPort
+}
+
 func GetWebShopHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8001"
 	if DockerChecker() {

@@ -30,9 +30,13 @@ func (repo *Repository) UpdateTransaction(transaction *model.Transaction) error 
 
 func (repo *Repository) GetAvailablePaymentTypes(transactionID string) ([]model.PaymentType, error) {
 	transactionsCollection := repo.getCollection(psputil.TransactionsCollectionName)
-	filter := bson.D{{psputil.IDFieldName, transactionID}}
+	id, err := primitive.ObjectIDFromHex(transactionID)
+	if err != nil{
+		return nil, err
+	}
+	filter := bson.D{{psputil.IDFieldName, id}}
 	var transaction model.Transaction
-	err := transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&transaction)
+	err = transactionsCollection.FindOne(psputil.EmptyContext, filter).Decode(&transaction)
 	return transaction.AvailablePaymentTypes, err
 }
 

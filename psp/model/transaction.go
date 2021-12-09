@@ -23,4 +23,5 @@ type Transaction struct {
 	AvailablePaymentTypes []PaymentType      `json:"availablePaymentTypes"`
 	SelectedPaymentType   PaymentType        `json:"selectedPaymentType"`
 	MerchantAccounts      []Account          `json:"merchant_accounts"`
+	ExternalTransactionId string             `json:"externalTransactionId"`
 }

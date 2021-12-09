@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"ubiquitous-payment/psp-plugins/paypal/transactions"
 	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
@@ -18,11 +19,7 @@ func (p plugin) SupportsPlanPayment() bool {
 }
 
 func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
-	return ExecuteOrder(data)
+	return transactions.ExecuteOrder(data)
 }
 
 var Plugin plugin
-
-func main() {
-
-}
