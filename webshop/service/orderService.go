@@ -79,9 +79,11 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 		message["recurringTimes"] = util.Uint2String(product.NumOfInstallments)
 	}
 	message["paymentTo"] = paymentData
-	message["successUrl"] = ""
-	message["failUrl"] = ""
-	message["errorUrl"] = ""
+	wsFrontHost, wsFrontPort := util.GetWebShopFrontHostAndPort()
+	initialUrl := util.GetPSPProtocol() + "://" + wsFrontHost + ":" + wsFrontPort + "/order"
+	message["successUrl"] = initialUrl + "/success"
+	message["failUrl"] = initialUrl + "/fail"
+	message["errorUrl"] = initialUrl + "/error"
 	message["merchantTimestamp"] = order.Timestamp
 	message["merchantOrderId"] = order.UUID
 

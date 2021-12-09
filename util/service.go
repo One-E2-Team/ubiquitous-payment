@@ -46,6 +46,11 @@ func GetWebShopHostAndPort() (string, string) {
 	return pspHost, pspPort
 }
 
+func GetWebShopFrontHostAndPort() (string, string) {
+	//TODO: parametrise
+	return "localhost", "200"
+}
+
 func GetNoSQLData() DatabaseData {
 	noSQLPort := "27017"
 	if DockerChecker() {
