@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	bitcoind_rpc "ubiquitous-payment/psp-plugins/bitcoin/bitcoind-rpc"
 	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
@@ -22,3 +24,17 @@ func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.Transacti
 }
 
 var Plugin plugin
+
+func main() {
+	client, err := bitcoind_rpc.GetClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer bitcoind_rpc.CloseClient()
+
+	address, err := client.GetNewAddress("wtf")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(address)
+}

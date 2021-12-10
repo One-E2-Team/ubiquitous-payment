@@ -3,11 +3,16 @@ module ubiquitous-payment
 go 1.17
 
 require (
+	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/gorilla/mux v1.8.0
 	go.mongodb.org/mongo-driver v1.8.0
 )
 
 require (
+	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
+	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce // indirect
+	github.com/btcsuite/go-socks v0.0.0-20170105172521-4720035b7bfd // indirect
+	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
