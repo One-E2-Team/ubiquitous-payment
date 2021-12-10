@@ -1,9 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"log"
-	bitcoind_rpc "ubiquitous-payment/psp-plugins/bitcoin/bitcoind-rpc"
+	"ubiquitous-payment/psp-plugins/bitcoin/transactions"
 	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
@@ -16,25 +16,18 @@ func (p plugin) Test() string {
 }
 
 func (p plugin) SupportsPlanPayment() bool {
-	return true
+	return false
 }
 
 func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
-	return pspdto.TransactionCreatedDTO{}, nil
+	if data.PricingPlan {
+		return pspdto.TransactionCreatedDTO{}, errors.New("bitcoin does not support plan payment")
+	}
+	return transactions.PrepareTransaction(data)
 }
 
 var Plugin plugin
 
 func main() {
-	client, err := bitcoind_rpc.GetClient()
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer bitcoind_rpc.CloseClient()
 
-	address, err := client.GetNewAddress("wtf")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(address)
 }
