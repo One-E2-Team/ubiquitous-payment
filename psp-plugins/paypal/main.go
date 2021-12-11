@@ -26,12 +26,16 @@ func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.Transacti
 	}
 }
 
+func (p plugin) CaptureTransaction(id string) (bool, error) {
+	return transactions.CaptureOrderPayment(id)
+}
+
 var Plugin plugin
 
 func main() {
 	ret, err := Plugin.ExecuteTransaction(pspdto.TransactionDTO{
-		PspTransactionId:            "T-0003",
-		OrderId:                     "O-0003",
+		PspTransactionId:            "T-0005",
+		OrderId:                     "O-0005",
 		PayeeId:                     "sb-064747x8893734@business.example.com",
 		PayeeSecret:                 "35AYF8PFJWGPS",
 		Currency:                    "USD",

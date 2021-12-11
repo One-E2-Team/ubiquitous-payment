@@ -129,3 +129,19 @@ func extractApproveLinkFromLinksInterface(links interface{}) (string, error) {
 	}
 	return ret, nil
 }
+
+func CaptureOrderPayment(id string) (bool, error) {
+	response, err := CallPayPalAPI(http.MethodPost, "https://api.sandbox.paypal.com/v2/checkout/orders/"+id+"/capture", nil)
+	if err != nil {
+		return false, err
+	}
+	status, ok := response["status"].(string)
+	if !ok {
+		return false, errors.New("could not convert status of captured payment")
+	}
+	if status == "COMPLETED" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}

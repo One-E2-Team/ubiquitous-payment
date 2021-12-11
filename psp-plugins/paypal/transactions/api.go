@@ -162,7 +162,7 @@ func CallPayPalAPI(method string, url string, data interface{}) (map[string]inte
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(responseJson)
 	return responseJson, nil
 }
 
