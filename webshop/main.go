@@ -13,6 +13,7 @@ import (
 	"ubiquitous-payment/webshop/repository"
 	"ubiquitous-payment/webshop/service"
 	"ubiquitous-payment/webshop/wsutil"
+	"github.com/gorilla/handlers"
 )
 
 func initDB() *gorm.DB {
@@ -78,7 +79,9 @@ func handleFunc(handler *handler.Handler) {
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error
-	err = http.ListenAndServe(host+":"+port, router)
+	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedHeaders([]string{"Authorization", "Content-Type"}),
+		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS", "DELETE"}))(router))
 	/*host, port := util.GetConnectionHostAndPort()
 	if util.DockerChecker() {
 		err = http.ListenAndServeTLS(":"+port, "../cert.pem", "../key.pem", router)
