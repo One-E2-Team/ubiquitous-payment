@@ -34,3 +34,12 @@ func (service *Service) LogIn(dto dto.LogInDTO) (*model.User, error) {
 	}
 	return user, nil
 }
+
+func (service *Service) SetPSPAccessToken(accessToken string) error {
+	webShop, err := service.WSRepository.GetFirstWebShop()
+	if err != nil {
+		return err
+	}
+	webShop.PSPAccessToken = accessToken
+	return service.WSRepository.UpdateWebShop(webShop)
+}

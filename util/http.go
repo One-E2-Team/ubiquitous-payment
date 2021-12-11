@@ -10,6 +10,7 @@ import (
 const (
 	ContentType     = "Content-Type"
 	ApplicationJson = "application/json"
+	Authorization   = "Authorization"
 )
 
 func HandleErrorInHandler(err error, responseWriter http.ResponseWriter) {

@@ -35,3 +35,10 @@ func (repo *Repository) ChangeWebShopAcceptance(webShopID primitive.ObjectID, is
 	_, err := webShopCollection.UpdateByID(psputil.EmptyContext, webShopID, updateFilter)
 	return err
 }
+
+func (repo *Repository) UpdateWebShop(webShop *model.WebShop) error {
+	webShopCollection := repo.getCollection(psputil.WebShopCollectionName)
+	filter := bson.D{{psputil.IDFieldName, webShop.ID}}
+	_, err := webShopCollection.ReplaceOne(psputil.EmptyContext, filter, webShop)
+	return err
+}

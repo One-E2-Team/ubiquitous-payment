@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
@@ -92,16 +93,26 @@ func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error
 	if user.IsDeleted {
 		return nil, fmt.Errorf("user with id %s is deleted", util.MongoID2String(user.ID))
 	}
-	//webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(user.WebShopId))
-	//if !webShop.Accepted {
-	//	return nil, fmt.Errorf("web shop with id %s is not accepted", util.MongoID2String(webShop.ID))
-	//}
-
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginCredentials.Password))
 	if err != nil {
 		return nil, fmt.Errorf("bad password")
 	}
 	return user, nil
+}
+
+func (service *Service) GetAccessTokenForWebShop(loggedUserID string) (string, error) {
+	webShopOwner, err := service.PSPRepository.GetUserByID(util.String2MongoID(loggedUserID))
+	if err != nil {
+		return "", err
+	}
+	webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(webShopOwner.WebShopId))
+	if !webShop.Accepted {
+		return "", fmt.Errorf("web shop with id '%s' is not accepted", util.MongoID2String(webShop.ID))
+	}
+	accessToken := uuid.NewString()
+	webShop.PSPAccessToken = hashAndSalt(accessToken)
+	err = service.PSPRepository.UpdateWebShop(webShop)
+	return accessToken, err
 }
 
 func checkCommonPass(v *validator.Validate) {

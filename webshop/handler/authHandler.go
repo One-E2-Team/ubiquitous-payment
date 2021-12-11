@@ -27,19 +27,22 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	resp := dto.TokenResponseDTO{
-		Token:     token,
-		Email:     user.Email,
-		ProfileId: user.ProfileId,
-		Roles:     user.Roles,
-		Username:  user.Username,
-	}
-	respJson, err := json.Marshal(resp)
+	resp := dto.TokenResponseDTO{Token: token, Email: user.Email, ProfileId: user.ProfileId,
+		Roles: user.Roles, Username: user.Username}
+	util.MarshalResult(w, resp)
+}
+
+func (handler *Handler) SetPSPAccessToken(w http.ResponseWriter, r *http.Request) {
+	var accessToken string
+	err := util.UnmarshalRequest(r, &accessToken)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		util.HandleErrorInHandler(err, w)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(respJson)
-	w.Header().Set(util.ContentType, util.ApplicationJson)
+	err = handler.WSService.SetPSPAccessToken(accessToken)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
