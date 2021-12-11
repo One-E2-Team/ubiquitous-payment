@@ -13,4 +13,15 @@ export function setJWTToken(jwt) {
 
 export function getJWTToken() {
     return JSON.parse(sessionStorage.getItem("JWT"));
+}
+
+export function getHeader() {
+  if (getJWTToken()) {
+    return {
+      Authorization: "Bearer " + getJWTToken().token
+    };
   }
+  return {
+    Authorization: "Bearer "
+  };
+}
