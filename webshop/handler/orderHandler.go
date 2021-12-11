@@ -9,10 +9,10 @@ import (
 func (handler *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	loggedUserId := util.GetLoggedUserIDFromToken(r)
 	pathVars := mux.Vars(r)
-	err := handler.WSService.CreateOrder(util.String2Uint(pathVars["id"]), loggedUserId)
+	retUrl, err := handler.WSService.CreateOrder(util.String2Uint(pathVars["id"]), loggedUserId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	util.MarshalResult(w, retUrl)
 }

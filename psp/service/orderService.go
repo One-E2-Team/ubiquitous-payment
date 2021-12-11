@@ -47,7 +47,7 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
 	pspFrontHost, pspFrontPort := util.GetPSPFrontHostAndPort()
-	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/transaction/" + t.ID.Hex(), err
+	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/#/choose-payment-type/" + t.ID.Hex(), err
 }
 
 func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (string, error) {

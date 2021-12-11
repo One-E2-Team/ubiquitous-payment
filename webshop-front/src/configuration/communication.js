@@ -1,5 +1,6 @@
 //export let WSserver = 'localhost:1080'
 export let WSserver = 'localhost:8001'
+export let PSPserver = 'localhost:8002'
 export let WSprotocol = 'http'
 
 export function setJWTToken(jwt) {

@@ -29,11 +29,7 @@ func GetPSPHostAndPort() (string, string) {
 }
 
 func GetPSPFrontHostAndPort() (string, string) {
-	var pspHost, pspPort = "localhost", "8002"
-	if DockerChecker() {
-		pspHost = "psp"
-		pspPort = "8080"
-	}
+	var pspHost, pspPort = "localhost", "3001"
 	return pspHost, pspPort
 }
 
@@ -47,8 +43,7 @@ func GetWebShopHostAndPort() (string, string) {
 }
 
 func GetWebShopFrontHostAndPort() (string, string) {
-	//TODO: parametrise
-	return "localhost", "200"
+	return "localhost", "3000"
 }
 
 func GetNoSQLData() DatabaseData {

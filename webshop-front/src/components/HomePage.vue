@@ -18,7 +18,10 @@
                       Price: {{p.price}} {{p.currency}}
                     </div>
 
-                    <div>Description: {{p.description}}</div>
+                    <div >Description: {{p.description}}</div>
+                    <div v-if="p.numOfInstallments > 1">Recurring type: {{p.recurringType}}</div>
+                    <div v-if="p.numOfInstallments > 1">Num of installments: {{p.numOfInstallments}}</div>
+                    <div v-if="p.numOfInstallments == 0">SUBSCRIPTION {{p.recurringType}}</div>
                   </v-card-text>
 
                   <v-divider class="mx-4"></v-divider>
@@ -63,11 +66,11 @@ import * as comm from '../configuration/communication.js'
      makeOrder(product){
        axios({
                 method: "post",
-                url: comm.WSprotocol +'://' + comm.WSserver + '/api/orders/' + product.id,
+                url: comm.WSprotocol +'://' + comm.WSserver + '/api/orders/' + product.ID,
                 headers: comm.getHeader()
             }).then(response => {
               if(response.status==200){
-                console.log("ok");
+                window.location.href = response.data;
               }
             }).catch(() => {
               console.log("error")
