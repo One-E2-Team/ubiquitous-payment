@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
@@ -102,6 +103,21 @@ func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error
 		return nil, fmt.Errorf("bad password")
 	}
 	return user, nil
+}
+
+func (service *Service) GetWebShopAccessToken(loggedUserID string) (string, error) {
+	webShopOwner, err := service.PSPRepository.GetUserByID(util.String2MongoID(loggedUserID))
+	if err != nil {
+		return "", err
+	}
+	webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(webShopOwner.WebShopId))
+	if !webShop.Accepted {
+		return "", fmt.Errorf("web shop with id '%s' is not accepted", util.MongoID2String(webShop.ID))
+	}
+	accessToken := uuid.NewString()
+	webShop.PSPAccessToken = hashAndSalt(accessToken)
+	err = service.PSPRepository.UpdateWebShop(webShop)
+	return accessToken, err
 }
 
 func checkCommonPass(v *validator.Validate) {

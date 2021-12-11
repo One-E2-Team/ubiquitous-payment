@@ -46,3 +46,12 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 
 	util.MarshalResult(w, resp)
 }
+
+func (handler *Handler) GetWebShopAccessToken(w http.ResponseWriter, r *http.Request) {
+	accessToken, err := handler.PSPService.GetWebShopAccessToken(psputil.GetLoggedUserIDFromToken(r))
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	util.MarshalResult(w, accessToken)
+}
