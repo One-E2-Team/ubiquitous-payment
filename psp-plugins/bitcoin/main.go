@@ -26,6 +26,13 @@ func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.Transacti
 	return transactions.PrepareTransaction(data)
 }
 
+func (p plugin) CaptureTransaction(id string, plan bool) (bool, error) {
+	if plan {
+		return false, errors.New("bitcoin does not allow for plan processing")
+	}
+	return transactions.CaptureTransactionSuccess(id)
+}
+
 var Plugin plugin
 
 func main() {

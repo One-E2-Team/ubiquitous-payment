@@ -26,7 +26,10 @@ func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.Transacti
 	}
 }
 
-func (p plugin) CaptureTransaction(id string) (bool, error) {
+func (p plugin) CaptureTransaction(id string, plan bool) (bool, error) {
+	if plan {
+		return transactions.CaptureSubscriptionApproval(id)
+	}
 	return transactions.CaptureOrderPayment(id)
 }
 

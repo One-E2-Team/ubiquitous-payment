@@ -145,3 +145,19 @@ func CaptureOrderPayment(id string) (bool, error) {
 		return false, nil
 	}
 }
+
+func CaptureSubscriptionApproval(id string) (bool, error) {
+	response, err := CallPayPalAPI(http.MethodGet, "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/"+id, nil)
+	if err != nil {
+		return false, err
+	}
+	status, ok := response["status"].(string)
+	if !ok {
+		return false, errors.New("could not convert status of subscription")
+	}
+	if status == "ACTIVE" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}

@@ -17,11 +17,11 @@ func PrepareTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDT
 	if err != nil {
 		return pspdto.TransactionCreatedDTO{}, err
 	}
-	address, err := client.GetNewAddress("wtf")
+	amount, err := convertValueToBTC(data.Amount, data.Currency)
 	if err != nil {
 		return pspdto.TransactionCreatedDTO{}, err
 	}
-	amount, err := convertValueToBTC(data.Amount, data.Currency)
+	address, err := client.GetNewAddress(amount)
 	if err != nil {
 		return pspdto.TransactionCreatedDTO{}, err
 	}
@@ -99,4 +99,28 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 
 func sendFundsToMerchant(data pspdto.TransactionDTO) {
 	// TODO
+}
+
+func CaptureTransactionSuccess(id string) (bool, error) {
+	b, err := bitcoind_rpc.GetClient()
+	if err != nil {
+		return false, err
+	}
+	label, err := b.GetLabelForAddress(id)
+	if err != nil {
+		return false, err
+	}
+	amount, err := strconv.ParseFloat(label, 64)
+	if err != nil {
+		return false, err
+	}
+	receivedAmount, err := b.GetReceivedByAddress(id, 6)
+	if err != nil {
+		return false, err
+	}
+	if amount <= receivedAmount {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
