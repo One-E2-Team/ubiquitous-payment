@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -83,7 +84,9 @@ func handleFunc(handler *handler.Handler) {
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error
-	err = http.ListenAndServe(host+":"+port, router)
+	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
 	/*host, port := util.GetConnectionHostAndPort()
 	if util.DockerChecker() {
 		err = http.ListenAndServeTLS(":"+port, "../cert.pem", "../key.pem", router)

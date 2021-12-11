@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"ubiquitous-payment/psp-plugins/pspdto/mapper"
@@ -92,6 +93,7 @@ func (service *Service) ExecuteTransaction(t *model.Transaction) (string, error)
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("Redirect ulr: ", result.RedirectUrl)
 	return result.RedirectUrl, nil
 }
 

@@ -7,6 +7,16 @@
         </h1>
       </v-col>
     </v-row>
+    <v-row justify="center" v-for="p in this.paymentTypes" :key="p.name">
+         <v-btn
+                color="success"
+                elevation="8"
+                large
+                @click="choosePaymentType(p)"
+                >
+                {{p}}
+                </v-btn><br/>
+        </v-row>
   </v-container>
 </template>
 
@@ -15,13 +25,14 @@ import axios from 'axios'
 import * as comm from '../configuration/communication.js'
   export default {
     name: 'HelloWorld',
-    props: ['transactionId'],
-    created(){
-        console.log(this.transactionId);
+    mounted(){
+        var pathParts = window.location.href.split("/");
+        this.transactionId = pathParts[pathParts.length - 1];
         this.getPaymentTypes();
     },
     data() {return {
       paymentTypes: [],
+      transactionId : ''
     }},
     methods: {
      getPaymentTypes(){
@@ -35,7 +46,26 @@ import * as comm from '../configuration/communication.js'
             }).catch((response) => {
               console.log(response.data)
             });
+    
      }, 
+     choosePaymentType(p){
+         let data = {
+             id : this.transactionId,
+             name : p
+         }
+        axios({
+                method: "post",
+                url: comm.Protocol +'://' + comm.PSPserver + '/api/psp/select-payment',
+                data : JSON.stringify(data)
+            }).then(response => {
+              if(response.status==200){
+                console.log(response.data);
+                window.location.href = response.data;
+              }
+            }).catch((response) => {
+              console.log(response.data)
+            });
+    }
   }
   }
 </script>

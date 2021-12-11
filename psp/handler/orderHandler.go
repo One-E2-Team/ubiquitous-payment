@@ -63,6 +63,10 @@ func (handler *Handler) SelectPaymentType(w http.ResponseWriter, r *http.Request
 func (handler *Handler) UpdateTransactionSuccess(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
 	externalId := r.FormValue("token")
+	subscriptionId := r.FormValue("subscription_id")
+	if subscriptionId != "" {
+		externalId = subscriptionId
+	}
 	retUrl, err := handler.PSPService.UpdateTransactionSuccess(externalId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
