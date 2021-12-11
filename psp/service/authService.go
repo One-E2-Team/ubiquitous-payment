@@ -93,11 +93,6 @@ func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error
 	if user.IsDeleted {
 		return nil, fmt.Errorf("user with id %s is deleted", util.MongoID2String(user.ID))
 	}
-	//webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(user.WebShopId))
-	//if !webShop.Accepted {
-	//	return nil, fmt.Errorf("web shop with id %s is not accepted", util.MongoID2String(webShop.ID))
-	//}
-
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginCredentials.Password))
 	if err != nil {
 		return nil, fmt.Errorf("bad password")
@@ -105,7 +100,7 @@ func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error
 	return user, nil
 }
 
-func (service *Service) GetWebShopAccessToken(loggedUserID string) (string, error) {
+func (service *Service) GetAccessTokenForWebShop(loggedUserID string) (string, error) {
 	webShopOwner, err := service.PSPRepository.GetUserByID(util.String2MongoID(loggedUserID))
 	if err != nil {
 		return "", err

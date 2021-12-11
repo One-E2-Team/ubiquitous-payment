@@ -79,7 +79,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/accept/{webShopID}", handler.AcceptWebShop).Methods(http.MethodPatch)   //TODO: add RBAC for admin
 	router.HandleFunc("/api/psp/decline/{webShopID}", handler.DeclineWebShop).Methods(http.MethodPatch) //TODO: add RBAC for admin
 	router.HandleFunc("/api/psp/login", handler.LogIn).Methods(http.MethodPost)
-	router.HandleFunc("/api/psp/access-token", handler.GetWebShopAccessToken).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/access-token", handler.GetAccessTokenForWebShop).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error
