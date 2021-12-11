@@ -15,3 +15,11 @@ func (b *BitcoinRPC) GetReceivedByAddress(address string, minimumConfirmations i
 	}
 	return value.ToBTC(), nil
 }
+
+func (b *BitcoinRPC) GetLabelForAddress(address string) (string, error) {
+	info, err := b.client.GetAddressInfo(address)
+	if err != nil {
+		return "", err
+	}
+	return info.Labels[0], nil
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -34,7 +35,7 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDTO)
 			_, _ = w.Write([]byte(" "))
 		}
 		_, _ = w.Write([]byte("\"}"))
-		return fmt.Errorf("validation error")
+		return errors.New("validation error")
 	}
 
 	if dto.Role == "ADMIN" {
