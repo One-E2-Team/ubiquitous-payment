@@ -45,6 +45,8 @@ services:
       dockerfile: GoBuild.dockerfile
       args:
         ARG_TARGET_GO: webshop
+    volumes:
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
     ports:
       - 1080:8080
     depends_on:
@@ -67,6 +69,7 @@ services:
         ARG_TARGET_GO: psp
     volumes:
       - ./temp:/ubiquitous-payment/temp
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
     ports:
       - 1081:8080
     depends_on:

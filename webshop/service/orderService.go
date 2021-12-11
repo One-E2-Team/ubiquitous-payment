@@ -86,9 +86,7 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	message["merchantOrderId"] = order.UUID
 
 	data, _ := json.Marshal(message)
-	pspHost, pspPort := util.GetPSPHostAndPort()
-	resp, err := util.PSPRequest(http.MethodPost,
-		util.GetPSPProtocol()+"://"+pspHost+":"+pspPort+"/api/order",
+	resp, err := util.PSPRequest(http.MethodPost,"/api/order",
 		data, map[string]string{})
 	if err != nil {
 		fmt.Println(err)
