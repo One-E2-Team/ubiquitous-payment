@@ -9,7 +9,6 @@ import (
 )
 
 func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
-
 	var req dto.LogInDTO
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {

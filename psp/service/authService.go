@@ -73,6 +73,27 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 	return service.PSPRepository.CreateUser(&webShopOwner)
 }
 
+func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error) {
+	user, err := service.PSPRepository.GetUserByUsername(loginCredentials.Username)
+
+	if err != nil {
+		return nil, fmt.Errorf("user with username %s does not exist", loginCredentials.Username)
+	}
+	if user.IsDeleted {
+		return nil, fmt.Errorf("user with id %s is deleted", util.MongoID2String(user.ID))
+	}
+	//webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(user.WebShopId))
+	//if !webShop.Accepted {
+	//	return nil, fmt.Errorf("web shop with id %s is not accepted", util.MongoID2String(webShop.ID))
+	//}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginCredentials.Password))
+	if err != nil {
+		return nil, fmt.Errorf("bad password")
+	}
+	return user, nil
+}
+
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
 		f, err := os.Open("common_pass.txt")

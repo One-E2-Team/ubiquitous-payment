@@ -16,6 +16,7 @@ const (
 	IDFieldName       = "_id"
 	NameFieldName     = "name"
 	AcceptedFieldName = "accepted"
+	UsernameFieldName = "username"
 
 	WebShopTokenPermissionName = "READ_ACCESS_TOKEN"
 	WebShopRoleName            = "WebShop"

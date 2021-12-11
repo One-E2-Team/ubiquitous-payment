@@ -45,8 +45,12 @@ func MongoID2String(mongoID primitive.ObjectID) string {
 	return mongoID.Hex()
 }
 
-func String2MongoID(mongoID string) (primitive.ObjectID, error) {
-	return primitive.ObjectIDFromHex(mongoID)
+func String2MongoID(stringID string) primitive.ObjectID {
+	mongoID, err := primitive.ObjectIDFromHex(stringID)
+	if err != nil {
+		return primitive.ObjectID{}
+	}
+	return mongoID
 }
 
 func Contains(element interface{}, list []interface{}) bool {

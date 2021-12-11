@@ -22,6 +22,7 @@ func MarshalResult(w http.ResponseWriter, result interface{}) {
 	js, err := json.Marshal(result)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(js)
