@@ -1,12 +1,19 @@
 package model
 
-type RecurringType int
+type RecurringType string
 
 const (
-	MONTHLY RecurringType = iota
-	YEARLY
+	MONTHLY RecurringType = "MONTHLY"
+	YEARLY RecurringType = "YEARLY"
 )
 
-func (rt RecurringType) String() string {
-	return [...]string{"MONTHLY", "YEARLY"}[rt]
+func GetRecurringType(str string) RecurringType{
+	switch str {
+	case "MONTHLY":
+		return MONTHLY
+	case "YEARLY":
+		return YEARLY
+	default:
+		return MONTHLY
+	}
 }

@@ -75,7 +75,7 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 		message["recurringTimes"] = "1"
 	default:
 		message["paymentMode"] = "RECURRING"
-		message["recurringType"] = product.RecurringType.String()
+		message["recurringType"] = product.RecurringType
 		message["recurringTimes"] = util.Uint2String(product.NumOfInstallments)
 	}
 	message["paymentTo"] = paymentData

@@ -80,7 +80,7 @@ func handleFunc(handler *handler.Handler) {
 	host, port := util.GetWebShopHostAndPort()
 	var err error
 	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
-		handlers.AllowedHeaders([]string{"Authorization", "Content-Type"}),
+		handlers.AllowedHeaders([]string{"Authorization", "Content-Type", "Accept"}),
 		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS", "DELETE"}))(router))
 	/*host, port := util.GetConnectionHostAndPort()
 	if util.DockerChecker() {
