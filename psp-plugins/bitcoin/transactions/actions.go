@@ -73,10 +73,12 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 	i := 0
 	b, err := bitcoind_rpc.GetClient()
 	if err != nil {
+		panic(err)
 		// TODO error
 	}
 	amount, err := strconv.ParseFloat(data.Amount, 64)
 	if err != nil {
+		panic(err)
 		// TODO error
 	}
 	for {
@@ -84,6 +86,7 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 		i++
 		receivedAmount, err = b.GetReceivedByAddress(preparedData.TransactionId, 6)
 		if err != nil {
+			panic(err)
 			// TODO error
 		}
 		if receivedAmount >= amount {
@@ -94,11 +97,18 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 		}
 	}
 	// TODO success
-	sendFundsToMerchant(data)
+	sendFundsToMerchant(data, receivedAmount)
 }
 
-func sendFundsToMerchant(data pspdto.TransactionDTO) {
-	// TODO
+func sendFundsToMerchant(data pspdto.TransactionDTO, amount float64) {
+	b, err := bitcoind_rpc.GetClient()
+	if err != nil {
+		panic(err)
+	}
+	err = b.SendAmountToAddressAndSubtractFees(data.PayeeId, fmt.Sprintf("%.8f", amount))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func CaptureTransactionSuccess(id string) (bool, error) {

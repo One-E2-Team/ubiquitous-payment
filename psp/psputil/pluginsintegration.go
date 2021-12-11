@@ -13,6 +13,7 @@ type Plugin interface {
 	Test() string
 	SupportsPlanPayment() bool
 	ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error)
+	CaptureTransaction(id string, plan bool) (bool, error)
 }
 
 var plugins = make(map[string]Plugin, 0)
