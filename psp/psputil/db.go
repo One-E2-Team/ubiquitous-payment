@@ -8,9 +8,14 @@ const (
 	TransactionsCollectionName = "psp-transactions"
 	PaymentTypesCollectionName = "paymentTypes"
 	AccountsCollectionName     = "accounts"
+	UsersCollectionName        = "users"
 
 	PSPIDFieldName = "pspid"
 	IDFieldName    = "_id"
+	NameFieldName  = "name"
+
+	WebShopTokenPermissionName = "READ_ACCESS_TOKEN"
+	WebShopRoleName            = "WebShop"
 )
 
 var EmptyContext = context.TODO()
