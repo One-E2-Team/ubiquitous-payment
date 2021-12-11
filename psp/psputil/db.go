@@ -12,10 +12,12 @@ const (
 	AccountsCollectionName     = "accounts"
 	UsersCollectionName        = "users"
 
-	PSPIDFieldName    = "pspid"
-	IDFieldName       = "_id"
-	NameFieldName     = "name"
-	AcceptedFieldName = "accepted"
+	PSPIDFieldName     = "pspid"
+	IDFieldName        = "_id"
+	NameFieldName      = "name"
+	AcceptedFieldName  = "accepted"
+	UsernameFieldName  = "username"
+	WebShopIDFieldName = "webshopid"
 
 	WebShopTokenPermissionName = "READ_ACCESS_TOKEN"
 	WebShopRoleName            = "WebShop"

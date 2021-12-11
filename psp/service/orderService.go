@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"ubiquitous-payment/psp-plugins/pspdto/mapper"
@@ -19,12 +20,17 @@ func (service *Service) CreateEmptyTransaction() (string, error) {
 	return orderId, nil
 }
 
-func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName string) (string, error) {
+func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopOwnerID string) (string, error) {
 	t, err := service.PSPRepository.GetTransactionByPspId(dto.PspOrderId)
 	if err != nil {
 		return "", err
 	}
-	t.WebShopID = webShopName
+	user, err := service.PSPRepository.GetUserByID(util.String2MongoID(webShopOwnerID))
+	if err != nil {
+		return "", err
+	}
+	webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(user.WebShopId))
+	t.WebShopID = webShop.Name
 	t.Amount = dto.Amount
 	t.Currency = dto.Currency
 	t.SuccessURL = dto.SuccessUrl
@@ -47,7 +53,7 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName str
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
 	pspFrontHost, pspFrontPort := util.GetPSPFrontHostAndPort()
-	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/transaction/" + t.ID.Hex(), err
+	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/#/choose-payment-type/" + t.ID.Hex(), err
 }
 
 func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (string, error) {
@@ -92,6 +98,7 @@ func (service *Service) ExecuteTransaction(t *model.Transaction) (string, error)
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("Redirect ulr: ", result.RedirectUrl)
 	return result.RedirectUrl, nil
 }
 

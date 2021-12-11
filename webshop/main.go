@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -75,10 +76,13 @@ func handleFunc(handler *handler.Handler) {
 		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(http.MethodPut)
 	router.HandleFunc("/api/orders/{id}",
 		wsutil.RBAC(handler.CreateOrder, "CREATE_ORDER", false)).Methods(http.MethodPost)
+	router.HandleFunc("/api/psp-access-token", handler.SetPSPAccessToken).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error
-	err = http.ListenAndServe(host+":"+port, router)
+	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
 	/*host, port := util.GetConnectionHostAndPort()
 	if util.DockerChecker() {
 		err = http.ListenAndServeTLS(":"+port, "../cert.pem", "../key.pem", router)
@@ -97,6 +101,5 @@ func main() {
 	wsService := initService(wsRepo)
 	wsutil.InitRbacService(wsService)
 	wsHandler := initHandler(wsService)
-	_ = util.SetupPSPAuth("test")
 	handleFunc(wsHandler)
 }

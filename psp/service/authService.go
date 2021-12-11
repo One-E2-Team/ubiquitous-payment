@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
@@ -58,6 +59,16 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 		paymentTypes = append(paymentTypes, *paymentType)
 	}
 
+	_, err = service.PSPRepository.GetUserByUsername(dto.Username)
+	if err == nil {
+		return fmt.Errorf("user with username '%s' already exists", dto.Username)
+	}
+
+	_, err = service.PSPRepository.GetWebShopByName(dto.WebShopName)
+	if err == nil {
+		return fmt.Errorf("web shop with name '%s' already exists", dto.WebShopName)
+	}
+
 	webShop := model.WebShop{ID: primitive.NewObjectID(), Name: dto.WebShopName, PSPAccessToken: "", //TODO: generate ID in repo
 		Accepted: false, PaymentTypes: paymentTypes, Accounts: nil}
 
@@ -71,6 +82,59 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 	webShopOwner := model.User{ID: primitive.NewObjectID(), Username: dto.Username, Password: hashAndSalt(dto.Password),
 		IsDeleted: false, Roles: []model.Role{webShopRole}, WebShopId: util.MongoID2String(webShop.ID)}
 	return service.PSPRepository.CreateUser(&webShopOwner)
+}
+
+func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error) {
+	user, err := service.PSPRepository.GetUserByUsername(loginCredentials.Username)
+
+	if err != nil {
+		return nil, fmt.Errorf("user with username %s does not exist", loginCredentials.Username)
+	}
+	if user.IsDeleted {
+		return nil, fmt.Errorf("user with id %s is deleted", util.MongoID2String(user.ID))
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginCredentials.Password))
+	if err != nil {
+		return nil, fmt.Errorf("bad password")
+	}
+	return user, nil
+}
+
+func (service *Service) GetAccessTokenForWebShop(loggedUserID string) (string, error) {
+	webShopOwner, err := service.PSPRepository.GetUserByID(util.String2MongoID(loggedUserID))
+	if err != nil {
+		return "", err
+	}
+	webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(webShopOwner.WebShopId))
+	if !webShop.Accepted {
+		return "", fmt.Errorf("web shop with id '%s' is not accepted", util.MongoID2String(webShop.ID))
+	}
+	accessToken := uuid.NewString()
+	webShop.PSPAccessToken = hashAndSalt(accessToken)
+	err = service.PSPRepository.UpdateWebShop(webShop)
+	return accessToken, err
+}
+
+func (service *Service) LoginWebShop(webShopLoginDTO dto.WebShopLoginDTO) (*string, error) {
+	webShop, err := service.PSPRepository.GetWebShopByName(webShopLoginDTO.WebShopName)
+	if err != nil {
+		return nil, err
+	}
+
+	webShopOwner, err := service.PSPRepository.GetUserByWebShopID(util.MongoID2String(webShop.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = bcrypt.CompareHashAndPassword([]byte(webShop.PSPAccessToken), []byte(webShopLoginDTO.AccessToken)); err == nil {
+		token, err := psputil.CreateToken(util.MongoID2String(webShopOwner.ID), "psp")
+		if err != nil {
+			return nil, err
+		}
+		return &token, nil
+	} else {
+		return nil, err
+	}
 }
 
 func checkCommonPass(v *validator.Validate) {

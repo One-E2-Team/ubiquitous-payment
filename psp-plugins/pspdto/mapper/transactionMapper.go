@@ -5,7 +5,6 @@ import (
 	"ubiquitous-payment/psp-plugins/pspdto"
 	"ubiquitous-payment/psp/model"
 	"ubiquitous-payment/psp/psputil"
-	"ubiquitous-payment/util"
 )
 
 func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.Plugin) (pspdto.TransactionDTO, error) {
@@ -13,11 +12,20 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 	if err != nil {
 		return pspdto.TransactionDTO{}, err
 	}
-	pspHost, pspPort := util.GetPSPHostAndPort()
-	initialUrl := util.GetPSPProtocol() + "://" + pspHost + ":" + pspPort + "/api/psp"
+	//pspHost, pspPort := util.GetPSPHostAndPort()
+	initialUrl := "http" + "://" + "igorsikuljak.rs" + "/api/psp"
 	pricingPlan, err := transaction.IsPricingPlan(plugin)
 	if err != nil {
 		return pspdto.TransactionDTO{}, err
+	}
+
+	numberOfInstallments := 1
+	installmentUnit := pspdto.Month
+	installmentDelayedTimeUnits := 0
+	if transaction.Recurring != nil{
+		numberOfInstallments = int(transaction.Recurring.InstallmentCount)
+		installmentUnit = model.GetInstallmentUnitByRecurringType(transaction.Recurring.Type)
+		installmentDelayedTimeUnits = int(transaction.Recurring.DelayedInstallmentCount)
 	}
 
 	return pspdto.TransactionDTO{
@@ -33,9 +41,9 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 		ErrorUrl:                    transaction.ErrorURL,
 		PricingPlan:                 pricingPlan,
 		PaymentInterval:             1,
-		NumberOfInstallments:        int(transaction.Recurring.InstallmentCount),
-		InstallmentUnit:             model.GetInstallmentUnitByRecurringType(transaction.Recurring.Type),
-		InstallmentDelayedTimeUnits: int(transaction.Recurring.DelayedInstallmentCount),
+		NumberOfInstallments:        numberOfInstallments,
+		InstallmentUnit:             installmentUnit,
+		InstallmentDelayedTimeUnits: installmentDelayedTimeUnits,
 	}, nil
 
 }

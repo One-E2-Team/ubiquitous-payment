@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"ubiquitous-payment/psp/dto"
+	"ubiquitous-payment/psp/psputil"
 	"ubiquitous-payment/util"
 )
 
@@ -25,7 +26,8 @@ func (handler *Handler) FillTransaction(w http.ResponseWriter, r *http.Request) 
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	redirectLink, err := handler.PSPService.FillTransaction(request, util.GetWebShopNameFromToken(r))
+	webShopOwnerID := psputil.GetLoggedUserIDFromToken(r)
+	redirectLink, err := handler.PSPService.FillTransaction(request, webShopOwnerID)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
@@ -63,6 +65,10 @@ func (handler *Handler) SelectPaymentType(w http.ResponseWriter, r *http.Request
 func (handler *Handler) UpdateTransactionSuccess(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
 	externalId := r.FormValue("token")
+	subscriptionId := r.FormValue("subscription_id")
+	if subscriptionId != "" {
+		externalId = subscriptionId
+	}
 	retUrl, err := handler.PSPService.UpdateTransactionSuccess(externalId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
@@ -81,4 +87,3 @@ func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Req
 	}
 	http.Redirect(w, r, retUrl, http.StatusSeeOther)
 }
-

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -41,7 +42,7 @@ func initCollections(client *mongo.Client) {
 }
 
 func createCollection(client *mongo.Client, dbName string, collectionName string) {
-	if err := client.Database(dbName).CreateCollection(context.TODO(), collectionName); err != nil {
+	if err := client.Database(dbName).CreateCollection(psputil.EmptyContext, collectionName); err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Create " + collectionName + " collection success")
@@ -49,7 +50,13 @@ func createCollection(client *mongo.Client, dbName string, collectionName string
 }
 
 func initRepo(client *mongo.Client) *repository.Repository {
-	return &repository.Repository{Client: client}
+	repo := &repository.Repository{Client: client}
+	err := repo.AddDBConstraints()
+	if err != nil {
+		fmt.Println("error in adding DB constraints")
+		return nil
+	}
+	return repo
 }
 
 func initService(pspRepo *repository.Repository) *service.Service {
@@ -63,8 +70,8 @@ func initHandler(pspService *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
-	router.HandleFunc("/api/psp/order-id", util.PSPAuth(handler.GetNewOrderId, []string{"test"})).Methods(http.MethodGet)
-	router.HandleFunc("/api/order", util.PSPAuth(handler.FillTransaction, []string{"test"})).Methods(http.MethodPost)
+	router.HandleFunc("/api/psp/order-id" /*util.PSPAuth(*/, handler.GetNewOrderId /*, []string{"test"})*/).Methods(http.MethodGet)
+	router.HandleFunc("/api/order" /*util.PSPAuth(*/, handler.FillTransaction /*, []string{"test"})*/).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payments/{transactionID}", handler.GetAvailablePaymentTypeNames).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/select-payment", handler.SelectPaymentType).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payment-success", handler.UpdateTransactionSuccess).Methods(http.MethodGet)
@@ -72,10 +79,15 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/register-web-shop", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/accept/{webShopID}", handler.AcceptWebShop).Methods(http.MethodPatch)   //TODO: add RBAC for admin
 	router.HandleFunc("/api/psp/decline/{webShopID}", handler.DeclineWebShop).Methods(http.MethodPatch) //TODO: add RBAC for admin
+	router.HandleFunc("/api/psp/login", handler.LogIn).Methods(http.MethodPost)
+	router.HandleFunc("/api/psp/access-token", handler.GetAccessTokenForWebShop).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/web-shop-login", handler.LoginWebShop).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error
-	err = http.ListenAndServe(host+":"+port, router)
+	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
 	/*host, port := util.GetConnectionHostAndPort()
 	if util.DockerChecker() {
 		err = http.ListenAndServeTLS(":"+port, "../cert.pem", "../key.pem", router)

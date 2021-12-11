@@ -10,36 +10,34 @@ import (
 	"ubiquitous-payment/webshop/model"
 )
 
-func (service *Service) CreateOrder(productID uint, loggedUserId uint) error {
+func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, error) {
 	product, err := service.WSRepository.GetProduct(productID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	pspId, err := service.getOrderIdFromPSP()
 	if err != nil {
-		return err
+		return "", err
 	}
 	order := &model.Order{Timestamp: time.Now(), UUID: uuid.NewString(), BuyerProfileId: loggedUserId, ProductId: productID}
 	err = service.WSRepository.CreateOrder(order)
 	if err != nil {
-		return err
+		return "", err
 	}
-	_, err = service.getRedirectLinkFromPsp(product, order, pspId)
+	redirectUrl, err := service.getRedirectLinkFromPsp(product, order, pspId)
 	if err != nil {
-		return err
+		return "", err
 	}
 	pspOrder := &model.PSPOrder{PSPId: pspId, OrderId: order.ID, Timestamp: time.Now(), OrderStatus: model.PLACED}
 	err = service.WSRepository.CreatePspOrder(pspOrder)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return redirectUrl, nil
 }
 
 func (service *Service) getOrderIdFromPSP() (string, error) {
-	pspHost, pspPort := util.GetPSPHostAndPort()
-	resp, err := util.PSPRequest(http.MethodGet,
-		util.GetPSPProtocol()+"://"+pspHost+":"+pspPort+"/api/psp/order-id",
+	resp, err := util.PSPRequest(http.MethodGet, "/api/psp/order-id",
 		nil, map[string]string{})
 	if err != nil {
 		fmt.Println(err)
@@ -75,7 +73,7 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 		message["recurringTimes"] = "1"
 	default:
 		message["paymentMode"] = "RECURRING"
-		message["recurringType"] = product.RecurringType.String()
+		message["recurringType"] = product.RecurringType
 		message["recurringTimes"] = util.Uint2String(product.NumOfInstallments)
 	}
 	message["paymentTo"] = paymentData
