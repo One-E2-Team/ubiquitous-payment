@@ -37,9 +37,7 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 }
 
 func (service *Service) getOrderIdFromPSP() (string, error) {
-	pspHost, pspPort := util.GetPSPHostAndPort()
-	resp, err := util.PSPRequest(http.MethodGet,
-		util.GetPSPProtocol()+"://"+pspHost+":"+pspPort+"/api/psp/order-id",
+	resp, err := util.PSPRequest(http.MethodGet, "/api/psp/order-id",
 		nil, map[string]string{})
 	if err != nil {
 		fmt.Println(err)

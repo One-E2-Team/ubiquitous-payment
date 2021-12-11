@@ -55,3 +55,18 @@ func (handler *Handler) GetAccessTokenForWebShop(w http.ResponseWriter, r *http.
 	}
 	util.MarshalResult(w, accessToken)
 }
+
+func (handler *Handler) LoginWebShop(w http.ResponseWriter, r *http.Request) {
+	var webShopLoginDTO dto.WebShopLoginDTO
+	err := util.UnmarshalRequest(r, &webShopLoginDTO)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	resp, err := handler.PSPService.LoginWebShop(webShopLoginDTO)
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	util.MarshalResult(w, resp)
+}

@@ -115,6 +115,28 @@ func (service *Service) GetAccessTokenForWebShop(loggedUserID string) (string, e
 	return accessToken, err
 }
 
+func (service *Service) LoginWebShop(webShopLoginDTO dto.WebShopLoginDTO) (*string, error) {
+	webShop, err := service.PSPRepository.GetWebShopByName(webShopLoginDTO.WebShopName)
+	if err != nil {
+		return nil, err
+	}
+
+	webShopOwner, err := service.PSPRepository.GetUserByWebShopID(util.MongoID2String(webShop.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = bcrypt.CompareHashAndPassword([]byte(webShop.PSPAccessToken), []byte(webShopLoginDTO.AccessToken)); err == nil {
+		token, err := psputil.CreateToken(util.MongoID2String(webShopOwner.ID), "psp")
+		if err != nil {
+			return nil, err
+		}
+		return &token, nil
+	} else {
+		return nil, err
+	}
+}
+
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
 		f, err := os.Open("common_pass.txt")

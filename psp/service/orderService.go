@@ -20,12 +20,17 @@ func (service *Service) CreateEmptyTransaction() (string, error) {
 	return orderId, nil
 }
 
-func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopName string) (string, error) {
+func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopOwnerID string) (string, error) {
 	t, err := service.PSPRepository.GetTransactionByPspId(dto.PspOrderId)
 	if err != nil {
 		return "", err
 	}
-	t.WebShopID = webShopName
+	user, err := service.PSPRepository.GetUserByID(util.String2MongoID(webShopOwnerID))
+	if err != nil {
+		return "", err
+	}
+	webShop, err := service.PSPRepository.GetWebShopByID(util.String2MongoID(user.WebShopId))
+	t.WebShopID = webShop.Name
 	t.Amount = dto.Amount
 	t.Currency = dto.Currency
 	t.SuccessURL = dto.SuccessUrl

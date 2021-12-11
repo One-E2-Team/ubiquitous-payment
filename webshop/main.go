@@ -101,6 +101,5 @@ func main() {
 	wsService := initService(wsRepo)
 	wsutil.InitRbacService(wsService)
 	wsHandler := initHandler(wsService)
-	_ = util.SetupPSPAuth("test")
 	handleFunc(wsHandler)
 }

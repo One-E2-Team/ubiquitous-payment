@@ -1,8 +1,10 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/dto"
 	"ubiquitous-payment/webshop/model"
@@ -40,6 +42,30 @@ func (service *Service) SetPSPAccessToken(accessToken string) error {
 	if err != nil {
 		return err
 	}
-	webShop.PSPAccessToken = accessToken
+
+	type AccessTokenData struct {
+		Name        string `json:"name"`
+		AccessToken string `json:"accessToken"` //TODO: change name to uuid
+	}
+
+	req := AccessTokenData{
+		Name:        webShop.Name,
+		AccessToken: accessToken,
+	}
+	jsonReq, _ := json.Marshal(req)
+
+	resp, err := util.PSPRequest(http.MethodPost, "/api/psp/web-shop-login",
+		jsonReq, map[string]string{util.ContentType: util.ApplicationJson})
+	if err != nil {
+		return err
+	}
+
+	var realAccessToken string
+	err = util.UnmarshalResponse(resp, &realAccessToken)
+	if err != nil {
+		return err
+	}
+	util.SetPspJwt(realAccessToken)
+	webShop.PSPAccessToken = realAccessToken
 	return service.WSRepository.UpdateWebShop(webShop)
 }
