@@ -37,6 +37,7 @@ func initCollections(client *mongo.Client) {
 	createCollection(client, psputil.PspDbName, psputil.TransactionsCollectionName)
 	createCollection(client, psputil.PspDbName, psputil.PaymentTypesCollectionName)
 	createCollection(client, psputil.PspDbName, psputil.AccountsCollectionName)
+	createCollection(client, psputil.PspDbName, psputil.UsersCollectionName)
 }
 
 func createCollection(client *mongo.Client, dbName string, collectionName string) {
@@ -68,6 +69,9 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/select-payment", handler.SelectPaymentType).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payment-success", handler.UpdateTransactionSuccess).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/payment-fail", handler.UpdateTransactionFail).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/register-web-shop", handler.Register).Methods(http.MethodPost)
+	router.HandleFunc("/api/psp/accept/{webShopID}", handler.AcceptWebShop).Methods(http.MethodPatch)   //TODO: add RBAC for admin
+	router.HandleFunc("/api/psp/decline/{webShopID}", handler.DeclineWebShop).Methods(http.MethodPatch) //TODO: add RBAC for admin
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error

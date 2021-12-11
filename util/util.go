@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/smtp"
 	"os"
 	"strconv"
@@ -40,9 +41,17 @@ func GetLoggingStringFromID(id uint) string {
 	return "profileId: '" + Uint2String(id) + "'"
 }
 
-func Contains(element interface{}, list []interface{}) bool{
-	for _, el := range list{
-		if el == element{
+func MongoID2String(mongoID primitive.ObjectID) string {
+	return mongoID.Hex()
+}
+
+func String2MongoID(mongoID string) (primitive.ObjectID, error) {
+	return primitive.ObjectIDFromHex(mongoID)
+}
+
+func Contains(element interface{}, list []interface{}) bool {
+	for _, el := range list {
+		if el == element {
 			return true
 		}
 	}

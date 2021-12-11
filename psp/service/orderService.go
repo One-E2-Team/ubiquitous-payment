@@ -137,20 +137,11 @@ func (service *Service) extractAccounts(paymentData map[string][]string) ([]mode
 				acc := model.Account{ID: primitive.NewObjectID(), AccountID: accData[0],
 					Secret: accData[1], PaymentType: pt}
 				accounts = append(accounts, acc)
-				if !paymentTypeListContains(pt, avPaymentTypes) {
+				if !service.paymentTypeListContains(avPaymentTypes, pt.Name) {
 					avPaymentTypes = append(avPaymentTypes, pt)
 				}
 			}
 		}
 	}
 	return accounts, avPaymentTypes, err
-}
-
-func paymentTypeListContains(paymentType model.PaymentType, list []model.PaymentType) bool {
-	for _, pt := range list {
-		if pt.Name == paymentType.Name {
-			return true
-		}
-	}
-	return false
 }

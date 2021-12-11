@@ -4,22 +4,22 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
-	"time"
-	"ubiquitous-payment/webshop/dto"
-	"ubiquitous-payment/webshop/model"
+	"ubiquitous-payment/psp/dto"
+	"ubiquitous-payment/psp/model"
+	"ubiquitous-payment/psp/psputil"
+	"ubiquitous-payment/util"
 )
 
-func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDTO) error {
+func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) error {
 	var err error
-
-	v := validator.New()
+	v := validator.New() // TODO: move validator in some util method
 	checkCommonPass(v)
 	checkWeakPass(v, err)
 	checkUsername(v)
@@ -38,27 +38,39 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegistrationDTO)
 		return errors.New("validation error")
 	}
 
-	if dto.Role == "ADMIN" {
-		return fmt.Errorf("admin must not be registered")
-	}
-	role, err := service.WSRepository.GetRoleByName(dto.Role)
+	supportedPaymentTypes, err := service.PSPRepository.GetAllPaymentTypes()
 	if err != nil {
 		return err
 	}
-	profile := model.Profile{Name: dto.Name}
-	err = service.WSRepository.CreateProfile(&profile)
-	if err != nil {
-		return err
-	}
-	user := model.User{ProfileId: profile.ID, Email: dto.Email, Username: dto.Username,
-		Password: hashAndSalt(dto.Password), IsDeleted: false, IsValidated: false, ValidationUuid: uuid.NewString(),
-		ValidationExpire: time.Now().Add(1 * time.Hour), Roles: []model.Role{*role}}
 
-	err = service.WSRepository.CreateUser(&user)
+	for _, selectedPaymentTypeName := range dto.PaymentTypes {
+		if !service.paymentTypeListContains(supportedPaymentTypes, selectedPaymentTypeName) {
+			return fmt.Errorf("'%s' payment type is not supported by PSP", selectedPaymentTypeName)
+		}
+	}
+
+	var paymentTypes []model.PaymentType //TODO: improve to call repo once
+	for _, selectedPaymentTypeName := range dto.PaymentTypes {
+		paymentType, err := service.PSPRepository.GetPaymentTypeByName(selectedPaymentTypeName)
+		if err != nil {
+			return err
+		}
+		paymentTypes = append(paymentTypes, *paymentType)
+	}
+
+	webShop := model.WebShop{ID: primitive.NewObjectID(), Name: dto.WebShopName, PSPAccessToken: "", //TODO: generate ID in repo
+		Accepted: false, PaymentTypes: paymentTypes, Accounts: nil}
+
+	err = service.PSPRepository.CreateWebShop(&webShop)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	webShopPrivilege := model.Privilege{Name: psputil.WebShopTokenPermissionName}
+	webShopRole := model.Role{Name: psputil.WebShopRoleName, Privileges: []model.Privilege{webShopPrivilege}}
+	webShopOwner := model.User{ID: primitive.NewObjectID(), Username: dto.Username, Password: hashAndSalt(dto.Password),
+		IsDeleted: false, Roles: []model.Role{webShopRole}, WebShopId: util.MongoID2String(webShop.ID)}
+	return service.PSPRepository.CreateUser(&webShopOwner)
 }
 
 func checkCommonPass(v *validator.Validate) {
