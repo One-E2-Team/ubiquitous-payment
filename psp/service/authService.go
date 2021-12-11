@@ -58,6 +58,16 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 		paymentTypes = append(paymentTypes, *paymentType)
 	}
 
+	_, err = service.PSPRepository.GetUserByUsername(dto.Username)
+	if err == nil {
+		return fmt.Errorf("user with username '%s' already exists", dto.Username)
+	}
+
+	_, err = service.PSPRepository.GetWebShopByName(dto.WebShopName)
+	if err == nil {
+		return fmt.Errorf("web shop with name '%s' already exists", dto.WebShopName)
+	}
+
 	webShop := model.WebShop{ID: primitive.NewObjectID(), Name: dto.WebShopName, PSPAccessToken: "", //TODO: generate ID in repo
 		Accepted: false, PaymentTypes: paymentTypes, Accounts: nil}
 
