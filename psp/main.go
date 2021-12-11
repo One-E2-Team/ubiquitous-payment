@@ -41,7 +41,7 @@ func initCollections(client *mongo.Client) {
 }
 
 func createCollection(client *mongo.Client, dbName string, collectionName string) {
-	if err := client.Database(dbName).CreateCollection(context.TODO(), collectionName); err != nil {
+	if err := client.Database(dbName).CreateCollection(psputil.EmptyContext, collectionName); err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Create " + collectionName + " collection success")
@@ -49,7 +49,13 @@ func createCollection(client *mongo.Client, dbName string, collectionName string
 }
 
 func initRepo(client *mongo.Client) *repository.Repository {
-	return &repository.Repository{Client: client}
+	repo := &repository.Repository{Client: client}
+	err := repo.AddDBConstraints()
+	if err != nil {
+		fmt.Println("error in adding DB constraints")
+		return nil
+	}
+	return repo
 }
 
 func initService(pspRepo *repository.Repository) *service.Service {
