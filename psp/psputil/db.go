@@ -19,9 +19,9 @@ const (
 	UsernameFieldName  = "username"
 	WebShopIDFieldName = "webshopid"
 
-	WebShopTokenPermissionName = "READ_ACCESS_TOKEN"
-	WebShopOrderPermissionName = "CREATE_ORDER_FROM_WEB_SHOP"
-	WebShopRoleName            = "WebShop"
+	WebShopTokenPrivilegeName = "READ_ACCESS_TOKEN"
+	WebShopOrderPrivilegeName = "CREATE_ORDER_FROM_WEB_SHOP"
+	WebShopRoleName           = "WebShop"
 )
 
 var EmptyContext = context.TODO()
