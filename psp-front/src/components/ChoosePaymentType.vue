@@ -17,18 +17,20 @@
                 {{p}}
                 </v-btn><br/>
      </v-row>
-     <div v-if="isPaymentSelected">
-      <v-row justify="center">
-        <h2>You will be automaticly redirected when we register a transaction.</h2> 
-      </v-row>
-      <v-row justify="center">
-        <v-progress-circular
-          :size="80"
-          color="primary"
-          indeterminate
-        ></v-progress-circular>
-      </v-row>
-     </div>
+     <v-row>
+      <div v-if="isPaymentSelected">
+        <v-row justify="center">
+          <h2>You will be automaticly redirected when we register a transaction.</h2> 
+        </v-row>
+        <v-row justify="center">
+          <v-progress-circular
+            :size="80"
+            color="primary"
+            indeterminate
+          ></v-progress-circular>
+        </v-row>
+      </div>
+     </v-row>
   </v-container>
 </template>
 

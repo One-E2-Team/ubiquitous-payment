@@ -6,6 +6,7 @@ import Register from './../components/Register.vue'
 import HomePage from './../components/HomePage.vue'
 import Success from './../components/Success.vue'
 import Fail from './../components/Fail.vue'
+import Error from './../components/Error.vue'
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,11 @@ const routes = [
     path: '/order/fail/:id',
     name: 'Fail',
     component: Fail
+  },
+  {
+    path: '/order/error/:id',
+    name: 'Error',
+    component: Error
   },
   {
     path: '/about',

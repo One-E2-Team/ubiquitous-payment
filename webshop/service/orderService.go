@@ -89,8 +89,8 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	wsFrontHost, wsFrontPort := util.GetWebShopFrontHostAndPort()
 	initialUrl := util.GetWebShopProtocol() + "://" + wsFrontHost + ":" + wsFrontPort + "/#/order"
 	message["successUrl"] = initialUrl + "/success/" + pspId
-	message["failUrl"] = initialUrl + "/fail" + pspId
-	message["errorUrl"] = initialUrl + "/error" + pspId
+	message["failUrl"] = initialUrl + "/fail/" + pspId
+	message["errorUrl"] = initialUrl + "/error/" + pspId
 	message["merchantTimestamp"] = order.Timestamp
 	message["merchantOrderId"] = order.UUID
 

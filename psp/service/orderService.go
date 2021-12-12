@@ -125,7 +125,8 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 	if err != nil {
 		return "", nil
 	}
-	if status == model.FULFILLED {
+	//TODO: Remove paypal check
+	if status == model.FULFILLED && t.SelectedPaymentType.Name != "paypal"{
 		plugin, err := psputil.GetPlugin(t.SelectedPaymentType.Name)
 		if err != nil {
 			return "", err
