@@ -8,6 +8,7 @@ import (
 	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/dto"
 	"ubiquitous-payment/webshop/model"
+	"ubiquitous-payment/webshop/wsutil"
 )
 
 func (service *Service) GetPrivileges(id uint) *[]string {
@@ -38,7 +39,7 @@ func (service *Service) LogIn(dto dto.LogInDTO) (*model.User, error) {
 }
 
 func (service *Service) SetPSPAccessToken(accessUuid string) error {
-	webShop, err := service.WSRepository.GetFirstWebShop()
+	webShop, err := service.WSRepository.GetOurWebShop()
 	if err != nil {
 		return err
 	}
@@ -54,7 +55,7 @@ func (service *Service) SetPSPAccessToken(accessUuid string) error {
 	}
 	jsonReq, _ := json.Marshal(req)
 
-	resp, err := util.PSPRequest(http.MethodPost, "/api/psp/web-shop-login",
+	resp, err := wsutil.PSPRequest(http.MethodPost, "/api/psp/web-shop-login",
 		jsonReq, map[string]string{util.ContentType: util.ApplicationJson})
 	if err != nil {
 		return err
@@ -65,7 +66,15 @@ func (service *Service) SetPSPAccessToken(accessUuid string) error {
 	if err != nil {
 		return err
 	}
-	util.SetPspAccessToken(accessToken)
+	wsutil.SetPspAccessToken(accessToken)
 	webShop.PSPAccessToken = accessToken
 	return service.WSRepository.UpdateWebShop(webShop)
+}
+
+func (service *Service) GetPSPAccessToken() (string, error) {
+	webShop, err := service.WSRepository.GetOurWebShop()
+	if err != nil {
+		return "", err
+	}
+	return webShop.PSPAccessToken, nil
 }

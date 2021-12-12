@@ -99,7 +99,7 @@ func main() {
 	db := initDB()
 	wsRepo := initRepo(db)
 	wsService := initService(wsRepo)
-	wsutil.InitRbacService(wsService)
+	wsutil.InitWebShopUtilService(wsService)
 	wsHandler := initHandler(wsService)
 	handleFunc(wsHandler)
 }

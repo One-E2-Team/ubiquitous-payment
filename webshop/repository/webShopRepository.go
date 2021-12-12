@@ -2,7 +2,7 @@ package repository
 
 import "ubiquitous-payment/webshop/model"
 
-func (repo *Repository) GetFirstWebShop() (*model.WebShop, error) {
+func (repo *Repository) GetOurWebShop() (*model.WebShop, error) {
 	webShop := &model.WebShop{}
 	if err := repo.RelationalDatabase.Table("web_shops").First(&webShop).Error; err != nil {
 		return nil, err

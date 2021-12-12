@@ -1,10 +1,22 @@
-package wsutil
+package psputil
 
 import (
 	"net/http"
-	"strconv"
-	"ubiquitous-payment/util"
+	"ubiquitous-payment/psp/model"
+	"ubiquitous-payment/psp/service"
 )
+
+type UtilService struct {
+	PspService *service.Service
+}
+
+var utilService UtilService
+
+func InitPspUtilService(wsService *service.Service) {
+	utilService = UtilService{PspService: wsService}
+}
+
+//TODO: create general RBAC if possible
 
 func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, returnCollection bool) func(http.ResponseWriter, *http.Request) {
 	finalHandler := func(pass bool) func(http.ResponseWriter, *http.Request) {
@@ -24,24 +36,27 @@ func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, re
 	}
 
 	return func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("initiator", "NO_TOKEN")
 		var handleFunc func(http.ResponseWriter, *http.Request)
-		id := util.GetLoggedUserIDFromToken(request)
-		if id == 0 {
-			writer.Header().Set("initiator", "UNAUTHORIZED")
+		id := GetLoggedUserIDFromToken(request)
+		if id == "" {
 			handleFunc = finalHandler(false)
 		} else {
-			writer.Header().Set("initiator", strconv.Itoa(int(id)))
-			handleFunc = finalHandler(isPrivilegeValid(privilege, *UtilService.WSService.GetPrivileges(id)))
+			user, err := utilService.PspService.GetUserByID(id)
+			if err != nil {
+				handleFunc = finalHandler(false)
+			}
+			handleFunc = finalHandler(isPrivilegeValid(privilege, *user))
 		}
 		handleFunc(writer, request)
 	}
 }
 
-func isPrivilegeValid(privilege string, validPrivileges []string) bool {
-	for _, val := range validPrivileges {
-		if val == privilege {
-			return true
+func isPrivilegeValid(privilege string, user model.User) bool {
+	for _, role := range user.Roles {
+		for _, userPrivilege := range role.Privileges {
+			if userPrivilege.Name == privilege {
+				return true
+			}
 		}
 	}
 	return false
