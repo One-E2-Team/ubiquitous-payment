@@ -74,26 +74,32 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 	b, err := bitcoind_rpc.GetClient()
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println("FATAL 1")
 		// TODO error
 	}
 	label, err := b.GetLabelForAddress(preparedData.TransactionId)
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println("FATAL 2")
 		// TODO error
 	}
 	amount, err := strconv.ParseFloat(label, 64)
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println("FATAL 3")
 		// TODO error
 	}
 	for {
 		time.Sleep(5 * time.Second)
+		fmt.Println("coroutine 5 second check for merchant payout")
 		i++
 		receivedAmount, err = b.GetReceivedByAddress(preparedData.TransactionId, 1)
 		if err != nil {
 			fmt.Println(err)
+			fmt.Println("FATAL 4")
 			// TODO error
 		}
+		fmt.Println(receivedAmount, amount)
 		if receivedAmount >= amount {
 			break
 		}

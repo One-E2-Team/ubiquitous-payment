@@ -154,7 +154,7 @@ func (b *BitcoinRPC) SendAmountToAddressAndSubtractFees(address string, amount s
 		Jsonrpc: "2.0",
 		ID:      "0",
 		Method:  "sendtoaddress",
-		Params:  []interface{}{"\"" + address + "\"", amount, "", "", true, true, 6, "unset", false},
+		Params:  []interface{}{address, amount, "", "", true, true, 6, "unset", false},
 	}
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
