@@ -66,9 +66,19 @@ func (b *BitcoinRPC) GetReceivedByAddress(address string, minimumConfirmations i
 		return 0, err
 	}
 	fmt.Println(responseJson)
-	amount, err := responseJson["amount"].(json.Number).Float64()
-	if err != nil {
-		return 0, err
+	results, ok := responseJson["result"].([]interface{})
+	if !ok {
+		return 0, errors.New("could not cast results list")
+	}
+	fmt.Println("results casted", results)
+	resultMap, ok := results[0].(map[string]interface{})
+	if !ok {
+		return 0, errors.New("could not cast first element of results into a map")
+	}
+	fmt.Println("result first element casted to map ", resultMap)
+	amount, ok := resultMap["amount"].(float64)
+	if !ok {
+		return 0, errors.New("could not convert amount to float64 from json response")
 	}
 	return amount, nil
 }

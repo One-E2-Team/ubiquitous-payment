@@ -97,9 +97,10 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 		if receivedAmount >= amount {
 			break
 		}
-		if i >= 60*10/5 {
-			//TODO fail
-		}
+		/*
+			if i >= 60*10/5 {
+				//TODO fail
+			}*/
 	}
 	// TODO success
 	fmt.Println("ZAPOCINJE PLACANJE")

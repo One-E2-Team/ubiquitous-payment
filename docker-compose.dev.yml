@@ -48,6 +48,7 @@ services:
     volumes:
       - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
       - ../staticdata:/staticdata
+      - ../logs:/logs
     ports:
       - 1080:8080
     depends_on:
@@ -71,6 +72,7 @@ services:
     volumes:
       - ./temp:/ubiquitous-payment/temp
       - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
     ports:
       - 1081:8080
     depends_on:
