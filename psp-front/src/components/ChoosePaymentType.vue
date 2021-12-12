@@ -23,6 +23,7 @@
 <script>
 import axios from 'axios'
 import * as comm from '../configuration/communication.js'
+import func from 'vue-editor-bridge';
   export default {
     name: 'HelloWorld',
     mounted(){
@@ -59,13 +60,31 @@ import * as comm from '../configuration/communication.js'
                 data : JSON.stringify(data)
             }).then(response => {
               if(response.status==200){
-                console.log(response.data);
-                window.location.href = response.data;
+                window.open(response.data.redirectUrl, '_blank');
+                if (p == "bitcoin"){
+                  async
+                }
               }
             }).catch((response) => {
               console.log(response.data)
             });
-    }
+      },
+      async bitcoinAsyncFunc(id){
+          const delay = ms => new Promise(res => setTimeout(res,ms));
+          while(true){
+            await delay(5000);
+            axios({
+              method: "get",
+              url: comm.Protocol +'://' + comm.PSPserver + '/api/psp/check-for-payment/bitcoin/' + id,
+            }).then(resp => {
+              if(resp.status == 200){
+                if (resp.data.paymentCaptured){
+                  window.location.href = resp.data.successUrl;
+                }
+              }
+            })
+          }
+      }
   }
   }
 </script>

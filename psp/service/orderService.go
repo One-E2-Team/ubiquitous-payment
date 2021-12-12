@@ -1,9 +1,9 @@
 package service
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"ubiquitous-payment/psp-plugins/pspdto"
 	"ubiquitous-payment/psp-plugins/pspdto/mapper"
 	"ubiquitous-payment/psp/dto"
 	"ubiquitous-payment/psp/model"
@@ -56,50 +56,49 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopOwnerID 
 	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/#/choose-payment-type/" + t.ID.Hex(), err
 }
 
-func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (string, error) {
+func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (*pspdto.TransactionCreatedDTO, error) {
 	id, err := primitive.ObjectIDFromHex(request.ID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	t, err := service.PSPRepository.GetTransactionById(id)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	pt, err := service.PSPRepository.GetPaymentTypeByName(request.PaymentTypeName)
 	if err != nil {
-		return "", nil
+		return nil, nil
 	}
 	t.SelectedPaymentType = *pt
 	err = service.PSPRepository.UpdateTransaction(t)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	redirectUrl, err := service.ExecuteTransaction(t)
+	result, err := service.ExecuteTransaction(t)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return redirectUrl, nil
+	return result, nil
 }
 
-func (service *Service) ExecuteTransaction(t *model.Transaction) (string, error) {
+func (service *Service) ExecuteTransaction(t *model.Transaction) (*pspdto.TransactionCreatedDTO, error) {
 	plugin, err := psputil.GetPlugin(t.SelectedPaymentType.Name)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	transactionDTO, err := mapper.TransactionToTransactionDTO(*t, plugin)
 	result, err := plugin.ExecuteTransaction(transactionDTO)
 	if err != nil {
 		t.TransactionStatus = model.FAILED
 		_ = service.PSPRepository.UpdateTransaction(t)
-		return "", err
+		return nil, err
 	}
 	t.ExternalTransactionId = result.TransactionId
 	err = service.PSPRepository.UpdateTransaction(t)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	fmt.Println("Redirect ulr: ", result.RedirectUrl)
-	return result.RedirectUrl, nil
+	return &result, nil
 }
 
 func (service *Service) UpdateTransactionSuccess(transactionID string) (string, error) {
@@ -115,7 +114,22 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 	if err != nil {
 		return "", nil
 	}
-	t.TransactionStatus = status
+	if status == model.FULFILLED{
+		plugin,err := psputil.GetPlugin(t.SelectedPaymentType.Name)
+		if err != nil{
+			return "", err
+		}
+		plan := t.IsSubscription || (t.Recurring != nil)
+		isFulfilled, err := plugin.CaptureTransaction(t.ExternalTransactionId, plan)
+		if err != nil || !isFulfilled{
+			t.TransactionStatus = model.ERROR
+		}
+		if isFulfilled{
+			t.TransactionStatus = status
+		}
+	}else{
+		t.TransactionStatus = status
+	}
 	return t.GetURLByStatus(), service.PSPRepository.UpdateTransaction(t)
 }
 
@@ -151,4 +165,22 @@ func (service *Service) extractAccounts(paymentData map[string][]string) ([]mode
 		}
 	}
 	return accounts, avPaymentTypes, err
+}
+
+func (service *Service) CheckForPaymentBitcoin(id string) (*dto.CheckForPaymentDTO, error) {
+	plugin, err := psputil.GetPlugin("bitcoin")
+	if err != nil{
+		return nil, err
+	}
+	t, err := service.PSPRepository.GetTransactionByExternalId(id)
+	if err != nil{
+		return nil, err
+	}
+	plan := t.IsSubscription || (t.Recurring != nil)
+	isCaptured, err := plugin.CaptureTransaction(id, plan)
+	if err != nil{
+		return nil, err
+	}
+	result := dto.CheckForPaymentDTO{PaymentCaptured: isCaptured, SuccessUrl: t.SuccessURL}
+	return &result, nil
 }

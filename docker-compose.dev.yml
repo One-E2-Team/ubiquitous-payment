@@ -47,6 +47,7 @@ services:
         ARG_TARGET_GO: webshop
     volumes:
       - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../staticdata:/staticdata
     ports:
       - 1080:8080
     depends_on:

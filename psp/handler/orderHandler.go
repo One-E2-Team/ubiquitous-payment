@@ -54,12 +54,12 @@ func (handler *Handler) SelectPaymentType(w http.ResponseWriter, r *http.Request
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	redirectUrl, err := handler.PSPService.SelectPaymentType(request)
+	result, err := handler.PSPService.SelectPaymentType(request)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	util.MarshalResult(w, redirectUrl)
+	util.MarshalResult(w, result)
 }
 
 func (handler *Handler) UpdateTransactionSuccess(w http.ResponseWriter, r *http.Request) {
@@ -86,4 +86,15 @@ func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Req
 		return
 	}
 	http.Redirect(w, r, retUrl, http.StatusSeeOther)
+}
+
+func (handler *Handler) CheckForPaymentBitcoin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(util.ContentType, util.ApplicationJson)
+	pathVars := mux.Vars(r)
+	result, err := handler.PSPService.CheckForPaymentBitcoin(pathVars["transactionID"])
+	if err != nil {
+		util.HandleErrorInHandler(err, w)
+		return
+	}
+	util.MarshalResult(w, result)
 }

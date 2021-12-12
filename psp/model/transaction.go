@@ -32,8 +32,10 @@ func (transaction *Transaction) GetURLByStatus() string {
 	switch transaction.TransactionStatus {
 	case FULFILLED:
 		return transaction.SuccessURL
-	default:
+	case FAILED:
 		return transaction.FailURL
+	default:
+		return transaction.ErrorURL
 	}
 }
 
