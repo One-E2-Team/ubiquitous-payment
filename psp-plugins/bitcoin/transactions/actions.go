@@ -76,7 +76,12 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 		panic(err)
 		// TODO error
 	}
-	amount, err := strconv.ParseFloat(data.Amount, 64)
+	label, err := b.GetLabelForAddress(preparedData.TransactionId)
+	if err != nil {
+		panic(err)
+		// TODO error
+	}
+	amount, err := strconv.ParseFloat(label, 64)
 	if err != nil {
 		panic(err)
 		// TODO error
