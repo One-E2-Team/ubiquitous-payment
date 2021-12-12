@@ -25,6 +25,10 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 	if err != nil {
 		return "", err
 	}
+
+	logContent := "User: '" + util.Uint2String(loggedUserId) + "' created order: '" + util.Uint2String(order.ID) + "' for product: '" + util.Uint2String(productID) + "'"
+	util.Logging(util.INFO, "Service.CreateOrder", logContent, "web-shop")
+
 	redirectUrl, err := service.getRedirectLinkFromPsp(product, order, pspId)
 	if err != nil {
 		return "", err
@@ -34,6 +38,10 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 	if err != nil {
 		return "", err
 	}
+
+	logContent = "User: '" + util.Uint2String(loggedUserId) + "' created PSP order" + util.Uint2String(pspOrder.ID) + "' for order: '" + util.Uint2String(order.ID) + "'"
+	util.Logging(util.SUCCESS, "Service.CreateOrder", logContent, "web-shop")
+	
 	return redirectUrl, nil
 }
 

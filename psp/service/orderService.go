@@ -52,6 +52,10 @@ func (service *Service) FillTransaction(dto dto.WebShopOrderDTO, webShopOwnerID 
 		return "", err
 	}
 	err = service.PSPRepository.UpdateTransaction(t)
+
+	logContent := "Created transaction: '" + util.MongoID2String(t.ID) + "'"
+	util.Logging(util.SUCCESS, "Service.FillTransaction", logContent, "psp")
+
 	pspFrontHost, pspFrontPort := util.GetPSPFrontHostAndPort()
 	return util.GetPSPProtocol() + "://" + pspFrontHost + ":" + pspFrontPort + "/#/choose-payment-type/" + t.ID.Hex(), err
 }
@@ -74,6 +78,10 @@ func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (*
 	if err != nil {
 		return nil, err
 	}
+
+	logContent := "For transaction: '" + request.ID + "' chosen payment type is '" + request.PaymentTypeName + "'"
+	util.Logging(util.INFO, "Service.SelectPaymentType", logContent, "psp")
+
 	result, err := service.ExecuteTransaction(t)
 	if err != nil {
 		return nil, err
@@ -110,6 +118,9 @@ func (service *Service) UpdateTransactionFail(transactionID string) (string, err
 }
 
 func (service *Service) updateTransactionStatus(externalId string, status model.TransactionStatus) (string, error) {
+	logContent := "Transaction: '" + externalId + "' was '" + status.ToString() + "'"
+	util.Logging(util.INFO, "Service.SelectPaymentType", logContent, "psp")
+
 	t, err := service.PSPRepository.GetTransactionByExternalId(externalId)
 	if err != nil {
 		return "", nil
