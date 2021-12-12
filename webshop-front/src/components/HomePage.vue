@@ -8,9 +8,7 @@
                   <template slot="progress">
                     <v-progress-linear color="deep-purple" height="10" indeterminate ></v-progress-linear>
                   </template>
-                    <!-- <v-img contain width="330" height="440" :src="protocol + '://' + server + '/data/' + p.picturePath"></v-img>
-                    -->
-                    <v-img contain width="330" height="340" :src="nesto"></v-img>
+                    <v-img contain width="330" height="440" :src="protocol + '://' + wsServer + '/static/' + p.mediaPath"></v-img>
                   <v-card-title>{{p.name}}</v-card-title>
 
                   <v-card-text>
@@ -46,6 +44,8 @@ import * as comm from '../configuration/communication.js'
     name: "HomePage",
     data() {return {
       products: [],
+      protocol : comm.WSprotocol,
+      wsServer : comm.WSserver
     }},
     mounted(){
        this.getProducts();
