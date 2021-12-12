@@ -1,19 +1,20 @@
-package psputil
+package rbac
 
 import (
 	"net/http"
 	"ubiquitous-payment/psp/model"
+	"ubiquitous-payment/psp/psputil"
 	"ubiquitous-payment/psp/service"
 )
 
-type UtilService struct {
-	PspService *service.Service
+type UtilRbacService struct {
+	RealService *service.Service
 }
 
-var utilService UtilService
+var rbacService UtilRbacService
 
-func InitPspUtilService(wsService *service.Service) {
-	utilService = UtilService{PspService: wsService}
+func InitRbacService(realService *service.Service) {
+	rbacService = UtilRbacService{RealService: realService}
 }
 
 //TODO: create general RBAC if possible
@@ -37,11 +38,11 @@ func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, re
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var handleFunc func(http.ResponseWriter, *http.Request)
-		id := GetLoggedUserIDFromToken(request)
+		id := psputil.GetLoggedUserIDFromToken(request)
 		if id == "" {
 			handleFunc = finalHandler(false)
 		} else {
-			user, err := utilService.PspService.GetUserByID(id)
+			user, err := rbacService.RealService.GetUserByID(id)
 			if err != nil {
 				handleFunc = finalHandler(false)
 			}
