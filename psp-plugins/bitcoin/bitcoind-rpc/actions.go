@@ -30,6 +30,7 @@ func (b *BitcoinRPC) GetLabelForAddress(address string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println(*info)
 	return info.Labels[0], nil
 }
 

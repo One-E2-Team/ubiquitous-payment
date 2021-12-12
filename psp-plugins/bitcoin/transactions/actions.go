@@ -73,25 +73,25 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 	i := 0
 	b, err := bitcoind_rpc.GetClient()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 		// TODO error
 	}
 	label, err := b.GetLabelForAddress(preparedData.TransactionId)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 		// TODO error
 	}
 	amount, err := strconv.ParseFloat(label, 64)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 		// TODO error
 	}
 	for {
 		time.Sleep(5 * time.Second)
 		i++
-		receivedAmount, err = b.GetReceivedByAddress(preparedData.TransactionId, 6)
+		receivedAmount, err = b.GetReceivedByAddress(preparedData.TransactionId, 1)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 			// TODO error
 		}
 		if receivedAmount >= amount {
@@ -102,6 +102,7 @@ func sendFundsToMerchantWhenReceived(data pspdto.TransactionDTO, preparedData ps
 		}
 	}
 	// TODO success
+	fmt.Println("ZAPOCINJE PLACANJE")
 	sendFundsToMerchant(data, receivedAmount)
 }
 
@@ -129,7 +130,7 @@ func CaptureTransactionSuccess(id string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	receivedAmount, err := b.GetReceivedByAddress(id, 6)
+	receivedAmount, err := b.GetReceivedByAddress(id, 1)
 	if err != nil {
 		return false, err
 	}

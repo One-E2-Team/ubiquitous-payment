@@ -114,20 +114,20 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 	if err != nil {
 		return "", nil
 	}
-	if status == model.FULFILLED{
-		plugin,err := psputil.GetPlugin(t.SelectedPaymentType.Name)
-		if err != nil{
+	if status == model.FULFILLED {
+		plugin, err := psputil.GetPlugin(t.SelectedPaymentType.Name)
+		if err != nil {
 			return "", err
 		}
 		plan := t.IsSubscription || (t.Recurring != nil)
 		isFulfilled, err := plugin.CaptureTransaction(t.ExternalTransactionId, plan)
-		if err != nil || !isFulfilled{
+		if err != nil || !isFulfilled {
 			t.TransactionStatus = model.ERROR
 		}
-		if isFulfilled{
+		if isFulfilled {
 			t.TransactionStatus = status
 		}
-	}else{
+	} else {
 		t.TransactionStatus = status
 	}
 	return t.GetURLByStatus(), service.PSPRepository.UpdateTransaction(t)
@@ -169,16 +169,17 @@ func (service *Service) extractAccounts(paymentData map[string][]string) ([]mode
 
 func (service *Service) CheckForPaymentBitcoin(id string) (*dto.CheckForPaymentDTO, error) {
 	plugin, err := psputil.GetPlugin("bitcoin")
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
-	t, err := service.PSPRepository.GetTransactionByExternalId(id)
-	if err != nil{
+	objectId, err := primitive.ObjectIDFromHex(id)
+	t, err := service.PSPRepository.GetTransactionById(objectId)
+	if err != nil {
 		return nil, err
 	}
 	plan := t.IsSubscription || (t.Recurring != nil)
 	isCaptured, err := plugin.CaptureTransaction(id, plan)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	result := dto.CheckForPaymentDTO{PaymentCaptured: isCaptured, SuccessUrl: t.SuccessURL}
