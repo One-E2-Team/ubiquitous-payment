@@ -130,7 +130,9 @@ func CaptureTransactionSuccess(id string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	fmt.Println("parsed amount from label ", amount)
 	receivedAmount, err := b.GetReceivedByAddress(id, 1)
+	fmt.Println("got received by address ", receivedAmount)
 	if err != nil {
 		return false, err
 	}

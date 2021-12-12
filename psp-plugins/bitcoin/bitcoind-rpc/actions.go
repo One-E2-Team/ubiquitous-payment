@@ -18,20 +18,118 @@ func (b *BitcoinRPC) GetNewAddress(label string) (string, error) {
 }
 
 func (b *BitcoinRPC) GetReceivedByAddress(address string, minimumConfirmations int) (float64, error) {
-	value, err := b.client.GetReceivedByAccountMinConf(address, minimumConfirmations)
+	/*value, err := b.client.GetReceivedByAccountMinConf(address, minimumConfirmations)
 	if err != nil {
 		return 0, err
 	}
-	return value.ToBTC(), nil
+	return value.ToBTC(), nil*/
+	type Payload struct {
+		Jsonrpc string        `json:"jsonrpc"`
+		ID      string        `json:"id"`
+		Method  string        `json:"method"`
+		Params  []interface{} `json:"params"`
+	}
+
+	data := Payload{
+		Jsonrpc: "2.0",
+		ID:      "0",
+		Method:  "listreceivedbyaddress",
+		Params:  []interface{}{minimumConfirmations, true, true, address},
+	}
+	payloadBytes, err := json.Marshal(data)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Println("payloadbytes ", payloadBytes)
+	body := bytes.NewReader(payloadBytes)
+
+	req, err := http.NewRequest("POST", "http://host.docker.internal:18332/wallet/secondarytest", body)
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Basic cm9vdDpyb290")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
+	responseJson := make(map[string]interface{})
+	err = json.NewDecoder(resp.Body).Decode(&responseJson)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Println(responseJson)
+	amount, err := responseJson["amount"].(json.Number).Float64()
+	if err != nil {
+		return 0, err
+	}
+	return amount, nil
 }
 
 func (b *BitcoinRPC) GetLabelForAddress(address string) (string, error) {
+	fmt.Println(address) /*
+		type Payload struct {
+			Jsonrpc string        `json:"jsonrpc"`
+			ID      string        `json:"id"`
+			Method  string        `json:"method"`
+			Params  []interface{} `json:"params"`
+		}
+
+		data := Payload{
+			Jsonrpc: "2.0",
+			ID:      "0",
+			Method:  "getaddressinfo",
+			Params:  []interface{}{address},
+		}
+		payloadBytes, err := json.Marshal(data)
+		if err != nil {
+			return "", err
+		}
+		fmt.Println("payloadbytes ", payloadBytes)
+		body := bytes.NewReader(payloadBytes)
+
+		req, err := http.NewRequest("POST", "http://host.docker.internal:18332/wallet/secondarytest", body)
+		if err != nil {
+			return "", err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Basic cm9vdDpyb290")
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return "", err
+		}
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(resp.Body)
+		responseJson := make(map[string]interface{})
+		err = json.NewDecoder(resp.Body).Decode(&responseJson)
+		if err != nil {
+			return "", err
+		}
+		fmt.Println(responseJson) */
 	info, err := b.client.GetAddressInfo(address)
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(*info)
+	fmt.Println("addres data ", *info)
+	fmt.Println("labels data ", info.Labels)
 	return info.Labels[0], nil
+	/*labels, ok := responseJson["labels"].([]string)
+	if !ok {
+		return "", errors.New("could not convert labels from response")
+	}
+	return labels[0], nil*/
 }
 
 func (b *BitcoinRPC) SendAmountToAddressAndSubtractFees(address string, amount string) error {
@@ -46,15 +144,16 @@ func (b *BitcoinRPC) SendAmountToAddressAndSubtractFees(address string, amount s
 		Jsonrpc: "2.0",
 		ID:      "0",
 		Method:  "sendtoaddress",
-		Params:  []interface{}{address, amount, "", "", true, true, 6, "unset", false},
+		Params:  []interface{}{"\"" + address + "\"", amount, "", "", true, true, 6, "unset", false},
 	}
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
+	fmt.Println("payloadbytes ", payloadBytes)
 	body := bytes.NewReader(payloadBytes)
 
-	req, err := http.NewRequest("POST", "host.docker.internal:18332/wallet/secondarytest", body)
+	req, err := http.NewRequest("POST", "http://host.docker.internal:18332/wallet/secondarytest", body)
 	if err != nil {
 		return err
 	}

@@ -178,7 +178,7 @@ func (service *Service) CheckForPaymentBitcoin(id string) (*dto.CheckForPaymentD
 		return nil, err
 	}
 	plan := t.IsSubscription || (t.Recurring != nil)
-	isCaptured, err := plugin.CaptureTransaction(id, plan)
+	isCaptured, err := plugin.CaptureTransaction(t.ExternalTransactionId, plan)
 	if err != nil {
 		return nil, err
 	}
