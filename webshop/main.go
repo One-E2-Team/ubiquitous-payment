@@ -67,6 +67,7 @@ func initHandler(wsService *service.Service) *handler.Handler {
 
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../staticdata/"))))
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
 	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
 	router.HandleFunc("/api/users", handler.Register).Methods(http.MethodPost)
