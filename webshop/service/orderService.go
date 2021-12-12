@@ -8,7 +8,7 @@ import (
 	"time"
 	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/model"
-	"ubiquitous-payment/webshop/wsutil"
+	"ubiquitous-payment/webshop/wsutil/pspAuth"
 )
 
 func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, error) {
@@ -38,7 +38,7 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 }
 
 func (service *Service) getOrderIdFromPSP() (string, error) {
-	resp, err := wsutil.PSPRequest(http.MethodGet, "/api/psp/order-id",
+	resp, err := pspAuth.PSPRequest(http.MethodGet, "/api/psp/order-id",
 		nil, map[string]string{})
 	if err != nil {
 		fmt.Println(err)
@@ -87,7 +87,7 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	message["merchantOrderId"] = order.UUID
 
 	data, _ := json.Marshal(message)
-	resp, err := wsutil.PSPRequest(http.MethodPost, "/api/order",
+	resp, err := pspAuth.PSPRequest(http.MethodPost, "/api/order",
 		data, map[string]string{})
 	if err != nil {
 		fmt.Println(err)

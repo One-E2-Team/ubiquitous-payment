@@ -1,4 +1,4 @@
-package wsutil
+package pspAuth
 
 import (
 	"bytes"
@@ -14,9 +14,6 @@ func SetPspAccessToken(accessToken string) {
 }
 
 func PSPRequest(method string, path string, data []byte, headers map[string]string) (*http.Response, error) {
-	if pspAccessToken == "" {
-		initAccessToken()
-	}
 	client := &http.Client{}
 	pspHost, pspPort := util.GetPSPHostAndPort()
 	pspPrefix := util.GetPSPProtocol() + "://" + pspHost + ":" + pspPort
@@ -30,12 +27,4 @@ func PSPRequest(method string, path string, data []byte, headers map[string]stri
 		req.Header.Set(key, value)
 	}
 	return client.Do(req)
-}
-
-func initAccessToken() {
-	accessToken, err := UtilService.WSService.GetPSPAccessToken()
-	if err != nil {
-		pspAccessToken = ""
-	}
-	pspAccessToken = accessToken
 }

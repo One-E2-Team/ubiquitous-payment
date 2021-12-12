@@ -14,6 +14,7 @@ import (
 	"ubiquitous-payment/webshop/repository"
 	"ubiquitous-payment/webshop/service"
 	"ubiquitous-payment/webshop/wsutil"
+	"ubiquitous-payment/webshop/wsutil/pspAuth"
 )
 
 func initDB() *gorm.DB {
@@ -99,7 +100,12 @@ func main() {
 	db := initDB()
 	wsRepo := initRepo(db)
 	wsService := initService(wsRepo)
-	wsutil.InitWebShopUtilService(wsService)
+	accessToken, err := wsService.GetPSPAccessToken()
+	if err != nil {
+		accessToken = ""
+	}
+	pspAuth.SetPspAccessToken(accessToken)
+	wsutil.InitRbacService(wsService)
 	wsHandler := initHandler(wsService)
 	handleFunc(wsHandler)
 }

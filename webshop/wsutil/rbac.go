@@ -4,7 +4,18 @@ import (
 	"net/http"
 	"strconv"
 	"ubiquitous-payment/util"
+	"ubiquitous-payment/webshop/service"
 )
+
+type RbacService struct {
+	WSService *service.Service
+}
+
+var rbacService RbacService
+
+func InitRbacService(wsService *service.Service) {
+	rbacService = RbacService{WSService: wsService}
+}
 
 func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, returnCollection bool) func(http.ResponseWriter, *http.Request) {
 	finalHandler := func(pass bool) func(http.ResponseWriter, *http.Request) {
@@ -32,7 +43,7 @@ func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, re
 			handleFunc = finalHandler(false)
 		} else {
 			writer.Header().Set("initiator", strconv.Itoa(int(id)))
-			handleFunc = finalHandler(isPrivilegeValid(privilege, *UtilService.WSService.GetPrivileges(id)))
+			handleFunc = finalHandler(isPrivilegeValid(privilege, *rbacService.WSService.GetPrivileges(id)))
 		}
 		handleFunc(writer, request)
 	}
