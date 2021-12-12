@@ -18,6 +18,7 @@
                 </v-btn><br/>
      </v-row>
      <v-row>
+     </v-row>
       <div v-if="isPaymentSelected">
         <v-row justify="center">
           <h2>You will be automaticly redirected when we register a transaction.</h2> 
@@ -30,7 +31,6 @@
           ></v-progress-circular>
         </v-row>
       </div>
-     </v-row>
   </v-container>
 </template>
 
