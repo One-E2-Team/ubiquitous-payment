@@ -11,7 +11,7 @@ func (handler *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	pathVars := mux.Vars(r)
 	retUrl, err := handler.WSService.CreateOrder(util.String2Uint(pathVars["id"]), loggedUserId)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"CreateOrder", loggingService)
 		return
 	}
 	util.MarshalResult(w, retUrl)

@@ -11,13 +11,13 @@ func (handler *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var requestDTO dto.RegisterDTO
 	err := util.UnmarshalRequest(r, &requestDTO)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"Register", loggingService)
 		return
 	}
 
 	err = handler.PSPService.Register(w, requestDTO)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"Register", loggingService)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -27,18 +27,18 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 	var loginCredentials dto.LoginDTO
 	err := util.UnmarshalRequest(r, &loginCredentials)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"LogIn", loggingService)
 		return
 	}
 	user, err := handler.PSPService.Login(loginCredentials)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"LogIn", loggingService)
 		return
 	}
 
 	token, err := psputil.CreateToken(util.MongoID2String(user.ID), "psp", false)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"LogIn", loggingService)
 		return
 	}
 	resp := dto.LoginResponseDTO{Token: token, Username: user.Username,
@@ -50,7 +50,7 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 func (handler *Handler) GetAccessTokenForWebShop(w http.ResponseWriter, r *http.Request) {
 	accessToken, err := handler.PSPService.GetAccessTokenForWebShop(psputil.GetLoggedUserIDFromToken(r))
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"GetAccessTokenForWebShop", loggingService)
 		return
 	}
 	util.MarshalResult(w, accessToken)
@@ -60,12 +60,12 @@ func (handler *Handler) LoginWebShop(w http.ResponseWriter, r *http.Request) {
 	var webShopLoginDTO dto.WebShopLoginDTO
 	err := util.UnmarshalRequest(r, &webShopLoginDTO)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"LoginWebShop", loggingService)
 		return
 	}
 	resp, err := handler.PSPService.LoginWebShop(webShopLoginDTO)
 	if err != nil {
-		util.HandleErrorInHandler(err, w)
+		util.HandleErrorInHandler(err, w, loggingClass+"LoginWebShop", loggingService)
 		return
 	}
 	util.MarshalResult(w, resp)

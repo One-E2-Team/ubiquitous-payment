@@ -13,8 +13,9 @@ const (
 	Authorization   = "Authorization"
 )
 
-func HandleErrorInHandler(err error, responseWriter http.ResponseWriter) {
+func HandleErrorInHandler(err error, responseWriter http.ResponseWriter, resourceMethod string, service string) {
 	fmt.Println(err)
+	Logging(ERROR, resourceMethod, err.Error(), service)
 	responseWriter.WriteHeader(http.StatusBadRequest)
 }
 
