@@ -20,6 +20,7 @@
                     <div v-if="p.numOfInstallments > 1">Recurring type: {{p.recurringType}}</div>
                     <div v-if="p.numOfInstallments > 1">Num of installments: {{p.numOfInstallments}}</div>
                     <div v-if="p.numOfInstallments == 0">SUBSCRIPTION {{p.recurringType}}</div>
+                    <div v-if="p.delayedInstallments > 0">Delayed for {{p.delayedInstallments}}.</div>
                   </v-card-text>
 
                   <v-divider class="mx-4"></v-divider>

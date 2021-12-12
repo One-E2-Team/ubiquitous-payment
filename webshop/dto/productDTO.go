@@ -9,4 +9,5 @@ type ProductDTO struct {
 	Description       string  `json:"description"`
 	NumOfInstallments uint    `json:"numOfInstallments"`
 	RecurringType 	  model.RecurringType    `json:"recurringType"`
+	DelayedInstallments uint    `json:"delayedInstallments"`
 }

@@ -15,5 +15,6 @@ func ProductDTOToProduct(productDto dto.ProductDTO, loggedMerchantId uint) model
 		NumOfInstallments: productDto.NumOfInstallments,
 		MerchantProfileId: loggedMerchantId,
 		RecurringType:	productDto.RecurringType,
+		DelayedInstallments: productDto.DelayedInstallments,
 	}
 }
