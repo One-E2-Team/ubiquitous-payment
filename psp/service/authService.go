@@ -126,8 +126,8 @@ func (service *Service) LoginWebShop(webShopLoginDTO dto.WebShopLoginDTO) (*stri
 		return nil, err
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(webShop.PSPAccessToken), []byte(webShopLoginDTO.AccessToken)); err == nil {
-		token, err := psputil.CreateToken(util.MongoID2String(webShopOwner.ID), "psp")
+	if err = bcrypt.CompareHashAndPassword([]byte(webShop.PSPAccessToken), []byte(webShopLoginDTO.AccessUuid)); err == nil {
+		token, err := psputil.CreateToken(util.MongoID2String(webShopOwner.ID), "psp", true)
 		if err != nil {
 			return nil, err
 		}

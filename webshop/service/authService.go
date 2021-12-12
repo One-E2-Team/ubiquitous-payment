@@ -37,20 +37,20 @@ func (service *Service) LogIn(dto dto.LogInDTO) (*model.User, error) {
 	return user, nil
 }
 
-func (service *Service) SetPSPAccessToken(accessToken string) error {
+func (service *Service) SetPSPAccessToken(accessUuid string) error {
 	webShop, err := service.WSRepository.GetFirstWebShop()
 	if err != nil {
 		return err
 	}
 
 	type AccessTokenData struct {
-		Name        string `json:"name"`
-		AccessToken string `json:"accessToken"` //TODO: change name to uuid
+		Name       string `json:"name"`
+		AccessUuid string `json:"accessUuid"`
 	}
 
 	req := AccessTokenData{
-		Name:        webShop.Name,
-		AccessToken: accessToken,
+		Name:       webShop.Name,
+		AccessUuid: accessUuid,
 	}
 	jsonReq, _ := json.Marshal(req)
 
@@ -60,12 +60,12 @@ func (service *Service) SetPSPAccessToken(accessToken string) error {
 		return err
 	}
 
-	var realAccessToken string
-	err = util.UnmarshalResponse(resp, &realAccessToken)
+	var accessToken string
+	err = util.UnmarshalResponse(resp, &accessToken)
 	if err != nil {
 		return err
 	}
-	util.SetPspJwt(realAccessToken)
-	webShop.PSPAccessToken = realAccessToken
+	util.SetPspAccessToken(accessToken)
+	webShop.PSPAccessToken = accessToken
 	return service.WSRepository.UpdateWebShop(webShop)
 }

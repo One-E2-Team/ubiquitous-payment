@@ -6,27 +6,17 @@ import (
 	"net/http"
 )
 
-//
-//import (
-//	"bytes"
-//	"fmt"
-//	"github.com/dgrijalva/jwt-go"
-//	"net/http"
-//	"os"
-//	"time"
-//)
-//
 var pspAccessToken = ""
 
-func SetPspJwt(pspJwt string) {
-	pspAccessToken = pspJwt
+func SetPspAccessToken(accessToken string) {
+	pspAccessToken = accessToken
 }
 
 func PSPRequest(method string, path string, data []byte, headers map[string]string) (*http.Response, error) {
 	client := &http.Client{}
 	pspHost, pspPort := GetPSPHostAndPort()
-	urlPath := GetPSPProtocol() + "://" + pspHost + ":" + pspPort
-	req, err := http.NewRequest(method, urlPath+path, bytes.NewBuffer(data))
+	pspPrefix := GetPSPProtocol() + "://" + pspHost + ":" + pspPort
+	req, err := http.NewRequest(method, pspPrefix+path, bytes.NewBuffer(data))
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
