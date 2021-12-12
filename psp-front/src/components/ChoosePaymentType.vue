@@ -23,7 +23,6 @@
 <script>
 import axios from 'axios'
 import * as comm from '../configuration/communication.js'
-import func from 'vue-editor-bridge';
   export default {
     name: 'HelloWorld',
     mounted(){
@@ -62,7 +61,7 @@ import func from 'vue-editor-bridge';
               if(response.status==200){
                 window.open(response.data.redirectUrl, '_blank');
                 if (p == "bitcoin"){
-                  async
+                  this.bitcoinAsyncFunc(data.id)
                 }
               }
             }).catch((response) => {
@@ -70,8 +69,17 @@ import func from 'vue-editor-bridge';
             });
       },
       async bitcoinAsyncFunc(id){
-          const delay = ms => new Promise(res => setTimeout(res,ms));
-          while(true){
+          /*let kurc = function wait(ms) {
+            var start = Date.now(),
+                now = start;
+            while (now - start < ms) {
+              now = Date.now();
+            }
+          }*/
+          const delay = ms => new Promise(res => setTimeout(res, ms));
+          var k = true;
+          while(k){
+            //kurc(5000);
             await delay(5000);
             axios({
               method: "get",
@@ -84,7 +92,6 @@ import func from 'vue-editor-bridge';
               }
             })
           }
-      }
   }
-  }
+  }}
 </script>
