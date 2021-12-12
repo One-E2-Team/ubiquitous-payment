@@ -146,13 +146,27 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 }
 
 func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {
+	t, err := service.PSPRepository.GetTransactionById(util.String2MongoID(transactionID))
+	if err != nil{
+		return nil, err
+	}
 	paymentTypes, err := service.PSPRepository.GetAvailablePaymentTypes(transactionID)
 	if err != nil {
 		return nil, err
 	}
 	var paymentTypeNames []string
 	for _, paymentType := range paymentTypes {
-		paymentTypeNames = append(paymentTypeNames, paymentType.Name)
+		if t.IsSubscription || (t.Recurring != nil){
+			plugin, err := psputil.GetPlugin(paymentType.Name)
+			if err != nil{
+				return nil, err
+			}
+			if plugin.SupportsPlanPayment(){
+				paymentTypeNames = append(paymentTypeNames, paymentType.Name)
+			}
+		}else{
+			paymentTypeNames = append(paymentTypeNames, paymentType.Name)
+		}
 	}
 	return paymentTypeNames, nil
 }
