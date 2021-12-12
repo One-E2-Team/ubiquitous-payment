@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const ExpiresIn = 86400
+const SecondsInDay = 86400
 
 var PSPTokenSecret = ""
 
@@ -28,12 +28,16 @@ func initTokenSecret() {
 	}
 }
 
-func CreateToken(userId string, issuer string) (string, error) {
+func CreateToken(userId string, issuer string, isWebShopAccessToken bool) (string, error) {
 	if PSPTokenSecret == "" {
 		initTokenSecret()
 	}
+	expiresInDays := 1
+	if isWebShopAccessToken {
+		expiresInDays = 365
+	}
 	claims := PSPTokenClaims{LoggedUserId: userId, StandardClaims: jwt.StandardClaims{
-		ExpiresAt: time.Now().Unix() + ExpiresIn,
+		ExpiresAt: time.Now().Unix() + int64(expiresInDays*SecondsInDay),
 		IssuedAt:  time.Now().Unix(),
 		Issuer:    issuer,
 	}}

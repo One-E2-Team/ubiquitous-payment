@@ -2,5 +2,5 @@ package dto
 
 type WebShopLoginDTO struct {
 	WebShopName string `json:"name"`
-	AccessToken string `json:"accessToken"`
+	AccessUuid  string `json:"accessUuid"`
 }

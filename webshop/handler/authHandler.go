@@ -33,13 +33,13 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *Handler) SetPSPAccessToken(w http.ResponseWriter, r *http.Request) {
-	var accessToken string
-	err := util.UnmarshalRequest(r, &accessToken)
+	var accessUuid string
+	err := util.UnmarshalRequest(r, &accessUuid)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
 	}
-	err = handler.WSService.SetPSPAccessToken(accessToken)
+	err = handler.WSService.SetPSPAccessToken(accessUuid)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return

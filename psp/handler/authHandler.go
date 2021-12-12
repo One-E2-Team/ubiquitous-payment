@@ -36,7 +36,7 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := psputil.CreateToken(util.MongoID2String(user.ID), "psp")
+	token, err := psputil.CreateToken(util.MongoID2String(user.ID), "psp", false)
 	if err != nil {
 		util.HandleErrorInHandler(err, w)
 		return
