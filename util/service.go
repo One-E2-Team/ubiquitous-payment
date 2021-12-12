@@ -19,6 +19,10 @@ func GetPSPProtocol() string {
 	return "http"
 }
 
+func GetWebShopProtocol() string {
+	return "http"
+}
+
 func GetPSPHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8002"
 	if DockerChecker() {

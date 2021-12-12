@@ -87,10 +87,10 @@ func (service *Service) getRedirectLinkFromPsp(product *model.Product, order *mo
 	}
 	message["paymentTo"] = paymentData
 	wsFrontHost, wsFrontPort := util.GetWebShopFrontHostAndPort()
-	initialUrl := util.GetPSPProtocol() + "://" + wsFrontHost + ":" + wsFrontPort + "/order"
-	message["successUrl"] = initialUrl + "/success"
-	message["failUrl"] = initialUrl + "/fail"
-	message["errorUrl"] = initialUrl + "/error"
+	initialUrl := util.GetWebShopProtocol() + "://" + wsFrontHost + ":" + wsFrontPort + "/#/order"
+	message["successUrl"] = initialUrl + "/success/" + pspId
+	message["failUrl"] = initialUrl + "/fail" + pspId
+	message["errorUrl"] = initialUrl + "/error" + pspId
 	message["merchantTimestamp"] = order.Timestamp
 	message["merchantOrderId"] = order.UUID
 

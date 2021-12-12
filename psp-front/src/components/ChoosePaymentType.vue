@@ -16,7 +16,19 @@
                 >
                 {{p}}
                 </v-btn><br/>
-        </v-row>
+     </v-row>
+     <div v-if="isPaymentSelected">
+      <v-row justify="center">
+        <h2>You will be automaticly redirected when we register a transaction.</h2> 
+      </v-row>
+      <v-row justify="center">
+        <v-progress-circular
+          :size="80"
+          color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+     </div>
   </v-container>
 </template>
 
@@ -32,7 +44,8 @@ import * as comm from '../configuration/communication.js'
     },
     data() {return {
       paymentTypes: [],
-      transactionId : ''
+      transactionId : '',
+      isPaymentSelected : false
     }},
     methods: {
      getPaymentTypes(){
@@ -49,6 +62,7 @@ import * as comm from '../configuration/communication.js'
     
      }, 
      choosePaymentType(p){
+       this.isPaymentSelected = true;
          let data = {
              id : this.transactionId,
              name : p
