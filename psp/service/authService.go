@@ -77,8 +77,8 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 		return err
 	}
 
-	webShopPrivilege := model.Privilege{Name: psputil.WebShopTokenPermissionName}
-	webShopRole := model.Role{Name: psputil.WebShopRoleName, Privileges: []model.Privilege{webShopPrivilege}}
+	webShopPrivileges := []model.Privilege{{Name: psputil.WebShopTokenPermissionName}, {Name: psputil.WebShopOrderPermissionName}}
+	webShopRole := model.Role{Name: psputil.WebShopRoleName, Privileges: webShopPrivileges}
 	webShopOwner := model.User{ID: primitive.NewObjectID(), Username: dto.Username, Password: hashAndSalt(dto.Password),
 		IsDeleted: false, Roles: []model.Role{webShopRole}, WebShopId: util.MongoID2String(webShop.ID)}
 	return service.PSPRepository.CreateUser(&webShopOwner)

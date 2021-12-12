@@ -20,6 +20,7 @@ const (
 	WebShopIDFieldName = "webshopid"
 
 	WebShopTokenPermissionName = "READ_ACCESS_TOKEN"
+	WebShopOrderPermissionName = "CREATE_ORDER_FROM_WEB_SHOP"
 	WebShopRoleName            = "WebShop"
 )
 
