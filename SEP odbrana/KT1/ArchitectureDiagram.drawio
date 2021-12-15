@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-12-15T15:19:30.714Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36" etag="AxpI2lYVfGVBSy-ls65n" version="15.9.6" type="github">
+<mxfile host="app.diagrams.net" modified="2021-12-15T15:42:56.386Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36" etag="gKO1sUdM6iLuthCbBTzR" version="15.9.6" type="github">
   <diagram id="RoDfw6OUDIv51ifGNwrH" name="Page-1">
     <mxGraphModel dx="633" dy="1927" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -24,6 +24,9 @@
         </mxCell>
         <mxCell id="I7TksY0qr9zUllApRns5-46" value="&lt;b&gt;API&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;fontSize=19;" vertex="1" parent="I7TksY0qr9zUllApRns5-37">
           <mxGeometry x="25" y="280" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="I7TksY0qr9zUllApRns5-31" value="&lt;b&gt;Bitcoin plugin&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=19;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="I7TksY0qr9zUllApRns5-37">
+          <mxGeometry x="611.05" y="296" width="130" height="84" as="geometry" />
         </mxCell>
         <mxCell id="I7TksY0qr9zUllApRns5-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;strokeWidth=2;" edge="1" parent="1" source="I7TksY0qr9zUllApRns5-1" target="I7TksY0qr9zUllApRns5-5">
           <mxGeometry relative="1" as="geometry" />
@@ -87,9 +90,6 @@
             <mxPoint x="2170" y="-574" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="I7TksY0qr9zUllApRns5-31" value="&lt;b&gt;Bitcoin plugin&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=19;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-          <mxGeometry x="1860" y="-614" width="120" height="80" as="geometry" />
-        </mxCell>
         <mxCell id="I7TksY0qr9zUllApRns5-32" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.03;entryY=0.641;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=19;strokeWidth=2;" edge="1" parent="1" source="I7TksY0qr9zUllApRns5-26" target="I7TksY0qr9zUllApRns5-30">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -100,6 +100,9 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="2160" y="-755" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="I7TksY0qr9zUllApRns5-47" value="Webshops - multi-merchant or single merchant" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;fontSize=19;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="900" y="-900" width="260" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
