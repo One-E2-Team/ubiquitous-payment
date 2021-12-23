@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/dto"
@@ -41,8 +40,7 @@ func (handler *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pathVars := mux.Vars(r)
-	err = handler.WSService.UpdateProduct(util.String2Uint(pathVars["id"]), mapper.ProductDTOToProduct(request, util.GetLoggedUserIDFromToken(r)))
+	err = handler.WSService.UpdateProduct(util.String2Uint(util.GetPathVariable(r, "id")), mapper.ProductDTOToProduct(request, util.GetLoggedUserIDFromToken(r)))
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"UpdateProduct", loggingService)
 		return

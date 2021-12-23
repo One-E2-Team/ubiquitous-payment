@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io"
 	"net/http"
 )
@@ -12,6 +13,10 @@ const (
 	ApplicationJson = "application/json"
 	Authorization   = "Authorization"
 )
+
+func GetPathVariable(request *http.Request, variableName string) string {
+	return mux.Vars(request)[variableName]
+}
 
 func HandleErrorInHandler(err error, responseWriter http.ResponseWriter, resourceMethod string, service string) {
 	fmt.Println(err)

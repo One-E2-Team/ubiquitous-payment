@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"ubiquitous-payment/psp/dto"
 	"ubiquitous-payment/psp/psputil"
@@ -37,8 +36,7 @@ func (handler *Handler) FillTransaction(w http.ResponseWriter, r *http.Request) 
 
 func (handler *Handler) GetAvailablePaymentTypeNames(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
-	pathVars := mux.Vars(r)
-	payments, err := handler.PSPService.GetAvailablePaymentTypeNames(pathVars["transactionID"])
+	payments, err := handler.PSPService.GetAvailablePaymentTypeNames(util.GetPathVariable(r, "transactionID"))
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"GetAvailablePaymentTypeNames", loggingService)
 		return
@@ -90,8 +88,7 @@ func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Req
 
 func (handler *Handler) CheckForPaymentBitcoin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
-	pathVars := mux.Vars(r)
-	result, err := handler.PSPService.CheckForPaymentBitcoin(pathVars["transactionID"])
+	result, err := handler.PSPService.CheckForPaymentBitcoin(util.GetPathVariable(r, "transactionID"))
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"CheckForPaymentBitcoin", loggingService)
 		return
