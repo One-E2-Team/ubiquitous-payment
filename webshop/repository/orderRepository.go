@@ -20,4 +20,3 @@ func (repo *Repository) CreatePspOrder(pspOrder *model.PSPOrder) error {
 	}
 	return nil
 }
-

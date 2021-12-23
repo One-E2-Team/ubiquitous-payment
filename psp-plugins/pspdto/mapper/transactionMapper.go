@@ -22,7 +22,7 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 	numberOfInstallments := 1
 	installmentUnit := pspdto.Month
 	installmentDelayedTimeUnits := 0
-	if transaction.Recurring != nil{
+	if transaction.Recurring != nil {
 		numberOfInstallments = int(transaction.Recurring.InstallmentCount)
 		installmentUnit = model.GetInstallmentUnitByRecurringType(transaction.Recurring.Type)
 		installmentDelayedTimeUnits = int(transaction.Recurring.DelayedInstallmentCount)

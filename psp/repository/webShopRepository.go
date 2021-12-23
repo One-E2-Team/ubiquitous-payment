@@ -7,12 +7,6 @@ import (
 	"ubiquitous-payment/psp/psputil"
 )
 
-func (repo *Repository) CreateWebShop(webShop *model.WebShop) error {
-	webShopCollection := repo.getCollection(psputil.WebShopCollectionName)
-	_, err := webShopCollection.InsertOne(psputil.EmptyContext, webShop)
-	return err
-}
-
 func (repo *Repository) GetWebShopByID(webShopID primitive.ObjectID) (*model.WebShop, error) {
 	webShopCollection := repo.getCollection(psputil.WebShopCollectionName)
 	filter := bson.D{{psputil.IDFieldName, webShopID}}

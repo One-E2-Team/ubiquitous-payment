@@ -72,7 +72,7 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 	webShop := model.WebShop{ID: primitive.NewObjectID(), Name: dto.WebShopName, PSPAccessToken: "", //TODO: generate ID in repo
 		Accepted: false, PaymentTypes: paymentTypes, Accounts: nil}
 
-	err = service.PSPRepository.CreateWebShop(&webShop)
+	err = service.PSPRepository.Create(&webShop, psputil.WebShopCollectionName)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 	webShopRole := model.Role{Name: psputil.WebShopRoleName, Privileges: webShopPrivileges}
 	webShopOwner := model.User{ID: primitive.NewObjectID(), Username: dto.Username, Password: hashAndSalt(dto.Password),
 		IsDeleted: false, Roles: []model.Role{webShopRole}, WebShopId: util.MongoID2String(webShop.ID)}
-	return service.PSPRepository.CreateUser(&webShopOwner)
+	return service.PSPRepository.Create(&webShopOwner, psputil.UsersCollectionName)
 }
 
 func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error) {

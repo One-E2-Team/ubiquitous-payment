@@ -13,7 +13,7 @@ import (
 
 func (service *Service) CreateEmptyTransaction() (string, error) {
 	orderId := uuid.NewString()
-	err := service.PSPRepository.CreateTransaction(&model.Transaction{ID: primitive.NewObjectID(), PSPId: orderId})
+	err := service.PSPRepository.Create(&model.Transaction{ID: primitive.NewObjectID(), PSPId: orderId}, psputil.TransactionsCollectionName)
 	if err != nil {
 		return "", err
 	}
@@ -126,7 +126,7 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 		return "", nil
 	}
 	//TODO: Remove paypal check
-	if status == model.FULFILLED && t.SelectedPaymentType.Name != "paypal"{
+	if status == model.FULFILLED && t.SelectedPaymentType.Name != "paypal" {
 		plugin, err := psputil.GetPlugin(t.SelectedPaymentType.Name)
 		if err != nil {
 			return "", err
@@ -147,7 +147,7 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 
 func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]string, error) {
 	t, err := service.PSPRepository.GetTransactionById(util.String2MongoID(transactionID))
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	paymentTypes, err := service.PSPRepository.GetAvailablePaymentTypes(transactionID)
@@ -156,15 +156,15 @@ func (service *Service) GetAvailablePaymentTypeNames(transactionID string) ([]st
 	}
 	var paymentTypeNames []string
 	for _, paymentType := range paymentTypes {
-		if t.IsSubscription || (t.Recurring != nil){
+		if t.IsSubscription || (t.Recurring != nil) {
 			plugin, err := psputil.GetPlugin(paymentType.Name)
-			if err != nil{
+			if err != nil {
 				return nil, err
 			}
-			if plugin.SupportsPlanPayment(){
+			if plugin.SupportsPlanPayment() {
 				paymentTypeNames = append(paymentTypeNames, paymentType.Name)
 			}
-		}else{
+		} else {
 			paymentTypeNames = append(paymentTypeNames, paymentType.Name)
 		}
 	}

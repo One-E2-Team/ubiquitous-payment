@@ -41,7 +41,7 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 
 	logContent = "User: '" + util.Uint2String(loggedUserId) + "' created PSP order" + util.Uint2String(pspOrder.ID) + "' for order: '" + util.Uint2String(order.ID) + "'"
 	util.Logging(util.SUCCESS, "Service.CreateOrder", logContent, "web-shop")
-	
+
 	return redirectUrl, nil
 }
 

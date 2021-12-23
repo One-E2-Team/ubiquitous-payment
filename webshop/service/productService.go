@@ -13,11 +13,11 @@ import (
 
 func (service *Service) CreateProduct(product model.Product, r *http.Request) error {
 	picture, picHeader, err := r.FormFile("file")
-	if err != nil{
+	if err != nil {
 		return err
 	}
-	fileName,err := saveFile(picture, picHeader)
-	if err != nil{
+	fileName, err := saveFile(picture, picHeader)
+	if err != nil {
 		return err
 	}
 	product.MediaPath = fileName

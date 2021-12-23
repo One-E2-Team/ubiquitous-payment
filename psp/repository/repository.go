@@ -36,6 +36,12 @@ func (repo *Repository) AddDBConstraints() error {
 	return err
 }
 
+func (repo *Repository) Create(newEntity interface{}, collectionName string) error {
+	collection := repo.getCollection(collectionName)
+	_, err := collection.InsertOne(psputil.EmptyContext, newEntity)
+	return err
+}
+
 func (repo *Repository) getCollection(collectionName string) *mongo.Collection {
 	return repo.Client.Database(psputil.PspDbName).Collection(collectionName)
 }

@@ -5,5 +5,5 @@ import (
 )
 
 type Repository struct {
-	RelationalDatabase		*gorm.DB
+	RelationalDatabase *gorm.DB
 }

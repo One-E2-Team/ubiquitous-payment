@@ -28,6 +28,6 @@ const (
 )
 
 type TransactionCreatedDTO struct {
-	TransactionId string	`json:"transactionId"`
-	RedirectUrl   string	`json:"redirectUrl"`
+	TransactionId string `json:"transactionId"`
+	RedirectUrl   string `json:"redirectUrl"`
 }

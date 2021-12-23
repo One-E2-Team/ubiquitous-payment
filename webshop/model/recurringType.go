@@ -4,10 +4,10 @@ type RecurringType string
 
 const (
 	MONTHLY RecurringType = "MONTHLY"
-	YEARLY RecurringType = "YEARLY"
+	YEARLY  RecurringType = "YEARLY"
 )
 
-func GetRecurringType(str string) RecurringType{
+func GetRecurringType(str string) RecurringType {
 	switch str {
 	case "MONTHLY":
 		return MONTHLY
