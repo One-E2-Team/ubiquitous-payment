@@ -69,7 +69,7 @@ func (service *Service) Register(w http.ResponseWriter, dto dto.RegisterDTO) err
 		return fmt.Errorf("web shop with name '%s' already exists", dto.WebShopName)
 	}
 
-	webShop := model.WebShop{ID: primitive.NewObjectID(), Name: dto.WebShopName, PSPAccessToken: "", //TODO: generate ID in repo
+	webShop := model.WebShop{ID: primitive.NewObjectID(), Name: dto.WebShopName, PSPAccessUuid: "", //TODO: generate ID in repo
 		Accepted: false, PaymentTypes: paymentTypes, Accounts: nil}
 
 	err = service.PSPRepository.Create(&webShop, psputil.WebShopCollectionName)
@@ -100,7 +100,7 @@ func (service *Service) Login(loginCredentials dto.LoginDTO) (*model.User, error
 	return user, nil
 }
 
-func (service *Service) GetAccessTokenForWebShop(loggedUserID string) (string, error) {
+func (service *Service) GetAccessUuidForWebShop(loggedUserID string) (string, error) {
 	webShopOwner, err := service.PSPRepository.GetUserByID(util.String2MongoID(loggedUserID))
 	if err != nil {
 		return "", err
@@ -109,10 +109,10 @@ func (service *Service) GetAccessTokenForWebShop(loggedUserID string) (string, e
 	if !webShop.Accepted {
 		return "", fmt.Errorf("web shop with id '%s' is not accepted", util.MongoID2String(webShop.ID))
 	}
-	accessToken := uuid.NewString()
-	webShop.PSPAccessToken = hashAndSalt(accessToken)
+	accessUuid := uuid.NewString()
+	webShop.PSPAccessUuid = hashAndSalt(accessUuid)
 	err = service.PSPRepository.UpdateWebShop(webShop)
-	return accessToken, err
+	return accessUuid, err
 }
 
 func (service *Service) LoginWebShop(webShopLoginDTO dto.WebShopLoginDTO) (*string, error) {
@@ -126,7 +126,7 @@ func (service *Service) LoginWebShop(webShopLoginDTO dto.WebShopLoginDTO) (*stri
 		return nil, err
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(webShop.PSPAccessToken), []byte(webShopLoginDTO.AccessUuid)); err == nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(webShop.PSPAccessUuid), []byte(webShopLoginDTO.AccessUuid)); err == nil {
 		token, err := psputil.CreateToken(util.MongoID2String(webShopOwner.ID), "psp", true)
 		if err != nil {
 			return nil, err

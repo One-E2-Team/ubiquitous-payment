@@ -44,15 +44,7 @@ func (service *Service) SetPSPAccessToken(accessUuid string) error {
 		return err
 	}
 
-	type AccessTokenData struct {
-		Name       string `json:"name"`
-		AccessUuid string `json:"accessUuid"`
-	}
-
-	req := AccessTokenData{
-		Name:       webShop.Name,
-		AccessUuid: accessUuid,
-	}
+	req := dto.PSPLoginDTO{Name: webShop.Name, AccessUuid: accessUuid}
 	jsonReq, _ := json.Marshal(req)
 
 	resp, err := pspAuth.PSPRequest(http.MethodPost, "/api/psp/web-shop-login",

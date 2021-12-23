@@ -47,13 +47,13 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 	util.MarshalResult(w, resp)
 }
 
-func (handler *Handler) GetAccessTokenForWebShop(w http.ResponseWriter, r *http.Request) {
-	accessToken, err := handler.PSPService.GetAccessTokenForWebShop(psputil.GetLoggedUserIDFromToken(r))
+func (handler *Handler) GetAccessUuidForWebShop(w http.ResponseWriter, r *http.Request) {
+	accessUuid, err := handler.PSPService.GetAccessUuidForWebShop(psputil.GetLoggedUserIDFromToken(r))
 	if err != nil {
-		util.HandleErrorInHandler(err, w, loggingClass+"GetAccessTokenForWebShop", loggingService)
+		util.HandleErrorInHandler(err, w, loggingClass+"GetAccessUuidForWebShop", loggingService)
 		return
 	}
-	util.MarshalResult(w, accessToken)
+	util.MarshalResult(w, accessUuid)
 }
 
 func (handler *Handler) LoginWebShop(w http.ResponseWriter, r *http.Request) {
