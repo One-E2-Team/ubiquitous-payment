@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-type IRbac interface {
+type IRbacService interface {
 	IsPrivilegeValid(string, *http.Request) bool
 }
 
@@ -17,9 +17,9 @@ func finalHandler(handler func(http.ResponseWriter, *http.Request), pass bool) f
 	}
 }
 
-func GenericRBAC(handler func(http.ResponseWriter, *http.Request), privilege string, rbacEntity IRbac) func(http.ResponseWriter, *http.Request) {
+func GenericRBAC(handler func(http.ResponseWriter, *http.Request), privilege string, rbacService IRbacService) func(http.ResponseWriter, *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		handleFunc := finalHandler(handler, rbacEntity.IsPrivilegeValid(privilege, request))
+		handleFunc := finalHandler(handler, rbacService.IsPrivilegeValid(privilege, request))
 		handleFunc(writer, request)
 	}
 }
