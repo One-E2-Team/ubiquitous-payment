@@ -13,8 +13,8 @@ import (
 	"ubiquitous-payment/webshop/model"
 	"ubiquitous-payment/webshop/repository"
 	"ubiquitous-payment/webshop/service"
-	"ubiquitous-payment/webshop/wsutil"
 	"ubiquitous-payment/webshop/wsutil/pspAuth"
+	"ubiquitous-payment/webshop/wsutil/rbac"
 )
 
 func initDB() *gorm.DB {
@@ -73,11 +73,11 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/users", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/products", handler.GetActiveProducts).Methods(http.MethodGet)
 	router.HandleFunc("/api/products",
-		wsutil.RBAC(handler.CreateProduct, "CREATE_PRODUCT", false)).Methods(http.MethodPost)
+		rbac.WebShopRbac(handler.CreateProduct, "CREATE_PRODUCT")).Methods(http.MethodPost)
 	router.HandleFunc("/api/products/{id}",
-		wsutil.RBAC(handler.UpdateProduct, "UPDATE_PRODUCT", false)).Methods(http.MethodPut)
+		rbac.WebShopRbac(handler.UpdateProduct, "UPDATE_PRODUCT")).Methods(http.MethodPut)
 	router.HandleFunc("/api/orders/{id}",
-		wsutil.RBAC(handler.CreateOrder, "CREATE_ORDER", false)).Methods(http.MethodPost)
+		rbac.WebShopRbac(handler.CreateOrder, "CREATE_ORDER")).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp-access-token", handler.SetPSPAccessToken).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
@@ -106,7 +106,7 @@ func main() {
 		accessToken = ""
 	}
 	pspAuth.SetPspAccessToken(accessToken)
-	wsutil.InitRbacService(wsService)
+	rbac.InitRbacService(wsService)
 	wsHandler := initHandler(wsService)
 	handleFunc(wsHandler)
 }

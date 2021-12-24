@@ -5,51 +5,37 @@ import (
 	"ubiquitous-payment/psp/model"
 	"ubiquitous-payment/psp/psputil"
 	"ubiquitous-payment/psp/service"
+	"ubiquitous-payment/util"
 )
 
-type UtilRbacService struct {
-	RealService *service.Service
+type CopyPspService struct {
+	RealPspService *service.Service
 }
 
-var rbacService UtilRbacService
+var copyPspService CopyPspService
 
-func InitRbacService(realService *service.Service) {
-	rbacService = UtilRbacService{RealService: realService}
+func InitRbacService(realPspService *service.Service) {
+	copyPspService = CopyPspService{RealPspService: realPspService}
 }
 
-//TODO: create general RBAC if possible
+type PspRbacService struct{}
 
-func RBAC(handler func(http.ResponseWriter, *http.Request), privilege string, returnCollection bool) func(http.ResponseWriter, *http.Request) {
-	finalHandler := func(pass bool) func(http.ResponseWriter, *http.Request) {
-		if pass {
-			return handler
-		} else {
-			return func(writer http.ResponseWriter, request *http.Request) {
-				writer.WriteHeader(http.StatusOK)
-				writer.Header().Set("Content-Type", "application/json")
-				if returnCollection {
-					_, _ = writer.Write([]byte("[{\"status\":\"fail\", \"reason\":\"unauthorized\"}]"))
-				} else {
-					_, _ = writer.Write([]byte("{\"status\":\"fail\", \"reason\":\"unauthorized\"}"))
-				}
-			}
-		}
-	}
+var pspRbacService PspRbacService
 
-	return func(writer http.ResponseWriter, request *http.Request) {
-		var handleFunc func(http.ResponseWriter, *http.Request)
-		id := psputil.GetLoggedUserIDFromToken(request)
-		if id == "" {
-			handleFunc = finalHandler(false)
-		} else {
-			user, err := rbacService.RealService.GetUserByID(id)
-			if err != nil {
-				handleFunc = finalHandler(false)
-			}
-			handleFunc = finalHandler(isPrivilegeValid(privilege, *user))
-		}
-		handleFunc(writer, request)
+func (PspRbacService) IsPrivilegeValid(privilege string, request *http.Request) bool {
+	id := psputil.GetLoggedUserIDFromToken(request)
+	if id == "" {
+		return false
 	}
+	user, err := copyPspService.RealPspService.GetUserByID(id)
+	if err != nil {
+		return false
+	}
+	return isPrivilegeValid(privilege, *user)
+}
+
+func PspRbac(handler func(http.ResponseWriter, *http.Request), privilege string) func(http.ResponseWriter, *http.Request) {
+	return util.GenericRBAC(handler, privilege, pspRbacService)
 }
 
 func isPrivilegeValid(privilege string, user model.User) bool {

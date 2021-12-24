@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"ubiquitous-payment/util"
 	"ubiquitous-payment/webshop/dto"
@@ -10,7 +9,6 @@ import (
 )
 
 func (handler *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("creating product handler")
 	if err := r.ParseMultipartForm(0); err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"CreateProduct", loggingService)
 		return

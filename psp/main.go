@@ -71,8 +71,8 @@ func initHandler(pspService *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
-	router.HandleFunc("/api/psp/order-id", rbac.RBAC(handler.GetNewOrderId, psputil.WebShopOrderPrivilegeName, false)).Methods(http.MethodGet)
-	router.HandleFunc("/api/order", rbac.RBAC(handler.FillTransaction, psputil.WebShopOrderPrivilegeName, false)).Methods(http.MethodPost)
+	router.HandleFunc("/api/psp/order-id", rbac.PspRbac(handler.GetNewOrderId, psputil.WebShopOrderPrivilegeName)).Methods(http.MethodGet)
+	router.HandleFunc("/api/order", rbac.PspRbac(handler.FillTransaction, psputil.WebShopOrderPrivilegeName)).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payments/{transactionID}", handler.GetAvailablePaymentTypeNames).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/select-payment", handler.SelectPaymentType).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payment-success", handler.UpdateTransactionSuccess).Methods(http.MethodGet)
@@ -82,7 +82,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/accept/{webShopID}", handler.AcceptWebShop).Methods(http.MethodPatch)   //TODO: add RBAC for admin
 	router.HandleFunc("/api/psp/decline/{webShopID}", handler.DeclineWebShop).Methods(http.MethodPatch) //TODO: add RBAC for admin
 	router.HandleFunc("/api/psp/login", handler.LogIn).Methods(http.MethodPost)
-	router.HandleFunc("/api/psp/access-uuid", rbac.RBAC(handler.GetAccessUuidForWebShop, psputil.WebShopTokenPrivilegeName, false)).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/access-uuid", rbac.PspRbac(handler.GetAccessUuidForWebShop, psputil.WebShopTokenPrivilegeName)).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/web-shop-login", handler.LoginWebShop).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
