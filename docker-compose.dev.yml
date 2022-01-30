@@ -78,6 +78,24 @@ services:
     depends_on:
       - mongo
 
+  pcc:
+    container_name: pcc_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_DEV: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: pcc
+    ports:
+      - 1082:8080
+    depends_on:
+      - rdb
+
   mongo-express:
     image: mongo-express
     restart: always

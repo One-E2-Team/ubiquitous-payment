@@ -50,6 +50,24 @@ func GetWebShopFrontHostAndPort() (string, string) {
 	return "localhost", "3000"
 }
 
+func GetPccHostAndPort() (string, string) {
+	var pspHost, pspPort = "localhost", "8003"
+	if DockerChecker() {
+		pspHost = "pcc"
+		pspPort = "8080"
+	}
+	return pspHost, pspPort
+}
+
+func GetBankHostAndPort() (string, string) {
+	bankHost := "localhost" //TODO: parametrize for docker
+	//if DockerChecker() {
+	//	pspHost = "pcc"
+	//	pspPort = "8080"
+	//}
+	return bankHost, os.Getenv("BANK_PORT")
+}
+
 func GetNoSQLData() DatabaseData {
 	noSQLPort := "27017"
 	if DockerChecker() {

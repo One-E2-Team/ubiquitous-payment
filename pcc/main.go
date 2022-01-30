@@ -7,12 +7,11 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"net/http"
-	"os"
 	"time"
-	"ubiquitous-payment/bank/handler"
-	"ubiquitous-payment/bank/model"
-	"ubiquitous-payment/bank/repository"
-	"ubiquitous-payment/bank/service"
+	"ubiquitous-payment/pcc/handler"
+	"ubiquitous-payment/pcc/model"
+	"ubiquitous-payment/pcc/repository"
+	"ubiquitous-payment/pcc/service"
 	"ubiquitous-payment/util"
 )
 
@@ -24,9 +23,7 @@ func initDB() *gorm.DB {
 	time.Sleep(5 * time.Second)
 	rdb := util.GetRDBData()
 	for {
-		schemaName := "bank_" + os.Getenv("PAN_PREFIX")
-		db, err = gorm.Open(mysql.Open(rdb.Username + ":" + rdb.Password + "@tcp(" + rdb.Host + ":" + rdb.Port + ")/" +
-			schemaName + "?charset=utf8mb4&parseTime=True&loc=Local"))
+		db, err = gorm.Open(mysql.Open(rdb.Username + ":" + rdb.Password + "@tcp(" + rdb.Host + ":" + rdb.Port + ")/pcc?charset=utf8mb4&parseTime=True&loc=Local"))
 
 		if err != nil {
 			fmt.Println("Cannot connect to database! Sleeping 10s and then retrying....")
@@ -37,12 +34,7 @@ func initDB() *gorm.DB {
 		}
 	}
 
-	err = db.AutoMigrate(&model.Privilege{},
-		&model.Role{},
-		&model.CreditCard{},
-		&model.ClientAccount{},
-		&model.Client{},
-		&model.Transaction{},
+	err = db.AutoMigrate(&model.Bank{},
 		&model.PccOrder{})
 	if err != nil {
 		return nil
@@ -52,23 +44,22 @@ func initDB() *gorm.DB {
 }
 
 func initRepo(database *gorm.DB) *repository.Repository {
-	return &repository.Repository{Database: database}
+	return &repository.Repository{RelationalDatabase: database}
 }
 
 func initService(repo *repository.Repository) *service.Service {
-	return &service.Service{BankRepository: repo}
+	return &service.Service{Repository: repo}
 }
 
 func initHandler(service *service.Service) *handler.Handler {
-	return &handler.Handler{BankService: service}
+	return &handler.Handler{Service: service}
 }
 
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
-	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
-	host, port := util.GetBankHostAndPort()
+	host, port := util.GetPccHostAndPort()
 	var err error
 	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
@@ -82,7 +73,7 @@ func handleFunc(handler *handler.Handler) {
 func main() {
 	db := initDB()
 	repo := initRepo(db)
-	bankService := initService(repo)
-	bankHandler := initHandler(bankService)
-	handleFunc(bankHandler)
+	service := initService(repo)
+	handler := initHandler(service)
+	handleFunc(handler)
 }
