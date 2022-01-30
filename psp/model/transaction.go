@@ -25,9 +25,7 @@ type Transaction struct {
 	AvailablePaymentTypes []PaymentType      `json:"availablePaymentTypes"`
 	SelectedPaymentType   PaymentType        `json:"selectedPaymentType"`
 	MerchantAccounts      []Account          `json:"merchant_accounts"`
-	ExternalTransactionId string             `json:"externalTransactionId"` //paypalId
-	PaymentId             string             `json:"paymentId"`             //bank
-	PaymentUrlId          string             `json:"paymentUrlId"`          //bank
+	ExternalTransactionId string             `json:"externalTransactionId"` //pay-pal
 }
 
 func (transaction *Transaction) GetURLByStatus() string {

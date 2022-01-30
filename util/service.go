@@ -60,8 +60,7 @@ func GetPccHostAndPort() (string, string) {
 }
 
 func GetBankHostAndPort() (string, string) {
-	bankHost := "localhost"
-	os.Getenv("PAN_PREFIX") //TODO: parametrize for docker
+	bankHost := "localhost" //TODO: parametrize for docker
 	//if DockerChecker() {
 	//	pspHost = "pcc"
 	//	pspPort = "8080"

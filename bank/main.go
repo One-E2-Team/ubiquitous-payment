@@ -66,6 +66,7 @@ func initHandler(service *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetBankHostAndPort()
 	var err error
