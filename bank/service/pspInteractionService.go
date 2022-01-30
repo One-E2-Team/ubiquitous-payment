@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"errors"
 	"github.com/google/uuid"
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/model"
@@ -15,7 +15,7 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 	}
 
 	if clientAccount.Secret != transaction.MerchantPassword {
-		return nil, fmt.Errorf("bad merchant credentials")
+		return nil, errors.New("bad merchant credentials")
 	}
 
 	transaction.PaymentId = uuid.NewString()
@@ -26,8 +26,9 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 	}
 
 	bankHost, bankPort := util.GetBankHostAndPort()
-	payTransactionUrl := "https://" + bankHost + ":" + bankPort + "/api/pay/" + transaction.PaymentUrlId
-	paymentCheckUrl := "https://" + bankHost + ":" + bankPort + "/api/payment-check/{id}"
+	bankProtocol := util.GetBankProtocol()
+	payTransactionUrl := bankProtocol + "://" + bankHost + ":" + bankPort + "/api/pay/" + transaction.PaymentUrlId
+	paymentCheckUrl := bankProtocol + "://" + bankHost + ":" + bankPort + "/api/payment-check/{id}"
 	return &dto.PspResponseDTO{
 		PaymentId: transaction.PaymentId, PaymentUrl: payTransactionUrl, PaymentCheckUrl: paymentCheckUrl}, nil
 }

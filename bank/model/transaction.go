@@ -8,6 +8,7 @@ import (
 type Transaction struct {
 	gorm.Model
 	Amount            float32           `json:"amount"`
+	AmountRsd         float32           `json:"amountRsd"`
 	Currency          string            `json:"Currency"`
 	MerchantId        string            `json:"merchantId"`       //account number
 	MerchantPassword  string            `json:"merchantPassword"` //account secret
