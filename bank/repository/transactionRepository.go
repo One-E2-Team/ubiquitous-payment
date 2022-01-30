@@ -12,3 +12,11 @@ func (repo *Repository) CreateTransaction(transaction *model.Transaction) error 
 	}
 	return nil
 }
+
+func (repo *Repository) GetTransactionByPaymentUrlId(paymentUrlId string) (*model.Transaction, error) {
+	transaction := &model.Transaction{}
+	if err := repo.Database.First(&transaction, "payment_url_id = ?", paymentUrlId).Error; err != nil {
+		return nil, err
+	}
+	return transaction, nil
+}
