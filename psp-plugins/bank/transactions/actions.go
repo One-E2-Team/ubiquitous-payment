@@ -5,7 +5,7 @@ import (
 	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
-func PrepareTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
+func PrepareTransaction(data pspdto.TransactionDTO, context *map[string]string) (pspdto.TransactionCreatedDTO, error) {
 	return pspdto.TransactionCreatedDTO{}, errors.New("unimplemented")
 }
 

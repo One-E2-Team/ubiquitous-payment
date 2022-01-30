@@ -14,9 +14,15 @@ type Plugin interface {
 	SupportsPlanPayment() bool
 	ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error)
 	CaptureTransaction(id string, plan bool) (bool, error)
+	InitContextData(context map[string]string)
 }
 
 var plugins = make(map[string]Plugin, 0)
+var PluginInterfaceContext PluginContext
+
+type PluginContext interface {
+	GetAllBanksKeyValue() (*map[string]string, error)
+}
 
 func loadPlugin(pluginName string) (Plugin, error) {
 	var p Plugin = nil
@@ -38,8 +44,21 @@ func loadPlugin(pluginName string) (Plugin, error) {
 	if !ok {
 		return p, errors.New("invalid plugin type")
 	}
+	context, err := getContext()
+	if err != nil {
+		return p, err
+	}
+	p.InitContextData(*context)
 	plugins[pluginName] = p
 	return p, nil
+}
+
+func getContext() (*map[string]string, error) {
+	ret, err := PluginInterfaceContext.GetAllBanksKeyValue()
+	if err != nil {
+		return nil, err
+	}
+	return ret, err
 }
 
 func GetPlugin(pluginName string) (Plugin, error) {

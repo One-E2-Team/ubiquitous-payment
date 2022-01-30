@@ -11,6 +11,7 @@ const (
 	PaymentTypesCollectionName = "paymentTypes"
 	AccountsCollectionName     = "accounts"
 	UsersCollectionName        = "users"
+	BanksCollectionName        = "banks"
 
 	PSPIDFieldName     = "pspid"
 	IDFieldName        = "_id"
@@ -18,6 +19,7 @@ const (
 	AcceptedFieldName  = "accepted"
 	UsernameFieldName  = "username"
 	WebShopIDFieldName = "webshopid"
+	PANPrefixFieldName = "panPrefix"
 
 	WebShopTokenPrivilegeName = "READ_ACCESS_TOKEN"
 	WebShopOrderPrivilegeName = "CREATE_ORDER_FROM_WEB_SHOP"

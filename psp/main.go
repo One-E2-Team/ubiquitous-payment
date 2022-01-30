@@ -40,6 +40,7 @@ func initCollections(client *mongo.Client) {
 	createCollection(client, psputil.PspDbName, psputil.PaymentTypesCollectionName)
 	createCollection(client, psputil.PspDbName, psputil.AccountsCollectionName)
 	createCollection(client, psputil.PspDbName, psputil.UsersCollectionName)
+	createCollection(client, psputil.PspDbName, psputil.BanksCollectionName)
 }
 
 func createCollection(client *mongo.Client, dbName string, collectionName string) {
@@ -58,6 +59,10 @@ func initRepo(client *mongo.Client) *repository.Repository {
 		return nil
 	}
 	return repo
+}
+
+func initPlugin(repo *repository.Repository) {
+	psputil.PluginInterfaceContext = repo
 }
 
 func initService(pspRepo *repository.Repository) *service.Service {
@@ -125,6 +130,7 @@ func main() {
 	client := initDB()
 	defer closeConnection(client)
 	pspRepo := initRepo(client)
+	initPlugin(pspRepo)
 	pspService := initService(pspRepo)
 	rbac.InitRbacService(pspService)
 	pspHandler := initHandler(pspService)

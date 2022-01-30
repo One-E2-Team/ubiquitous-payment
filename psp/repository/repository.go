@@ -33,6 +33,18 @@ func (repo *Repository) AddDBConstraints() error {
 			Options: options.Index().SetUnique(true),
 		},
 	)
+	if err != nil {
+		return err
+	}
+
+	banksCollection := repo.getCollection(psputil.BanksCollectionName)
+	_, err = banksCollection.Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys:    bson.D{{Key: psputil.PANPrefixFieldName, Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 	return err
 }
 

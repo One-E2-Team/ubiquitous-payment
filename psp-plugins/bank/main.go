@@ -8,11 +8,16 @@ import (
 )
 
 type plugin struct {
+	context map[string]string
 }
 
 func (p plugin) Test() string {
 	fmt.Println("bankaaaaaaaaaaa")
 	return "bank-ups"
+}
+
+func (p plugin) InitContextData(context map[string]string) {
+	p.context = context
 }
 
 func (p plugin) SupportsPlanPayment() bool {
@@ -23,7 +28,7 @@ func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.Transacti
 	if data.PricingPlan {
 		return pspdto.TransactionCreatedDTO{}, errors.New("bank does not support plan payment")
 	}
-	return transactions.PrepareTransaction(data)
+	return transactions.PrepareTransaction(data, &p.context)
 }
 
 func (p plugin) CaptureTransaction(id string, plan bool) (bool, error) {

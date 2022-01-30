@@ -14,6 +14,10 @@ func (p plugin) Test() string {
 	return "ups"
 }
 
+func (p plugin) InitContextData(_ map[string]string) {
+	return
+}
+
 func (p plugin) SupportsPlanPayment() bool {
 	return true
 }
