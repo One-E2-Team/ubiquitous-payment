@@ -1,2 +1,3 @@
 # create databases
 CREATE DATABASE IF NOT EXISTS `webshop`;
+CREATE DATABASE IF NOT EXISTS `pcc`
