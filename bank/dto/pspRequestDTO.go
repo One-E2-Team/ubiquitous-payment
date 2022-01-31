@@ -6,7 +6,7 @@ type PspRequestDTO struct {
 	MerchantId        string    `json:"merchantId"`
 	MerchantPassword  string    `json:"merchantPassword"`
 	Amount            float32   `json:"amount"`
-	Currency          string    `json:"Currency"`
+	Currency          string    `json:"currency"`
 	MerchantOrderID   string    `json:"merchantOrderID"`
 	MerchantTimestamp time.Time `json:"merchantTimestamp"`
 	SuccessURL        string    `json:"successURL"`

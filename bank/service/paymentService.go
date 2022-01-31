@@ -25,7 +25,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 		err = service.proceedPaymentToPcc(issuerCard, transaction)
 	}
 
-	if service.IsCreditCardDataValid(issuerCard) {
+	if !service.IsCreditCardDataValid(issuerCard) {
 		return nil, errors.New("bad credit card data")
 	}
 
@@ -42,7 +42,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 
 func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponseDTO, error) {
 	transaction := mapper.PccOrderDTOToTransaction(pccOrderDto)
-	if service.IsCreditCardDataValid(mapper.PccOrderDtoToIssuerCardDto(pccOrderDto)) {
+	if !service.IsCreditCardDataValid(mapper.PccOrderDtoToIssuerCardDto(pccOrderDto)) {
 		return nil, errors.New("bad credit card data")
 	}
 
@@ -63,6 +63,10 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponse
 	}
 
 	transaction.TransactionStatus = model.FULFILLED
+	err = service.BankRepository.CreateTransaction(&transaction)
+	if err != nil {
+		return nil, err
+	}
 	return mapper.TransactionToPccResponseDTO(transaction), nil
 }
 
@@ -103,11 +107,6 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 		IssuerCVC:             issuerCard.Cvc,
 		IssuerValidUntil:      issuerCard.ValidUntil,
 		IssuerHolderName:      issuerCard.HolderName,
-	}
-
-	err := service.BankRepository.Update(&pccOrder)
-	if err != nil {
-		return err
 	}
 
 	client := &http.Client{}

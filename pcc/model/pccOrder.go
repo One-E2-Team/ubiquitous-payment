@@ -11,7 +11,7 @@ type PccOrder struct {
 	AcquirerTimestamp     time.Time   `json:"acquirerTimestamp"`
 	AcquirerPanPrefix     string      `json:"acquirerPanPrefix"`
 	MerchantId            string      `json:"merchantId"`
-	Amount                string      `json:"amount"`
+	Amount                float32     `json:"amount"`
 	Currency              string      `json:"currency"`
 	IssuerPAN             string      `json:"issuerPan"`
 	IssuerCVC             string      `json:"issuerCvc"`

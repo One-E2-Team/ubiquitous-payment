@@ -22,9 +22,10 @@ func (repo *Repository) GetCreditCard(pan string) (*model.CreditCard, error) {
 
 func (repo *Repository) GetClientAccountByPan(pan string) (*model.ClientAccount, error) {
 	clientAccount := &model.ClientAccount{}
-	if err := repo.Database.Table("client_accounts").Raw("select ac.client_account_id from account_cards ac "+
+	if err := repo.Database.Table("client_accounts").Raw("select * from client_accounts ca where ca.id ="+
+		"(select ac.client_account_id from account_cards ac "+
 		"where ac.credit_card_id = "+
-		"(select cc.id from credit_cards cc where cc.pan = ?)", pan).Scan(&clientAccount).Error; err != nil {
+		"(select cc.id from credit_cards cc where cc.pan = ?))", pan).Scan(&clientAccount).Error; err != nil {
 		return nil, err
 	}
 	return clientAccount, nil
