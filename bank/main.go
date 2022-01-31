@@ -68,6 +68,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	router.HandleFunc("/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
 	router.HandleFunc("/pcc-issuer-pay", handler.IssuerPay).Methods(http.MethodPost)
+	router.HandleFunc("/api/payment-check/{id}", handler.CheckPayment).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetBankHostAndPort()
 	var err error

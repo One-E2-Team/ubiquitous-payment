@@ -20,3 +20,11 @@ func (repo *Repository) GetTransactionByPaymentUrlId(paymentUrlId string) (*mode
 	}
 	return transaction, nil
 }
+
+func (repo *Repository) GetTransactionByPaymentId(paymentId string) (*model.Transaction, error) {
+	transaction := &model.Transaction{}
+	if err := repo.Database.First(&transaction, "payment_id = ?", paymentId).Error; err != nil {
+		return nil, err
+	}
+	return transaction, nil
+}

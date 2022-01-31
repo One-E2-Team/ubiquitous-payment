@@ -19,6 +19,9 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 	}
 
 	transaction.PaymentId = uuid.NewString()
+	transaction.SuccessURL += "?token=" + transaction.PaymentId
+	transaction.FailURL += "?token=" + transaction.PaymentId
+	transaction.ErrorURL += "?token=" + transaction.PaymentId
 	transaction.PaymentUrlId = uuid.NewString()
 	err = service.BankRepository.CreateTransaction(&transaction)
 	if err != nil {
@@ -31,4 +34,18 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 	paymentCheckUrl := bankProtocol + "://" + bankHost + ":" + bankPort + "/api/payment-check/{id}"
 	return &dto.PspResponseDTO{
 		PaymentId: transaction.PaymentId, PaymentUrl: payTransactionUrl, PaymentCheckUrl: paymentCheckUrl}, nil
+}
+
+func (service *Service) CheckPaymentStatus(id string) (*dto.PaymentResponseDTO, error) {
+	transaction, err := service.BankRepository.GetTransactionByPaymentId(id)
+	if err != nil {
+		return nil, err
+	}
+	return &dto.PaymentResponseDTO{
+		MerchantOrderId:   transaction.MerchantOrderID,
+		AcquirerOrderId:   transaction.MerchantId,
+		AcquirerTimestamp: transaction.MerchantTimestamp,
+		PaymentId:         transaction.PaymentId,
+		TransactionStatus: transaction.TransactionStatus,
+	}, nil
 }

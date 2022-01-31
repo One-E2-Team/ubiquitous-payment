@@ -25,9 +25,9 @@ func PrepareTransaction(data pspdto.TransactionDTO, context *map[string]string) 
 		Currency:          data.Currency,
 		MerchantOrderID:   data.OrderId,
 		MerchantTimestamp: time.Now(),
-		SuccessURL:        data.SuccessUrl + "?token=" + data.PspTransactionId,
-		FailURL:           data.FailUrl + "?token=" + data.PspTransactionId,
-		ErrorURL:          data.ErrorUrl + "?token=" + data.PspTransactionId,
+		SuccessURL:        data.SuccessUrl,
+		FailURL:           data.FailUrl,
+		ErrorURL:          data.ErrorUrl,
 	}
 	targetUrl, err := determineBankEndpoint(data.PayeeId, context)
 	if err != nil {
