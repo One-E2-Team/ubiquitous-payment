@@ -22,7 +22,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 	}
 
 	if !strings.HasPrefix(issuerCard.Pan, os.Getenv("PAN_PREFIX")) {
-		err = service.proceedPaymentToPcc(issuerCard, transaction)
+		return service.proceedPaymentToPcc(issuerCard, transaction)
 	}
 
 	if !service.IsCreditCardDataValid(issuerCard) {
@@ -96,7 +96,7 @@ func (service *Service) payInSameBank(issuerPan string, transaction *model.Trans
 	return service.BankRepository.Update(acquirerAccount)
 }
 
-func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transaction *model.Transaction) error {
+func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transaction *model.Transaction) (*dto.PaymentResponseDTO, error) {
 	pccOrder := dto.PccOrderDTO{
 		AcquirerTransactionId: transaction.ID,
 		AcquirerTimestamp:     time.Now(),
@@ -116,12 +116,29 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 	req, err := http.NewRequest(http.MethodPost, util.GetPccProtocol()+"://"+pccHost+":"+pccPort+"/pcc-order", bytes.NewBuffer(jsonReq))
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return nil, err
 	}
 	resp, err := client.Do(req)
-	// TODO: implement pcc response
-	fmt.Println(resp)
-	return nil
+
+	var respDto dto.PccResponseDTO
+	err = util.UnmarshalResponse(resp, &respDto)
+	if err != nil {
+		return nil, err
+	}
+
+	transaction.TransactionStatus = respDto.OrderStatus
+	err = service.BankRepository.Update(transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	acquirerAccount, err := service.BankRepository.GetClientAccount(transaction.MerchantId)
+	if err != nil {
+		return nil, err
+	}
+
+	acquirerAccount.Amount += transaction.AmountRsd
+	return mapper.TransactionToPaymentResponseDTO(*transaction), service.BankRepository.Update(acquirerAccount)
 }
 
 func (service *Service) IsCreditCardDataValid(issuerCard dto.IssuerCardDTO) bool {
@@ -131,5 +148,5 @@ func (service *Service) IsCreditCardDataValid(issuerCard dto.IssuerCardDTO) bool
 	}
 
 	return creditCard.Cvc == issuerCard.Cvc && creditCard.HolderName == issuerCard.HolderName &&
-		creditCard.ValidUntil == issuerCard.ValidUntil
+		creditCard.ValidUntil == issuerCard.ValidUntil //TODO: check valid until
 }
