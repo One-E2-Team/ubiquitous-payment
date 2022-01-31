@@ -15,8 +15,12 @@ func (handler *Handler) PspRequest(w http.ResponseWriter, r *http.Request) {
 		util.HandleErrorInHandler(err, w, loggingClass+"PspRequest", loggingService)
 		return
 	}
-
-	response, err := handler.BankService.PspRequest(mapper.PspRequestDTOToTransaction(pspRequest))
+	t, err := mapper.PspRequestDTOToTransaction(pspRequest)
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"PspRequest", loggingService)
+		return
+	}
+	response, err := handler.BankService.PspRequest(t)
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"PspRequest", loggingService)
 		return

@@ -41,7 +41,10 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 }
 
 func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponseDTO, error) {
-	transaction := mapper.PccOrderDTOToTransaction(pccOrderDto)
+	transaction, err := mapper.PccOrderDTOToTransaction(pccOrderDto)
+	if err != nil {
+		return nil, err
+	}
 	if !service.IsCreditCardDataValid(mapper.PccOrderDtoToIssuerCardDto(pccOrderDto)) {
 		return nil, errors.New("bad credit card data")
 	}
@@ -51,12 +54,11 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponse
 		return nil, err
 	}
 
-	//TODO: check currency
-	if issuerAccount.Amount < pccOrderDto.Amount {
+	if issuerAccount.Amount < transaction.AmountRsd {
 		return nil, errors.New("not enough money")
 	}
 
-	issuerAccount.Amount -= pccOrderDto.Amount
+	issuerAccount.Amount -= transaction.AmountRsd
 	err = service.BankRepository.Update(issuerAccount)
 	if err != nil {
 		return nil, err
@@ -81,7 +83,6 @@ func (service *Service) payInSameBank(issuerPan string, transaction *model.Trans
 		return err
 	}
 
-	//TODO: check currency
 	if issuerAccount.Amount < transaction.AmountRsd {
 		return errors.New("not enough money")
 	}
@@ -101,8 +102,8 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 		AcquirerTimestamp:     time.Now(),
 		AcquirerPanPrefix:     os.Getenv("PAN_PREFIX"),
 		MerchantId:            transaction.MerchantId,
-		Amount:                transaction.AmountRsd, //TODO: currency
-		Currency:              transaction.Currency,
+		Amount:                transaction.AmountRsd,
+		Currency:              "RSD",
 		IssuerPAN:             issuerCard.Pan,
 		IssuerCVC:             issuerCard.Cvc,
 		IssuerValidUntil:      issuerCard.ValidUntil,
