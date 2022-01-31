@@ -16,16 +16,10 @@ func TransactionToPaymentResponseDTO(transaction model.Transaction) *dto.Payment
 	}
 }
 
-func PccOrderToPccOrderDTO(pccOrder model.PccOrder) *dto.PccOrderDTO {
-	return &dto.PccOrderDTO{
-		AcquirerTransactionId: pccOrder.AcquirerTransactionId,
-		AcquirerTimestamp:     pccOrder.AcquirerTimestamp,
-		AcquirerPanPrefix:     pccOrder.AcquirerPanPrefix,
-		Amount:                pccOrder.Amount,
-		Currency:              pccOrder.Currency,
-		IssuerPAN:             pccOrder.IssuerPan,
-		IssuerCVC:             pccOrder.IssuerCvc,
-		IssuerValidUntil:      pccOrder.IssuerValidUntil,
-		IssuerHolderName:      pccOrder.IssuerHolderName,
+func TransactionToPccResponseDTO(transaction model.Transaction) *dto.PccResponseDTO {
+	return &dto.PccResponseDTO{
+		IssuerOrderId:   transaction.ID,
+		IssuerTimestamp: time.Now(),
+		OrderStatus:     transaction.TransactionStatus,
 	}
 }

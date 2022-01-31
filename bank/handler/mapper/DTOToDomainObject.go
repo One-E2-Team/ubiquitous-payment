@@ -18,3 +18,12 @@ func PspRequestDTOToTransaction(pspRequest dto.PspRequestDTO) model.Transaction 
 		MerchantTimestamp: pspRequest.MerchantTimestamp,
 	}
 }
+
+func PccOrderDTOToTransaction(pccOrderDto dto.PccOrderDTO) model.Transaction {
+	return model.Transaction{
+		Amount:     pccOrderDto.Amount,
+		Currency:   pccOrderDto.Currency,
+		MerchantId: pccOrderDto.MerchantId,
+		IssuerPan:  pccOrderDto.IssuerPAN,
+	}
+}
