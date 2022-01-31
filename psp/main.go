@@ -82,6 +82,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/select-payment", handler.SelectPaymentType).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/payment-success", handler.UpdateTransactionSuccess).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/payment-fail", handler.UpdateTransactionFail).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp/payment-error", handler.UpdateTransactionError).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/check-for-payment/bitcoin/{transactionID}", handler.CheckForPaymentBitcoin).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/register-web-shop", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/accept/{webShopID}", handler.AcceptWebShop).Methods(http.MethodPatch)   //TODO: add RBAC for admin

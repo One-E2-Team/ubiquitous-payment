@@ -58,6 +58,7 @@ func initHandler(service *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/pcc-order", handler.CreatePccOrder).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetPccHostAndPort()
 	var err error

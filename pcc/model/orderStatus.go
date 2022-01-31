@@ -3,6 +3,8 @@ package model
 type OrderStatus string
 
 const (
-	MONTHLY OrderStatus = "MONTHLY"
-	YEARLY  OrderStatus = "YEARLY"
+	PLACED OrderStatus = "PLACED"
+	FULFILLED  OrderStatus = "FULFILLED"
+	FAILED OrderStatus = "FAILED"
+	ERROR OrderStatus = "ERROR"
 )

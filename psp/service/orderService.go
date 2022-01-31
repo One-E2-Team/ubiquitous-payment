@@ -117,6 +117,10 @@ func (service *Service) UpdateTransactionFail(transactionID string) (string, err
 	return service.updateTransactionStatus(transactionID, model.FAILED)
 }
 
+func (service *Service) UpdateTransactionError(transactionID string) (string, error) {
+	return service.updateTransactionStatus(transactionID, model.ERROR)
+}
+
 func (service *Service) updateTransactionStatus(externalId string, status model.TransactionStatus) (string, error) {
 	logContent := "Transaction: '" + externalId + "' was '" + status.ToString() + "'"
 	util.Logging(util.INFO, "Service.SelectPaymentType", logContent, "psp")
