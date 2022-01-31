@@ -5,6 +5,9 @@ import (
 	"ubiquitous-payment/pcc/service"
 )
 
+var loggingService = "pcc"
+var loggingClass = "Handler."
+
 type Handler struct {
 	Service *service.Service
 }

@@ -1,12 +1,8 @@
-package model
+package dto
 
-import (
-	"gorm.io/gorm"
-	"time"
-)
+import "time"
 
-type PccOrder struct {
-	gorm.Model
+type PccOrderDto struct {
 	AcquirerTransactionId     uint 					`json:"acquirerTransactionId"`
 	AcquirerTimestamp         time.Time 			`json:"acquirerTimestamp"`
 	AcquirerPanPrefix		  string			    `json:"acquirerPanPrefix"`
@@ -16,7 +12,5 @@ type PccOrder struct {
 	IssuerCVC			      string			    `json:"issuerCvc"`
 	IssuerValidUntil		  string			    `json:"issuerValidUntil"`
 	IssuerHolderName		  string			    `json:"issuerHolderName"`
-	IssuerOrderId		  	  uint			        `json:"issuerOrderId"`
-	IssuerTimestamp           time.Time 			`json:"issuerTimestamp"`
-	OrderStatus				  OrderStatus		    `json:"orderStatus"`
 }
+
