@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"time"
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/model"
 )
@@ -20,12 +19,11 @@ func PspRequestDTOToTransaction(pspRequest dto.PspRequestDTO) model.Transaction 
 	}
 }
 
-func TransactionToPaymentResponseDTO(transaction model.Transaction) *dto.PaymentResponseDTO {
-	return &dto.PaymentResponseDTO{
-		MerchantOrderId:   transaction.MerchantOrderID,
-		AcquirerOrderId:   transaction.MerchantId,
-		AcquirerTimestamp: time.Now(),
-		PaymentId:         transaction.PaymentId,
-		TransactionStatus: transaction.TransactionStatus,
+func PccOrderDTOToTransaction(pccOrderDto dto.PccOrderDTO) model.Transaction {
+	return model.Transaction{
+		Amount:     pccOrderDto.Amount,
+		Currency:   pccOrderDto.Currency,
+		MerchantId: pccOrderDto.MerchantId,
+		IssuerPan:  pccOrderDto.IssuerPAN,
 	}
 }

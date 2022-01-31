@@ -9,9 +9,10 @@ type Transaction struct {
 	gorm.Model
 	Amount            float32           `json:"amount"`
 	AmountRsd         float32           `json:"amountRsd"`
-	Currency          string            `json:"Currency"`
+	Currency          string            `json:"currency"`
 	MerchantId        string            `json:"merchantId"`       //account number
 	MerchantPassword  string            `json:"merchantPassword"` //account secret
+	IssuerPan         string            `json:"issuerPan"`
 	SuccessURL        string            `json:"successURL"`
 	FailURL           string            `json:"failURL"`
 	ErrorURL          string            `json:"errorURL"`

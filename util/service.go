@@ -27,6 +27,10 @@ func GetBankProtocol() string {
 	return "http"
 }
 
+func GetPccProtocol() string {
+	return "http"
+}
+
 func GetPSPHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8002"
 	if DockerChecker() {

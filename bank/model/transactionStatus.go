@@ -1,10 +1,10 @@
 package model
 
-type TransactionStatus int
+type TransactionStatus string
 
 const (
-	WAITING TransactionStatus = iota
-	FULFILLED
-	FAILED
-	ERROR
+	PLACED    TransactionStatus = "PLACED"
+	FULFILLED TransactionStatus = "FULFILLED"
+	FAILED    TransactionStatus = "FAILED"
+	ERROR     TransactionStatus = "ERROR"
 )
