@@ -38,13 +38,13 @@ func PrepareTransaction(data pspdto.TransactionDTO, context *map[string]string) 
 	if err != nil {
 		return pspdto.TransactionCreatedDTO{}, err
 	}
-	checkBaseUrl := ret.PaymentCheckUrl[:len(ret.PaymentCheckUrl)-4] // remove {id} ath the end
+	checkBaseUrl := ret.PaymentCheckUrl[:len(ret.PaymentCheckUrl)-4] // remove '{id}' at the end
 	return pspdto.TransactionCreatedDTO{TransactionId: checkBaseUrl + ret.PaymentId, RedirectUrl: ret.PaymentUrl}, nil
 }
 
 func determineBankEndpoint(id string, context *map[string]string) (string, error) {
 	for k, v := range *context {
-		if id[:len(k)] == v {
+		if id[:len(k)] == k {
 			return v, nil
 		}
 	}

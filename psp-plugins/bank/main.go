@@ -11,27 +11,27 @@ type plugin struct {
 	context map[string]string
 }
 
-func (p plugin) Test() string {
+func (plugin) Test() string {
 	fmt.Println("bankaaaaaaaaaaa")
 	return "bank-ups"
 }
 
-func (p plugin) InitContextData(context map[string]string) {
-	p.context = context
+func (plugin) InitContextData(context map[string]string) {
+	Plugin.context = context
 }
 
-func (p plugin) SupportsPlanPayment() bool {
+func (plugin) SupportsPlanPayment() bool {
 	return false
 }
 
-func (p plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
+func (plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error) {
 	if data.PricingPlan {
 		return pspdto.TransactionCreatedDTO{}, errors.New("bank does not support plan payment")
 	}
-	return transactions.PrepareTransaction(data, &p.context)
+	return transactions.PrepareTransaction(data, &Plugin.context)
 }
 
-func (p plugin) CaptureTransaction(id string, plan bool) (bool, error) {
+func (plugin) CaptureTransaction(id string, plan bool) (bool, error) {
 	if plan {
 		return false, errors.New("bank does not allow for plan processing")
 	}
@@ -41,5 +41,28 @@ func (p plugin) CaptureTransaction(id string, plan bool) (bool, error) {
 var Plugin plugin
 
 func main() {
-	
+	var ctx map[string]string = make(map[string]string, 0)
+	ctx["000001"] = "https://remotehost.lol"
+	Plugin.InitContextData(ctx)
+	transactionCreatedDTO, err := Plugin.ExecuteTransaction(pspdto.TransactionDTO{
+		PspTransactionId:            "1",
+		OrderId:                     "o1",
+		PayeeId:                     "0000011",
+		PayeeSecret:                 "supersecret",
+		Currency:                    "USD",
+		Amount:                      "1",
+		ClientBusinessName:          "ime",
+		SuccessUrl:                  "success",
+		FailUrl:                     "fail",
+		ErrorUrl:                    "error",
+		PricingPlan:                 false,
+		PaymentInterval:             0,
+		NumberOfInstallments:        0,
+		InstallmentUnit:             "",
+		InstallmentDelayedTimeUnits: 0,
+	})
+	if err != nil {
+		return
+	}
+	fmt.Println(transactionCreatedDTO)
 }
