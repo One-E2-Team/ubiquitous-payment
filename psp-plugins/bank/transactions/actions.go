@@ -52,15 +52,28 @@ func determineBankEndpoint(id string, context *map[string]string) (string, error
 }
 
 func CheckPaymentStatusSuccess(id string) (bool, error) {
-	return false, errors.New("unimplemented")
+	var ret dto.PaymentResponseDTO
+	err := CallBankAPI(http.MethodGet, id, nil, ret)
+	if err != nil {
+		return false, err
+	}
+	if ret.TransactionStatus != dto.FULFILLED {
+		return false, nil
+	} else {
+		return true, nil
+	}
 }
 
 func CallBankAPI(method string, url string, data interface{}, ret interface{}) error {
-	payloadBytes, err := json.Marshal(data)
-	if err != nil {
-		return err
+	var body io.Reader = nil
+	if data != nil {
+		payloadBytes, err := json.Marshal(data)
+		if err != nil {
+			return err
+		}
+		body = bytes.NewReader(payloadBytes)
 	}
-	body := bytes.NewReader(payloadBytes)
+
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return err

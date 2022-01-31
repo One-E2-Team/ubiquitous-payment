@@ -39,3 +39,7 @@ func (p plugin) CaptureTransaction(id string, plan bool) (bool, error) {
 }
 
 var Plugin plugin
+
+func main() {
+	
+}
