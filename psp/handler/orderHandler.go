@@ -86,6 +86,17 @@ func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Req
 	http.Redirect(w, r, retUrl, http.StatusSeeOther)
 }
 
+func (handler *Handler) UpdateTransactionError(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(util.ContentType, util.ApplicationJson)
+	externalId := r.FormValue("token")
+	retUrl, err := handler.PSPService.UpdateTransactionError(externalId)
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"UpdateTransactionError", loggingService)
+		return
+	}
+	http.Redirect(w, r, retUrl, http.StatusSeeOther)
+}
+
 func (handler *Handler) CheckForPaymentBitcoin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
 	result, err := handler.PSPService.CheckForPaymentBitcoin(util.GetPathVariable(r, "transactionID"))
