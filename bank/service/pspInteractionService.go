@@ -9,7 +9,7 @@ import (
 )
 
 func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspResponseDTO, error) {
-	clientAccount, err := service.BankRepository.GetClientAccount(transaction.MerchantId)
+	clientAccount, err := service.Repository.GetClientAccount(transaction.MerchantId)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 	transaction.FailURL += "?token=" + transaction.PaymentId
 	transaction.ErrorURL += "?token=" + transaction.PaymentId
 	transaction.PaymentUrlId = uuid.NewString()
-	err = service.BankRepository.CreateTransaction(&transaction)
+	err = service.Repository.CreateTransaction(&transaction)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 }
 
 func (service *Service) CheckPaymentStatus(id string) (*dto.PaymentResponseDTO, error) {
-	transaction, err := service.BankRepository.GetTransactionByPaymentId(id)
+	transaction, err := service.Repository.GetTransactionByPaymentId(id)
 	if err != nil {
 		return nil, err
 	}

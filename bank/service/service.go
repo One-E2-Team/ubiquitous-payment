@@ -5,5 +5,5 @@ import (
 )
 
 type Service struct {
-	BankRepository *repository.Repository
+	Repository *repository.Repository
 }

@@ -55,7 +55,7 @@ func initRepo(database *gorm.DB) *repository.Repository {
 }
 
 func initService(repo *repository.Repository) *service.Service {
-	return &service.Service{BankRepository: repo}
+	return &service.Service{Repository: repo}
 }
 
 func initHandler(service *service.Service) *handler.Handler {

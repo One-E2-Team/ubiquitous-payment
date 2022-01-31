@@ -16,7 +16,7 @@ import (
 )
 
 func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (*dto.PaymentResponseDTO, error) {
-	transaction, err := service.BankRepository.GetTransactionByPaymentUrlId(paymentUrlId)
+	transaction, err := service.Repository.GetTransactionByPaymentUrlId(paymentUrlId)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 	} else {
 		transaction.TransactionStatus = model.FULFILLED
 	}
-	err = service.BankRepository.Update(transaction)
+	err = service.Repository.Update(transaction)
 	return mapper.TransactionToPaymentResponseDTO(*transaction), err
 }
 
@@ -49,7 +49,7 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponse
 		return nil, errors.New("bad credit card data")
 	}
 
-	issuerAccount, err := service.BankRepository.GetClientAccountByPan(pccOrderDto.IssuerPAN)
+	issuerAccount, err := service.Repository.GetClientAccountByPan(pccOrderDto.IssuerPAN)
 	if err != nil {
 		return nil, err
 	}
@@ -59,13 +59,13 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponse
 	}
 
 	issuerAccount.Amount -= transaction.AmountRsd
-	err = service.BankRepository.Update(issuerAccount)
+	err = service.Repository.Update(issuerAccount)
 	if err != nil {
 		return nil, err
 	}
 
 	transaction.TransactionStatus = model.FULFILLED
-	err = service.BankRepository.CreateTransaction(&transaction)
+	err = service.Repository.CreateTransaction(&transaction)
 	if err != nil {
 		return nil, err
 	}
@@ -73,12 +73,12 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponse
 }
 
 func (service *Service) payInSameBank(issuerPan string, transaction *model.Transaction) error {
-	issuerAccount, err := service.BankRepository.GetClientAccountByPan(issuerPan)
+	issuerAccount, err := service.Repository.GetClientAccountByPan(issuerPan)
 	if err != nil {
 		return err
 	}
 
-	acquirerAccount, err := service.BankRepository.GetClientAccount(transaction.MerchantId)
+	acquirerAccount, err := service.Repository.GetClientAccount(transaction.MerchantId)
 	if err != nil {
 		return err
 	}
@@ -89,11 +89,11 @@ func (service *Service) payInSameBank(issuerPan string, transaction *model.Trans
 
 	issuerAccount.Amount -= transaction.AmountRsd
 	acquirerAccount.Amount += transaction.AmountRsd
-	err = service.BankRepository.Update(issuerAccount)
+	err = service.Repository.Update(issuerAccount)
 	if err != nil {
 		return err
 	}
-	return service.BankRepository.Update(acquirerAccount)
+	return service.Repository.Update(acquirerAccount)
 }
 
 func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transaction *model.Transaction) (*dto.PaymentResponseDTO, error) {
@@ -127,22 +127,22 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 	}
 
 	transaction.TransactionStatus = respDto.OrderStatus
-	err = service.BankRepository.Update(transaction)
+	err = service.Repository.Update(transaction)
 	if err != nil {
 		return nil, err
 	}
 
-	acquirerAccount, err := service.BankRepository.GetClientAccount(transaction.MerchantId)
+	acquirerAccount, err := service.Repository.GetClientAccount(transaction.MerchantId)
 	if err != nil {
 		return nil, err
 	}
 
 	acquirerAccount.Amount += transaction.AmountRsd
-	return mapper.TransactionToPaymentResponseDTO(*transaction), service.BankRepository.Update(acquirerAccount)
+	return mapper.TransactionToPaymentResponseDTO(*transaction), service.Repository.Update(acquirerAccount)
 }
 
 func (service *Service) IsCreditCardDataValid(issuerCard dto.IssuerCardDTO) bool {
-	creditCard, err := service.BankRepository.GetCreditCard(issuerCard.Pan)
+	creditCard, err := service.Repository.GetCreditCard(issuerCard.Pan)
 	if err != nil {
 		return false
 	}
