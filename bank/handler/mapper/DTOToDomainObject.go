@@ -30,16 +30,16 @@ func PspRequestDTOToTransaction(pspRequest dto.PspRequestDTO) (model.Transaction
 	}, nil
 }
 
-func PccOrderDTOToTransaction(pccOrderDto dto.PccOrderDTO) (model.Transaction, error) {
+func PccOrderDTOToTransaction(pccOrderDto dto.PccOrderDTO) (*model.Transaction, error) {
 	amountRsd := pccOrderDto.Amount
 	var err error
 	if pccOrderDto.Currency != "RSD" {
 		amountRsd, err = util.CurrencyConversion(pccOrderDto.Currency, "RSD", pccOrderDto.Amount)
 		if err != nil {
-			return model.Transaction{}, err
+			return nil, err
 		}
 	}
-	return model.Transaction{
+	return &model.Transaction{
 		Amount:            pccOrderDto.Amount,
 		AmountRsd:         amountRsd,
 		Currency:          pccOrderDto.Currency,
