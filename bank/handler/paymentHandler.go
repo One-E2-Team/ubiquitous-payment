@@ -14,12 +14,12 @@ func (handler *Handler) Pay(w http.ResponseWriter, r *http.Request) {
 		util.HandleErrorInHandler(err, w, loggingClass+"Pay", loggingService)
 		return
 	}
-	paymentDto, err := handler.BankService.Pay(issuerCard, paymentUrlId)
+	redirectUrl, err := handler.BankService.Pay(issuerCard, paymentUrlId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"Pay", loggingService)
 		return
 	}
-	util.MarshalResult(w, paymentDto)
+	util.MarshalResult(w, redirectUrl)
 }
 
 func (handler *Handler) IssuerPay(w http.ResponseWriter, r *http.Request) {
