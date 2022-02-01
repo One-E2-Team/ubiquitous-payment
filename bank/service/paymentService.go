@@ -15,10 +15,10 @@ import (
 	"ubiquitous-payment/util"
 )
 
-func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (*dto.PaymentResponseDTO, error) {
+func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (string, error) {
 	transaction, err := service.Repository.GetTransactionByPaymentUrlId(paymentUrlId)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if !strings.HasPrefix(issuerCard.Pan, os.Getenv("PAN_PREFIX")) {
@@ -26,7 +26,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 	}
 
 	if !service.IsCreditCardDataValid(issuerCard) {
-		return nil, errors.New("bad credit card data")
+		return "", errors.New("bad credit card data")
 	}
 
 	err = service.payInSameBank(issuerCard.Pan, transaction)
@@ -37,7 +37,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) (
 		transaction.TransactionStatus = model.FULFILLED
 	}
 	err = service.Repository.Update(transaction)
-	return mapper.TransactionToPaymentResponseDTO(*transaction), err
+	return transaction.GetURLByStatus(), err
 }
 
 func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponseDTO, error) {
@@ -96,7 +96,7 @@ func (service *Service) payInSameBank(issuerPan string, transaction *model.Trans
 	return service.Repository.Update(acquirerAccount)
 }
 
-func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transaction *model.Transaction) (*dto.PaymentResponseDTO, error) {
+func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transaction *model.Transaction) (string, error) {
 	pccOrder := dto.PccOrderDTO{
 		AcquirerTransactionId: transaction.ID,
 		AcquirerTimestamp:     time.Now(),
@@ -116,29 +116,29 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 	req, err := http.NewRequest(http.MethodPost, util.GetPccProtocol()+"://"+pccHost+":"+pccPort+"/pcc-order", bytes.NewBuffer(jsonReq))
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return "", err
 	}
 	resp, err := client.Do(req)
 
 	var respDto dto.PccResponseDTO
 	err = util.UnmarshalResponse(resp, &respDto)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	transaction.TransactionStatus = respDto.OrderStatus
 	err = service.Repository.Update(transaction)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	acquirerAccount, err := service.Repository.GetClientAccount(transaction.MerchantId)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	acquirerAccount.Amount += transaction.AmountRsd
-	return mapper.TransactionToPaymentResponseDTO(*transaction), service.Repository.Update(acquirerAccount)
+	return transaction.GetURLByStatus(), service.Repository.Update(acquirerAccount)
 }
 
 func (service *Service) IsCreditCardDataValid(issuerCard dto.IssuerCardDTO) bool {

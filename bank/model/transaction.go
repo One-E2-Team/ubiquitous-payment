@@ -22,3 +22,16 @@ type Transaction struct {
 	PaymentUrlId      string            `json:"paymentUrlId"`
 	TransactionStatus TransactionStatus `json:"transactionStatus"`
 }
+
+func (transaction *Transaction) GetURLByStatus() string {
+	switch transaction.TransactionStatus {
+	case FULFILLED:
+		return transaction.SuccessURL
+	case FAILED:
+		return transaction.FailURL
+	case ERROR:
+		return transaction.ErrorURL
+	default:
+		return ""
+	}
+}
