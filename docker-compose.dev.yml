@@ -78,6 +78,30 @@ services:
     depends_on:
       - mongo
 
+  bank1:
+    container_name: bank1_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_DEV: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PAN_PREFIX: ${BANK1_PAN_PREFIX}
+      BANK_PORT: ${BANK1_PORT}
+      BANK_HOST: ${BANK1_HOST}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: bank
+    volumes:
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
+    ports:
+      - 10001:8080
+    depends_on:
+      - rdb
+
   pcc:
     container_name: pcc_container
     restart: always
@@ -91,8 +115,30 @@ services:
       dockerfile: GoBuild.dockerfile
       args:
         ARG_TARGET_GO: pcc
+    depends_on:
+      - rdb
+
+  bank2:
+    container_name: bank2_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_DEV: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PAN_PREFIX: ${BANK2_PAN_PREFIX}
+      BANK_PORT: ${BANK2_PORT}
+      BANK_HOST: ${BANK2_HOST}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: bank
+    volumes:
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
     ports:
-      - 1082:8080
+      - 10002:8080
     depends_on:
       - rdb
 

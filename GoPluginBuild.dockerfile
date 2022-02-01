@@ -5,7 +5,8 @@ RUN cd src/ubiquitous-payment && \
     go mod download &&  \
     go mod verify &&  \
     go build -buildmode=plugin -o target/paypal.so psp-plugins/paypal/main.go && \
-    go build -buildmode=plugin -o target/bitcoin.so psp-plugins/bitcoin/main.go
+    go build -buildmode=plugin -o target/bitcoin.so psp-plugins/bitcoin/main.go && \
+    go build -buildmode=plugin -o target/bank.so psp-plugins/bank/main.go
 
 FROM scratch AS export-stage
 COPY --from=build /go/src/ubiquitous-payment/target /
