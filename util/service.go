@@ -68,12 +68,12 @@ func GetPccHostAndPort() (string, string) {
 }
 
 func GetBankHostAndPort() (string, string) {
-	bankHost := "localhost" //TODO: parametrize for docker
-	//if DockerChecker() {
-	//	pspHost = "pcc"
-	//	pspPort = "8080"
-	//}
-	return bankHost, os.Getenv("BANK_PORT")
+	bankHost, bankPort := "localhost", os.Getenv("BANK_PORT") //TODO: parametrize for docker
+	if DockerChecker() {
+		bankHost = os.Getenv("BANK_HOST")
+		bankPort = "8080"
+	}
+	return bankHost, bankPort
 }
 
 func GetNoSQLData() DatabaseData {
