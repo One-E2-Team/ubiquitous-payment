@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"ubiquitous-payment/psp-plugins/pspdto"
@@ -124,10 +125,11 @@ func (service *Service) UpdateTransactionError(transactionID string) (string, er
 func (service *Service) updateTransactionStatus(externalId string, status model.TransactionStatus) (string, error) {
 	logContent := "Transaction: '" + externalId + "' was '" + status.ToString() + "'"
 	util.Logging(util.INFO, "Service.SelectPaymentType", logContent, "psp")
-
+	fmt.Println("prije dobavljanja transakcije na osnovu external ida")
 	t, err := service.PSPRepository.GetTransactionByExternalId(externalId)
+	fmt.Println("got transaction for external id ", t)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	//TODO: Remove paypal check
 	if status == model.FULFILLED && t.SelectedPaymentType.Name != "paypal" {
@@ -137,6 +139,7 @@ func (service *Service) updateTransactionStatus(externalId string, status model.
 		}
 		plan := t.IsSubscription || (t.Recurring != nil)
 		isFulfilled, err := plugin.CaptureTransaction(t.ExternalTransactionId, plan)
+		fmt.Println("fulfilled je ", isFulfilled)
 		if err != nil || !isFulfilled {
 			t.TransactionStatus = model.ERROR
 		}

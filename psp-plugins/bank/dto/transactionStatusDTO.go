@@ -1,10 +1,10 @@
 package dto
 
-type TransactionStatusDTO int
+type TransactionStatusDTO string
 
 const (
-	WAITING TransactionStatusDTO = iota
-	FULFILLED
-	FAILED
-	ERROR
+	PLACED    TransactionStatusDTO = "PLACED"
+	FULFILLED TransactionStatusDTO = "FULFILLED"
+	FAILED    TransactionStatusDTO = "FAILED"
+	ERROR     TransactionStatusDTO = "ERROR"
 )

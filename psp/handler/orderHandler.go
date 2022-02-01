@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"ubiquitous-payment/psp/dto"
 	"ubiquitous-payment/psp/psputil"
@@ -67,6 +68,7 @@ func (handler *Handler) UpdateTransactionSuccess(w http.ResponseWriter, r *http.
 	if subscriptionId != "" {
 		externalId = subscriptionId
 	}
+	fmt.Println("external id receivd" + externalId)
 	retUrl, err := handler.PSPService.UpdateTransactionSuccess(externalId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"UpdateTransactionSuccess", loggingService)

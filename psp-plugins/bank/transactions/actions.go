@@ -53,7 +53,9 @@ func determineBankEndpoint(id string, context *map[string]string) (string, error
 
 func CheckPaymentStatusSuccess(id string) (bool, error) {
 	var ret dto.PaymentResponseDTO
-	err := CallBankAPI(http.MethodGet, id, nil, ret)
+	fmt.Println("prije calla za provjeru bla bla")
+	err := CallBankAPI(http.MethodGet, id, nil, &ret)
+	fmt.Println("posle calla ya provjeru sa err ", err, "i ret", ret)
 	if err != nil {
 		return false, err
 	}
