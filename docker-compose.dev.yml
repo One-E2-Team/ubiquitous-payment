@@ -87,7 +87,6 @@ services:
       DOCKER_ENV_SET_DEV: ""
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
       PAN_PREFIX: ${BANK1_PAN_PREFIX}
-      BANK_PORT: ${BANK1_PORT}
       BANK_HOST: ${BANK1_HOST}
     build:
       context: .
@@ -127,7 +126,6 @@ services:
       DOCKER_ENV_SET_DEV: ""
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
       PAN_PREFIX: ${BANK2_PAN_PREFIX}
-      BANK_PORT: ${BANK2_PORT}
       BANK_HOST: ${BANK2_HOST}
     build:
       context: .
