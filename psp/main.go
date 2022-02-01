@@ -127,11 +127,11 @@ func testPlugin(pluginName string) {
 }
 
 func main() {
-	testPlugin("paypal")
 	client := initDB()
 	defer closeConnection(client)
 	pspRepo := initRepo(client)
 	initPlugin(pspRepo)
+	testPlugin("paypal")
 	pspService := initService(pspRepo)
 	rbac.InitRbacService(pspService)
 	pspHandler := initHandler(pspService)
