@@ -30,3 +30,11 @@ func (repo *Repository) GetClientAccountByPan(pan string) (*model.ClientAccount,
 	}
 	return clientAccount, nil
 }
+
+func (repo *Repository) GetRoleByName(name string) (*model.Role, error) {
+	role := &model.Role{}
+	if err := repo.Database.Table("roles").First(&role, "name = ?", name).Error; err != nil {
+		return nil, err
+	}
+	return role, nil
+}
