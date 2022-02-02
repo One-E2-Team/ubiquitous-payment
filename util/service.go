@@ -76,6 +76,10 @@ func GetBankHostAndPort() (string, string) {
 	return bankHost, bankPort
 }
 
+func GetBankFrontHostAndPort() (string, string) {
+	return "localhost", "3002"
+}
+
 func GetNoSQLData() DatabaseData {
 	noSQLPort := "27017"
 	if DockerChecker() {

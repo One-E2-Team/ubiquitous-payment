@@ -28,9 +28,10 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 		return nil, err
 	}
 
+	bankFrontHost, bankFrontPort := util.GetBankFrontHostAndPort()
 	bankHost, bankPort := util.GetBankHostAndPort()
 	bankProtocol := util.GetBankProtocol()
-	payTransactionUrl := bankProtocol + "://" + bankHost + ":" + bankPort + "/api/pay/" + transaction.PaymentUrlId
+	payTransactionUrl := bankProtocol + "://" + bankFrontHost + ":" + bankFrontPort + "/#/payment?id=" + transaction.PaymentUrlId
 	paymentCheckUrl := bankProtocol + "://" + bankHost + ":" + bankPort + "/api/payment-check/{id}"
 	return &dto.PspResponseDTO{
 		PaymentId: transaction.PaymentId, PaymentUrl: payTransactionUrl, PaymentCheckUrl: paymentCheckUrl}, nil
