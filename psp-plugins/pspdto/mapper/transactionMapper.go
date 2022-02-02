@@ -12,8 +12,12 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 	if err != nil {
 		return pspdto.TransactionDTO{}, err
 	}
-	//pspHost, pspPort := util.GetPSPHostAndPort()
-	initialUrl := "http" + "://" + "igorsikuljak.rs" + "/api/psp"
+	pspHost, pspPort := "localhost", "1081" //util.GetPSPHostAndPort()
+	pspTarget := pspHost + ":" + pspPort
+	if plugin.Name() == "paypal" {
+		pspTarget = "igorsikuljak.rs"
+	}
+	initialUrl := "http" + "://" + pspTarget + "/api/psp"
 	pricingPlan, err := transaction.IsPricingPlan(plugin)
 	if err != nil {
 		return pspdto.TransactionDTO{}, err
@@ -38,7 +42,7 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 		ClientBusinessName:          transaction.WebShopID,
 		SuccessUrl:                  initialUrl + "/payment-success",
 		FailUrl:                     initialUrl + "/payment-fail",
-		ErrorUrl:                    transaction.ErrorURL,
+		ErrorUrl:                    initialUrl + "/payment-error",
 		PricingPlan:                 pricingPlan,
 		PaymentInterval:             1,
 		NumberOfInstallments:        numberOfInstallments,

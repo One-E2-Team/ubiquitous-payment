@@ -11,9 +11,8 @@ type plugin struct {
 	context map[string]string
 }
 
-func (plugin) Test() string {
-	fmt.Println("bankaaaaaaaaaaa")
-	return "bank-ups"
+func (plugin) Name() string {
+	return "bank"
 }
 
 func (plugin) InitContextData(context map[string]string) {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"ubiquitous-payment/psp-plugins/bitcoin/transactions"
 	"ubiquitous-payment/psp-plugins/pspdto"
 )
@@ -10,9 +9,8 @@ import (
 type plugin struct {
 }
 
-func (p plugin) Test() string {
-	fmt.Println("Bit-in bit-out wasaaaaaaaaaa")
-	return "bitups"
+func (p plugin) Name() string {
+	return "bitcoin"
 }
 
 func (p plugin) InitContextData(_ map[string]string) {
