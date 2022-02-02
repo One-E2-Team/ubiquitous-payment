@@ -81,6 +81,9 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp-access-token", handler.SetPSPAccessToken).Methods(http.MethodPost)
 	router.HandleFunc("/api/payment-types", handler.GetValidPaymentTypes).Methods(http.MethodGet)
 	router.HandleFunc("/api/accounts/{name}", handler.GetAccountsByPaymentType).Methods(http.MethodGet)
+	router.HandleFunc("/api/accounts/{id}", handler.UpdateAccount).Methods(http.MethodPut)
+	router.HandleFunc("/api/accounts", handler.CreateAccount).Methods(http.MethodPost)
+	router.HandleFunc("/api/accounts/{id}", handler.DeleteAccount).Methods(http.MethodDelete)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error
