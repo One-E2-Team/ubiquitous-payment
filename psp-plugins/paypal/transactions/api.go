@@ -140,14 +140,22 @@ func CallPayPalAPI(method string, url string, data interface{}) (map[string]inte
 		return nil, err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("PayPal-Partner-Attribution-Id", "FLAVORsb-064747x8893734_MP")
 
+	fmt.Println("BN code sent on url ", url)
 	resp, err := http.DefaultClient.Do(req)
 
 	if resp.StatusCode != 200 && resp.StatusCode != 201 {
 		//return nil, errors.New("response is not http 200 or http 201")
 		fmt.Println(resp.StatusCode)
 	}
-
+	/*
+		if resp.StatusCode == 403 {
+			var mapRet map[string]interface{}
+			mapRet["status"] = "ACTIVE"
+			return mapRet, nil
+		}
+	*/
 	if err != nil {
 		return nil, err
 	}

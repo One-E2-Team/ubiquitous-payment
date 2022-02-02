@@ -80,6 +80,11 @@ func (handler *Handler) UpdateTransactionSuccess(w http.ResponseWriter, r *http.
 func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
 	externalId := r.FormValue("token")
+	subscriptionId := r.FormValue("subscription_id")
+	if subscriptionId != "" {
+		externalId = subscriptionId
+	}
+	fmt.Println("external id receivd" + externalId)
 	retUrl, err := handler.PSPService.UpdateTransactionFail(externalId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"UpdateTransactionFail", loggingService)
@@ -91,6 +96,11 @@ func (handler *Handler) UpdateTransactionFail(w http.ResponseWriter, r *http.Req
 func (handler *Handler) UpdateTransactionError(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(util.ContentType, util.ApplicationJson)
 	externalId := r.FormValue("token")
+	subscriptionId := r.FormValue("subscription_id")
+	if subscriptionId != "" {
+		externalId = subscriptionId
+	}
+	fmt.Println("external id receivd" + externalId)
 	retUrl, err := handler.PSPService.UpdateTransactionError(externalId)
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"UpdateTransactionError", loggingService)

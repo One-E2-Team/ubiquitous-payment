@@ -84,7 +84,7 @@ func (p *Plan) Init(productId string, t pspdto.TransactionDTO) Plan {
 			PricingScheme: PricingScheme{
 				Version: 0,
 				FixedPrice: FixedPrice{
-					CurrencyCode: "USD",
+					CurrencyCode: t.Currency,
 					Value:        "0",
 				},
 				//PricingModel: Volume,

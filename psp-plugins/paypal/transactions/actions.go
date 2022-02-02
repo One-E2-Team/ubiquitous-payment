@@ -155,7 +155,7 @@ func CaptureSubscriptionApproval(id string) (bool, error) {
 	if !ok {
 		return false, errors.New("could not convert status of subscription")
 	}
-	if status == "ACTIVE" {
+	if status == "ACTIVE" || status == "EXPIRED" {
 		return true, nil
 	} else {
 		return false, nil
