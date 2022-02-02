@@ -5,6 +5,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/psp-front" />
       <excludeFolder url="file://$MODULE_DIR$/webshop-front" />
+      <excludeFolder url="file://$MODULE_DIR$/bank-front" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -122,7 +122,7 @@ func testPlugin(pluginName string) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(p.Test())
+		fmt.Println(p.Name())
 	}
 }
 

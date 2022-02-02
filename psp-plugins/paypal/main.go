@@ -9,9 +9,8 @@ import (
 type plugin struct {
 }
 
-func (p plugin) Test() string {
-	fmt.Println("Plug-in plug-out wasaaaaaaaaaa")
-	return "ups"
+func (p plugin) Name() string {
+	return "paypal"
 }
 
 func (p plugin) InitContextData(_ map[string]string) {

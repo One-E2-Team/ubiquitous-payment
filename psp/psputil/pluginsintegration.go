@@ -10,7 +10,7 @@ import (
 )
 
 type Plugin interface {
-	Test() string
+	Name() string
 	SupportsPlanPayment() bool
 	ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.TransactionCreatedDTO, error)
 	CaptureTransaction(id string, plan bool) (bool, error)
