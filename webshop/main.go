@@ -79,6 +79,8 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/orders/{id}",
 		rbac.WebShopRbac(handler.CreateOrder, "CREATE_ORDER")).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp-access-token", handler.SetPSPAccessToken).Methods(http.MethodPost)
+	router.HandleFunc("/api/payment-types", handler.GetValidPaymentTypes).Methods(http.MethodGet)
+	router.HandleFunc("/api/accounts/{name}", handler.GetAccountsByPaymentType).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error

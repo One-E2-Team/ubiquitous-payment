@@ -17,6 +17,14 @@ export function getJWTToken() {
     return JSON.parse(sessionStorage.getItem("JWT"));
 }
 
+export function hasRole(role) {
+  const token = JSON.parse(sessionStorage.getItem("JWT"));
+  if(token.roles.includes(role)){
+    return true;
+  }
+  return false;
+}
+
 export function getHeader() {
   if (getJWTToken()) {
     return {

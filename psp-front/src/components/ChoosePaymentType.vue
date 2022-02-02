@@ -7,16 +7,13 @@
         </h1>
       </v-col>
     </v-row>
-    <v-row justify="center" v-for="p in this.paymentTypes" :key="p.name">
-         <v-btn
-                color="success"
-                elevation="8"
-                large
-                @click="choosePaymentType(p)"
-                >
-                {{p}}
-                </v-btn><br/>
-     </v-row>
+    <v-row justify="center">
+      <v-col lg  v-for="p in this.paymentTypes" :key="p.name">
+         <img @click="choosePaymentType(p)" v-if='p=="paypal"' width="320px" height="220px" src="../assets/paypal-logo.png" />
+         <img @click="choosePaymentType(p)" v-if='p=="bitcoin"' widtch="300px" height="200px" src="../assets/bitcoin-icon.png" />
+         <img @click="choosePaymentType(p)" v-if='p=="bank"' width="250px" height="150px" src="../assets/bank-icon.png" />
+      </v-col>
+    </v-row>
      <v-row>
      </v-row>
       <div v-if="isPaymentSelected">
