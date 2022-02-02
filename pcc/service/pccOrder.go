@@ -1,7 +1,6 @@
 package service
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -28,13 +27,12 @@ func (service *Service) forwardOrderToIssuersBank(pccOrder *model.PccOrder) (*dt
 		return nil, err
 	}
 
-	client := &http.Client{}
 	jsonReq, _ := json.Marshal(pccOrder)
-	req, err := http.NewRequest(http.MethodPost, issuersBank.URL+"/pcc-issuer-pay", bytes.NewBuffer(jsonReq))
+	resp, err := util.CrossServiceRequest(http.MethodPost, issuersBank.URL+"/pcc-issuer-pay", jsonReq, nil)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := client.Do(req)
+
 	var respDto dto.IssuerBankResponseDto
 	err = util.UnmarshalResponse(resp, &respDto)
 	if err != nil {

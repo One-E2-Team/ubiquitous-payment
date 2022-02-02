@@ -10,6 +10,7 @@ import (
 	"time"
 	"ubiquitous-payment/pcc/handler"
 	"ubiquitous-payment/pcc/model"
+	"ubiquitous-payment/pcc/pccutil"
 	"ubiquitous-payment/pcc/repository"
 	"ubiquitous-payment/pcc/service"
 	"ubiquitous-payment/util"
@@ -58,7 +59,7 @@ func initHandler(service *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
-	router.HandleFunc("/pcc-order", handler.CreatePccOrder).Methods(http.MethodPost)
+	router.HandleFunc("/pcc-order", pccutil.PccRbac(handler.CreatePccOrder, "bank")).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
 	host, port := util.GetPccHostAndPort()
 	var err error
@@ -74,7 +75,8 @@ func handleFunc(handler *handler.Handler) {
 func main() {
 	db := initDB()
 	repo := initRepo(db)
-	service := initService(repo)
-	handler := initHandler(service)
-	handleFunc(handler)
+	pccService := initService(repo)
+	pccHandler := initHandler(pccService)
+	_ = util.SetupCsAuth("pcc")
+	handleFunc(pccHandler)
 }
