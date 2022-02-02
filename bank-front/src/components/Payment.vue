@@ -2,13 +2,13 @@
   <v-container>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="9">
-        <v-form ref="form1" lazy-validation>
+        <v-form ref="form" v-model="valid" lazy-validation>
           <v-row align="center" justify="center">
             <v-col cols="12" sm="6">
               <v-text-field
                 v-model="creditCard.pan"
                 label="PAN:"
-                :rules="[rules.required]"
+                :rules="[rules.required, rules.pan]"
                 required
               ></v-text-field>
             </v-col>
@@ -18,7 +18,7 @@
               <v-text-field
                 v-model="creditCard.validUntil"
                 label="Valid until:"
-                :rules="[rules.required]"
+                :rules="[rules.required, rules.cardValid]"
                 required
               ></v-text-field>
             </v-col>
@@ -44,9 +44,7 @@
         </v-form>
         <v-row align="center" justify="center">
           <v-col cols="12" sm="6" class="d-flex justify-space-around mb-6">
-            <v-btn color="primary" @click="pay()" :disabled="!isValid()">
-              Pay
-            </v-btn>
+            <v-btn color="primary" @click="pay()"> Pay </v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -64,6 +62,7 @@ export default {
   mounted() {},
   data() {
     return {
+      valid: true,
       rules: validator.rules,
       paymentUrlId: "",
       creditCard: {
@@ -76,14 +75,18 @@ export default {
   },
   methods: {
     pay() {
+      if (!this.$refs.form.validate()) {
+        return;
+      }
+      const urlId = comm.getUrlVars()["id"];
+      if (!urlId) {
+        alert("Url id missing");
+        return;
+      }
+
       axios({
         method: "post",
-        url:
-          comm.BankProtocol +
-          "://" +
-          comm.BankServer +
-          "/api/pay/" +
-          comm.getUrlVars()["id"],
+        url: comm.BankProtocol + "://" + comm.BankServer + "/api/pay/" + urlId,
         data: JSON.stringify(this.creditCard),
       }).then((response) => {
         if (response.status == 200) {
@@ -91,15 +94,6 @@ export default {
           window.location.href = response.data;
         }
       });
-    },
-    isValid() {
-      return (
-        this.creditCard &&
-        this.creditCard.pan &&
-        this.creditCard.cvc &&
-        this.creditCard.holderName &&
-        this.creditCard.validUntil
-      );
     },
   },
 };
