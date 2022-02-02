@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"ubiquitous-payment/bank/bankutil"
 	"ubiquitous-payment/bank/handler"
 	"ubiquitous-payment/bank/model"
 	"ubiquitous-payment/bank/repository"
@@ -65,9 +66,10 @@ func initHandler(service *service.Service) *handler.Handler {
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/api/clients", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
-	router.HandleFunc("/pcc-issuer-pay", handler.IssuerPay).Methods(http.MethodPost)
+	router.HandleFunc("/pcc-issuer-pay", bankutil.BankRbac(handler.IssuerPay, "pcc")).Methods(http.MethodPost)
 	router.HandleFunc("/api/payment-check/{id}", handler.CheckPayment).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetBankHostAndPort()
@@ -86,5 +88,6 @@ func main() {
 	repo := initRepo(db)
 	bankService := initService(repo)
 	bankHandler := initHandler(bankService)
+	_ = util.SetupCsAuth("bank")
 	handleFunc(bankHandler)
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -128,16 +127,14 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 		IssuerHolderName:      issuerCard.HolderName,
 	}
 
-	client := &http.Client{}
-	pccHost, pccPort := util.GetPccHostAndPort()
 	jsonReq, _ := json.Marshal(pccOrder)
-	req, err := http.NewRequest(http.MethodPost, util.GetPccProtocol()+"://"+pccHost+":"+pccPort+"/pcc-order", bytes.NewBuffer(jsonReq))
+	pccHost, pccPort := util.GetPccHostAndPort()
+	resp, err := util.CrossServiceRequest(http.MethodPost, util.GetPccProtocol()+"://"+pccHost+":"+pccPort+"/pcc-order", jsonReq, nil)
 	if err != nil {
 		util.Logging(util.ERROR, "Service.proceedPaymentToPcc", err.Error(), loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.ERROR)
 		return transaction.GetURLByStatus()
 	}
-	resp, err := client.Do(req)
 
 	var respDto dto.PccResponseDTO
 	err = util.UnmarshalResponse(resp, &respDto)
