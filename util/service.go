@@ -34,8 +34,8 @@ func GetPccProtocol() string {
 func GetPSPHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8002"
 	if DockerChecker() {
-		pspHost = "psp"
-		pspPort = "8080"
+		pspHost = os.Getenv("PSP_HOST")
+		pspPort = os.Getenv("PSP_PORT")
 	}
 	return pspHost, pspPort
 }
