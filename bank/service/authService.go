@@ -55,6 +55,22 @@ func (service *Service) Register(request dto.RegistrationDTO, w http.ResponseWri
 	return service.Repository.Create(&client)
 }
 
+func (service *Service) LogIn(credentials dto.LoginDTO) (*model.Client, error) {
+	client, err := service.Repository.GetClientByUsername(credentials.Username)
+
+	if err != nil {
+		return nil, fmt.Errorf("'" + credentials.Username + "' " + err.Error())
+	}
+	if client.IsDeleted {
+		return nil, fmt.Errorf(util.Uint2String(client.ID) + " DELETED")
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(client.Password), []byte(credentials.Password))
+	if err != nil {
+		return nil, fmt.Errorf(util.Uint2String(client.ID) + " " + err.Error())
+	}
+	return client, nil
+}
+
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
 		f, err := os.Open("common_pass.txt")

@@ -68,6 +68,7 @@ func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
 	router.HandleFunc("/api/clients", handler.Register).Methods(http.MethodPost)
+	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
 	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
 	router.HandleFunc("/pcc-issuer-pay", bankutil.BankRbac(handler.IssuerPay, "pcc")).Methods(http.MethodPost)
