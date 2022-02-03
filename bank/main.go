@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -84,6 +85,7 @@ func handleFunc(handler *handler.Handler) {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	db := initDB()
 	repo := initRepo(db)
 	bankService := initService(repo)

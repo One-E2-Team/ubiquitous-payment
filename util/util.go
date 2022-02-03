@@ -3,10 +3,13 @@ package util
 import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"math/rand"
 	"net/smtp"
 	"os"
 	"strconv"
 )
+
+const MMyyDateFormat = "01/06" // '01' is month, '06' is year :) screw you GO
 
 func SendMail(sendTo string, subject string, mailMessage string) {
 	from := os.Getenv("MAIL_USERNAME")
@@ -51,6 +54,16 @@ func String2MongoID(stringID string) primitive.ObjectID {
 		return primitive.ObjectID{}
 	}
 	return mongoID
+}
+
+func RandomString(availableCharacters string, length int) string {
+
+	characters := []rune(availableCharacters)
+	result := make([]rune, length)
+	for i := 0; i < length; i++ {
+		result[i] = characters[rand.Intn(len(characters))]
+	}
+	return string(result)
 }
 
 func Contains(element interface{}, list []interface{}) bool {
