@@ -23,3 +23,27 @@ func TransactionToPccResponseDTO(transaction model.Transaction) *dto.PccResponse
 		OrderStatus:     transaction.TransactionStatus,
 	}
 }
+
+func AccountToAccountResponseDTO(account model.ClientAccount) *dto.AccountResponseDTO {
+	accountCards := account.CreditCards
+	creditCards := make([]dto.CreditCardResponseDTO, len(accountCards))
+	for i := 0; i < len(accountCards); i++ {
+		creditCards[i] = CreditCardToCreditCardResponseDTO(accountCards[i])
+	}
+
+	return &dto.AccountResponseDTO{
+		AccountNumber: account.AccountNumber,
+		Amount:        account.Amount,
+		Secret:        account.Secret,
+		CreditCards:   creditCards,
+	}
+}
+
+func CreditCardToCreditCardResponseDTO(creditCard model.CreditCard) dto.CreditCardResponseDTO {
+	return dto.CreditCardResponseDTO{
+		Pan:        creditCard.Pan,
+		Cvc:        creditCard.Cvc,
+		HolderName: creditCard.HolderName,
+		ValidUntil: creditCard.ValidUntil,
+	}
+}

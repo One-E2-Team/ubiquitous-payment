@@ -47,3 +47,18 @@ func (handler *Handler) LogIn(w http.ResponseWriter, r *http.Request) {
 	resp := dto.TokenResponseDTO{Token: token, Username: client.Username, ClientId: client.ID, Roles: client.Roles}
 	util.MarshalResult(w, resp)
 }
+func (handler *Handler) ConfirmPassword(w http.ResponseWriter, r *http.Request) {
+	var password string
+	err := util.UnmarshalRequest(r, &password)
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"ConfirmPassword", loggingService)
+		return
+	}
+
+	confirmed, err := handler.BankService.ConfirmPassword(util.GetLoggedUserIDFromToken(r), password)
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"ConfirmPassword", loggingService)
+		return
+	}
+	util.MarshalResult(w, confirmed)
+}

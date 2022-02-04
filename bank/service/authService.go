@@ -71,6 +71,18 @@ func (service *Service) LogIn(credentials dto.LoginDTO) (*model.Client, error) {
 	return client, nil
 }
 
+func (service *Service) ConfirmPassword(clientId uint, password string) (bool, error) {
+	client, err := service.Repository.GetClientById(clientId)
+	if err != nil {
+		return false, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(client.Password), []byte(password))
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
 		f, err := os.Open("common_pass.txt")

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm/clause"
 	"ubiquitous-payment/bank/model"
 )
 
@@ -10,6 +11,12 @@ func (repo *Repository) GetClientByUsername(username string) (*model.Client, err
 		return nil, err
 	}
 	return client, nil
+}
+
+func (repo *Repository) GetClientById(clientId uint) (*model.Client, error) {
+	client := &model.Client{}
+	result := repo.Database.Preload("Accounts.CreditCards").Preload(clause.Associations).First(&client, "id = ?", clientId)
+	return client, result.Error
 }
 
 func (repo *Repository) GetClientAccount(accountNumber string) (*model.ClientAccount, error) {
