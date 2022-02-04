@@ -43,6 +43,7 @@ export default {
       logout() {
         comm.logOut();
         this.$router.push({name: "Welcome"});
+        location.reload();
       }
     }
 }

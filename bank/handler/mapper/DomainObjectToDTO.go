@@ -39,6 +39,17 @@ func AccountToAccountResponseDTO(account model.ClientAccount) *dto.AccountRespon
 	}
 }
 
+func TransactionToTransactionResponseDTO(transaction model.Transaction) dto.TransactionResponseDTO {
+	return dto.TransactionResponseDTO{
+		Amount:                transaction.Amount,
+		Currency:              transaction.Currency,
+		AcquirerAccountNumber: transaction.MerchantId,
+		IssuerPan:             transaction.IssuerPan,
+		Timestamp:             transaction.MerchantTimestamp,
+		TransactionStatus:     string(transaction.TransactionStatus),
+	}
+}
+
 func CreditCardToCreditCardResponseDTO(creditCard model.CreditCard) dto.CreditCardResponseDTO {
 	return dto.CreditCardResponseDTO{
 		Pan:        creditCard.Pan,

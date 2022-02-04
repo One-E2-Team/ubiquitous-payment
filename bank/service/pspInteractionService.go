@@ -35,7 +35,7 @@ func (service *Service) PspRequest(transaction model.Transaction, paymentMethod 
 	if paymentMethod == "bank" {
 		payTransactionUrl = bankProtocol + "://" + bankFrontHost + ":" + bankFrontPort + "/#/payment?id=" + transaction.PaymentUrlId
 	} else if paymentMethod == "qrcode" {
-		payTransactionUrl = bankProtocol + "://" + bankHost + ":" + bankPort + "/api/pay/" + transaction.PaymentUrlId
+		payTransactionUrl = bankProtocol + "://" + "localhost" + ":" + "10001" + "/api/pay/" + transaction.PaymentUrlId
 	} else {
 		return nil, errors.New("request for unknown payment method in bank: " + paymentMethod)
 	}

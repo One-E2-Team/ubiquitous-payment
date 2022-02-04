@@ -28,7 +28,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) s
 	}
 
 	if !service.isCreditCardDataValid(issuerCard) {
-		util.Logging(util.ERROR, "Service.Pay", "bad acquirer credit card data", loggingService)
+		util.Logging(util.ERROR, "Service.Pay", "bad issuer credit card data", loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.FAILED)
 		return transaction.GetURLByStatus()
 	}

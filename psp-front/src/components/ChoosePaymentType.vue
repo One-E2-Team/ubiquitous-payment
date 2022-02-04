@@ -2,21 +2,90 @@
   <v-container>
     <v-row class="text-center">
       <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
+        <h2 class="display-2 mb-3">
           Choose a payment type
-        </h1>
+        </h2>
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col lg  v-for="p in this.paymentTypes" :key="p.name">
-         <img @click="choosePaymentType(p)" v-if='p=="paypal"' width="320px" height="220px" src="../assets/paypal-logo.png" />
-         <img @click="choosePaymentType(p)" v-if='p=="bitcoin"' widtch="300px" height="200px" src="../assets/bitcoin-icon.png" />
-         <img @click="choosePaymentType(p)" v-if='p=="bank"' width="250px" height="150px" src="../assets/bank-icon.png" />
+      <v-col>
+        <v-row>
+          <v-col cols="auto" v-for="p in this.paymentTypes" :key="p.name">
+            <v-btn v-if='p=="qrcode" && !isQrcode' @click="choosePaymentType(p)">Pay with QR code</v-btn>
+          </v-col>
+        </v-row>
+        <v-row align="center" justify="center" v-if="isQrcode">
+              <v-col cols="12" sm="9">
+                <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-row align="center" justify="center">
+                    <v-col cols="6" sm="6">
+                      <v-text-field
+                        v-model="creditCard.pan"
+                        label="PAN:"
+                        :rules="[rules.required, rules.pan]"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6" sm="6">
+                      <v-text-field
+                        v-model="creditCard.holderName"
+                        label="Holder name:"
+                        :rules="[rules.required]"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row align="center" justify="center">
+                    <v-col cols="12" sm="6">
+                      <v-text-field
+                        v-model="creditCard.validUntil"
+                        label="Valid until:"
+                        :rules="[rules.required, rules.cardValid]"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                      <v-text-field
+                        v-model="creditCard.cvc"
+                        label="CVC:"
+                        :rules="[rules.required]"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-form>
+                <v-row align="center" justify="center">
+                  <v-col cols="12" sm="6" class="d-flex justify-space-around mb-6">
+                    <v-btn color="primary" @click="pay()"> Pay </v-btn>
+                  </v-col>
+                </v-row>
+              </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="3">
+        <v-divider vertical="true" style="margin-left: 80px;"></v-divider>
+      </v-col>
+      <v-col cols="auto">
+          <v-row justify="center" cols="auto" v-for="p in this.paymentTypes" :key="p.name" style="height: 100px;">
+            <v-col >
+              <v-container>
+                <v-row>
+                  <v-btn v-if='p=="paypal"' @click="choosePaymentType(p)"><img width="70px" height="70px" src="../assets/paypal-logo.png" /> PAYPAL</v-btn>
+                </v-row>
+                <v-row>
+                  <v-btn v-if='p=="bitcoin"' @click="choosePaymentType(p)"><img widtch="50px" height="50px" src="../assets/bitcoin-icon.png" /> BITCOIN</v-btn>
+                </v-row>
+                <v-row>
+                <v-btn v-if='p=="bank"' @click="choosePaymentType(p)"><img width="50px" height="50px" src="../assets/bank-icon.png" />BANK</v-btn>
+                </v-row>
+              </v-container>
+            </v-col>
+          </v-row>
       </v-col>
     </v-row>
      <v-row>
      </v-row>
-      <div v-if="isPaymentSelected">
+      <div v-if="isPaymentSelected && !isQrcode">
         <v-row justify="center">
           <h2>You will be automaticly redirected when we register a transaction.</h2> 
         </v-row>
@@ -34,6 +103,7 @@
 <script>
 import axios from 'axios'
 import * as comm from '../configuration/communication.js'
+import * as validator from "../plugins/validator"
   export default {
     name: 'HelloWorld',
     mounted(){
@@ -44,7 +114,18 @@ import * as comm from '../configuration/communication.js'
     data() {return {
       paymentTypes: [],
       transactionId : '',
-      isPaymentSelected : false
+      isPaymentSelected : false,
+      redirectUrl : '',
+      isQrcode : false,
+      dataForQrCode : {},
+      valid: true,
+      rules: validator.rules,
+      creditCard: {
+        pan: "",
+        cvc: "",
+        holderName: "",
+        validUntil: "",
+      },
     }},
     methods: {
      getPaymentTypes(){
@@ -72,14 +153,49 @@ import * as comm from '../configuration/communication.js'
                 data : JSON.stringify(data)
             }).then(response => {
               if(response.status==200){
-                window.open(response.data.redirectUrl, '_blank');
-                if (p == "bitcoin"){
-                  this.bitcoinAsyncFunc(data.id)
+                if (p == "qrcode"){
+                  this.redirectUrl = response.data.redirectUrl;
+                  this.getDataForQrCode();
+                }
+                else{
+                  window.open(response.data.redirectUrl, '_blank');
+                  if (p == "bitcoin"){
+                    this.bitcoinAsyncFunc(data.id)
+                  }
                 }
               }
             }).catch((response) => {
               console.log(response.data)
             });
+      },
+      getDataForQrCode(){
+
+         axios({
+                method: "get",
+                url: comm.Protocol +'://' + comm.PSPserver + '/api/transaction/qrcode/' + this.transactionId,
+            }).then(response => {
+              if(response.status==200){
+                this.dataForQrCode = response.data;
+                this.isQrcode = true;
+              }
+            }).catch((response) => {
+              console.log(response.data)
+            });
+      },
+      pay(){
+        if (!this.$refs.form.validate()) {
+        return;
+      }
+      axios({
+        method: "post",
+        url: this.redirectUrl,
+        data: JSON.stringify(this.creditCard),
+      }).then((response) => {
+        if (response.status == 200) {
+          console.log(response);
+          window.location.href = response.data;
+        }
+      });
       },
       async bitcoinAsyncFunc(id){
           /*let kurc = function wait(ms) {
