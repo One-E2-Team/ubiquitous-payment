@@ -27,7 +27,7 @@ func (plugin) ExecuteTransaction(data pspdto.TransactionDTO) (pspdto.Transaction
 	if data.PricingPlan {
 		return pspdto.TransactionCreatedDTO{}, errors.New("bank does not support plan payment")
 	}
-	return transactions.PrepareTransaction(data, &Plugin.context)
+	return transactions.PrepareTransaction(data, &Plugin.context, Plugin.Name())
 }
 
 func (plugin) CaptureTransaction(id string, plan bool) (bool, error) {

@@ -13,7 +13,7 @@ import (
 	"ubiquitous-payment/psp-plugins/pspdto"
 )
 
-func PrepareTransaction(data pspdto.TransactionDTO, context *map[string]string) (pspdto.TransactionCreatedDTO, error) {
+func PrepareTransaction(data pspdto.TransactionDTO, context *map[string]string, pluginName string) (pspdto.TransactionCreatedDTO, error) {
 	amount, err := strconv.ParseFloat(data.Amount, 32)
 	if err != nil {
 		return pspdto.TransactionCreatedDTO{}, err
@@ -28,6 +28,7 @@ func PrepareTransaction(data pspdto.TransactionDTO, context *map[string]string) 
 		SuccessURL:        data.SuccessUrl,
 		FailURL:           data.FailUrl,
 		ErrorURL:          data.ErrorUrl,
+		Method:            pluginName,
 	}
 	targetUrl, err := determineBankEndpoint(data.PayeeId, context)
 	if err != nil {
