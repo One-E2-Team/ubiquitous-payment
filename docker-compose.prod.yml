@@ -1,0 +1,294 @@
+version: '3.9'
+services:
+
+  rdb:
+    container_name: db_mysql
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: ${RDB_USERNAME}
+      MYSQL_ROOT_PASSWORD: ${RDB_PASSWORD}
+      MYSQL_DATABASE: webshop
+    command: --init-file /data/application/init.sql
+    ports:
+      - 3306:3306
+    volumes:
+      - type: volume
+        source: data_rdb
+        target: /var/lib/mysql
+      - ./conf/mysql/init.sql:/data/application/init.sql
+
+  mongo:
+    container_name: nosqldb_mongo1
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${NOSQLDB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${NOSQLDB_PASSWORD}
+    ports:
+      - 27017:27017
+    volumes:
+      - type: volume
+        source: data_nodql
+        target: /data/db
+
+  webshop:
+    container_name: webshop_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_PROD: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PSP_HOST: ${PSP_HOST}
+      PSP_PORT: ${PSP_PORT}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: webshop
+    volumes:
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../staticdata:/staticdata
+      - ../logs:/logs
+      - ./conf/certs/key/webshop.key.pem:/ubiquitous-payment/conf/certs/key/webshop.key.pem
+      - ./conf/certs/pem/webshop.cert.pem:/ubiquitous-payment/conf/certs/pem/webshop.cert.pem
+    ports:
+      - 1080:8080
+    depends_on:
+      - rdb
+
+  webshop_static:
+    container_name: webshop_frontend
+    restart: always
+    build:
+      context: .
+      dockerfile: StaticBuild.dockerfile
+      target: static
+      args:
+        - WEBSHOP_SERVER_HOST_PORT: "localhost:1080"
+        - PSP_SERVER_HOST_PORT: "localhost:1081"
+        - BANK_SERVER_HOST_PORT: "localhost:10001"
+        - WEBSHOP_PROTOCOL: "https"
+        - BANK_PROTOCOL: "https"
+        - PROTOCOL: "https"
+        - ARG_TARGET_STATIC: "webshop-front"
+    ports:
+      - 3000:443
+    volumes:
+      - ./conf/certs/pem/webshop.cert.pem:/etc/nginx/ssl/static.cert.pem
+      - ./conf/certs/key/webshop.key.pem:/etc/nginx/ssl/static.key.pem
+      - ./conf/static.nginx.conf:/etc/nginx/conf.d/default.conf
+
+  psp:
+    container_name: psp_load_balancer
+    restart: always
+    build:
+      context: .
+      dockerfile: StaticBuild.dockerfile
+      target: static
+      args:
+        - WEBSHOP_SERVER_HOST_PORT: "localhost:1080"
+        - PSP_SERVER_HOST_PORT: "localhost:1081"
+        - BANK_SERVER_HOST_PORT: "localhost:10001"
+        - WEBSHOP_PROTOCOL: "https"
+        - BANK_PROTOCOL: "https"
+        - PROTOCOL: "https"
+        - ARG_TARGET_STATIC: "psp-front"
+    volumes:
+      - ./conf/loadbalancer.nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 1081:1081
+    depends_on:
+      - psp1
+      - psp2
+
+  psp1:
+    container_name: psp1_container
+    restart: always
+    environment:
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
+      NOSQLDB_USERNAME: ${NOSQLDB_USERNAME}
+      NOSQLDB_PASSWORD: ${NOSQLDB_PASSWORD}
+      DOCKER_ENV_SET_PROD: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PSP_HOST: psp1
+      PSP_PORT: 8080
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: psp
+    volumes:
+      - ./temp:/ubiquitous-payment/temp
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
+      - ./conf/certs/key/psp.key.pem:/ubiquitous-payment/conf/certs/key/psp.key.pem
+      - ./conf/certs/pem/psp.cert.pem:/ubiquitous-payment/conf/certs/pem/psp.cert.pem
+    depends_on:
+      - mongo
+
+  psp2:
+    container_name: psp2_container
+    restart: always
+    environment:
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
+      NOSQLDB_USERNAME: ${NOSQLDB_USERNAME}
+      NOSQLDB_PASSWORD: ${NOSQLDB_PASSWORD}
+      DOCKER_ENV_SET_PROD: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PSP_HOST: psp2
+      PSP_PORT: 8080
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: psp
+    volumes:
+      - ./temp:/ubiquitous-payment/temp
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
+      - ./conf/certs/key/psp.key.pem:/ubiquitous-payment/conf/certs/key/psp.key.pem
+      - ./conf/certs/pem/psp.cert.pem:/ubiquitous-payment/conf/certs/pem/psp.cert.pem
+    depends_on:
+      - mongo
+
+  bank1_static:
+    container_name: bank1_frontend
+    restart: always
+    build:
+      context: .
+      dockerfile: StaticBuild.dockerfile
+      target: static
+      args:
+        - WEBSHOP_SERVER_HOST_PORT: "localhost:1080"
+        - PSP_SERVER_HOST_PORT: "localhost:1081"
+        - BANK_SERVER_HOST_PORT: "localhost:10001"
+        - WEBSHOP_PROTOCOL: "https"
+        - BANK_PROTOCOL: "https"
+        - PROTOCOL: "https"
+        - ARG_TARGET_STATIC: "bank-front"
+    ports:
+      - 3000:443
+    volumes:
+      - ./conf/certs/pem/bank1.cert.pem:/etc/nginx/ssl/static.cert.pem
+      - ./conf/certs/key/bank1.key.pem:/etc/nginx/ssl/static.key.pem
+      - ./conf/static.nginx.conf:/etc/nginx/conf.d/default.conf
+
+  bank1:
+    container_name: bank1_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_PROD: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PAN_PREFIX: ${BANK1_PAN_PREFIX}
+      BANK_HOST: ${BANK1_HOST}
+      PSP_HOST: ${PSP_HOST}
+      PSP_PORT: ${PSP_PORT}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: bank
+    volumes:
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
+      - ./conf/certs/key/bank1.key.pem:/ubiquitous-payment/conf/certs/key/bank1.key.pem
+      - ./conf/certs/pem/bank1.cert.pem:/ubiquitous-payment/conf/certs/pem/bank1.cert.pem
+    ports:
+      - 10001:8080
+    depends_on:
+      - rdb
+
+  pcc:
+    container_name: pcc_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_PROD: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: pcc
+    volumes:
+      - ../logs:/logs
+      - ./conf/certs/key/pcc.key.pem:/ubiquitous-payment/conf/certs/key/pcc.key.pem
+      - ./conf/certs/pem/pcc.cert.pem:/ubiquitous-payment/conf/certs/pem/pcc.cert.pem
+    depends_on:
+      - rdb
+
+  bank2_static:
+    container_name: bank2_frontend
+    restart: always
+    build:
+      context: .
+      dockerfile: StaticBuild.dockerfile
+      target: static
+      args:
+        - WEBSHOP_SERVER_HOST_PORT: "localhost:1080"
+        - PSP_SERVER_HOST_PORT: "localhost:1081"
+        - BANK_SERVER_HOST_PORT: "localhost:10002"
+        - WEBSHOP_PROTOCOL: "https"
+        - BANK_PROTOCOL: "https"
+        - PROTOCOL: "https"
+        - ARG_TARGET_STATIC: "bank-front"
+    ports:
+      - 3000:443
+    volumes:
+      - ./conf/certs/pem/bank2.cert.pem:/etc/nginx/ssl/static.cert.pem
+      - ./conf/certs/key/bank2.key.pem:/etc/nginx/ssl/static.key.pem
+      - ./conf/static.nginx.conf:/etc/nginx/conf.d/default.conf
+
+  bank2:
+    container_name: bank2_container
+    restart: always
+    environment:
+      RDB_USERNAME: ${RDB_USERNAME}
+      RDB_PASSWORD: ${RDB_PASSWORD}
+      DOCKER_ENV_SET_PROD: ""
+      PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      PAN_PREFIX: ${BANK2_PAN_PREFIX}
+      BANK_HOST: ${BANK2_HOST}
+      PSP_HOST: ${PSP_HOST}
+      PSP_PORT: ${PSP_PORT}
+    build:
+      context: .
+      dockerfile: GoBuild.dockerfile
+      args:
+        ARG_TARGET_GO: bank
+    volumes:
+      - ./common_pass.txt:/ubiquitous-payment/common_pass.txt
+      - ../logs:/logs
+      - ./conf/certs/key/bank2.key.pem:/ubiquitous-payment/conf/certs/key/bank2.key.pem
+      - ./conf/certs/pem/bank2.cert.pem:/ubiquitous-payment/conf/certs/pem/bank2.cert.pem
+    ports:
+      - 10002:8080
+    depends_on:
+      - rdb
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${NOSQLDB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${NOSQLDB_PASSWORD}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  data_rdb:
+  data_nodql:
