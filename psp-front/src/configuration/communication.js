@@ -1,5 +1,5 @@
 //export let WSserver = 'localhost:8001'
 //export let PSPserver = 'localhost:8002'
-export let WSserver = 'localhost:1080'
-export let PSPserver = 'localhost:1081'
-export let Protocol = 'http'
+export let WSserver = '$WEBSHOP_SERVER_HOST_PORT'
+export let PSPserver = '$PSP_SERVER_HOST_PORT'
+export let Protocol = 'kurcinela'

@@ -7,7 +7,7 @@ RUN cd src/ubiquitous-payment && go mod download && go mod verify && go build -o
 FROM alpine AS image
 COPY --from=build /go/src/ubiquitous-payment/exec /ubiquitous-payment/exec
 RUN apk update && apk add gcompat && apk add ca-certificates && rm -rf /var/cache/apk/*
-#COPY ./conf/certs/pem/* /usr/local/share/ca-certificates
+COPY ./conf/certs/pem/* /usr/local/share/ca-certificates
 RUN update-ca-certificates
 EXPOSE 8080
 EXPOSE 9090
