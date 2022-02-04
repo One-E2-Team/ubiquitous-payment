@@ -13,6 +13,7 @@ import (
 	"time"
 	"ubiquitous-payment/bank/bankutil"
 	"ubiquitous-payment/bank/dto"
+	"ubiquitous-payment/bank/handler/mapper"
 	"ubiquitous-payment/bank/model"
 	"ubiquitous-payment/util"
 )
@@ -69,6 +70,15 @@ func (service *Service) LogIn(credentials dto.LoginDTO) (*model.Client, error) {
 		return nil, fmt.Errorf(util.Uint2String(client.ID) + " " + err.Error())
 	}
 	return client, nil
+}
+
+func (service *Service) GetMyAccount(clientId uint) (*dto.AccountResponseDTO, error) {
+	client, err := service.Repository.GetClientById(clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.AccountToAccountResponseDTO(client.Accounts[0]), nil
 }
 
 func checkCommonPass(v *validator.Validate) {

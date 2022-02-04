@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Payment from './../components/Payment.vue'
 import Register from './../components/Register.vue'
 import Login from './../components/Login.vue'
+import MyProfile from './../components/MyProfile.vue'
 
 Vue.use(VueRouter)
 
@@ -35,7 +36,12 @@ const routes = [{
     path: '/payment',
     name: 'Payment',
     component: Payment
-  }
+  },
+  {
+    path: '/my-profile',
+    name: 'MyProfile',
+    component: MyProfile
+  },
 ]
 
 const router = new VueRouter({

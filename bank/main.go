@@ -73,6 +73,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
 	router.HandleFunc("/pcc-issuer-pay", bankutil.BankRbac(handler.IssuerPay, "pcc")).Methods(http.MethodPost)
 	router.HandleFunc("/api/payment-check/{id}", handler.CheckPayment).Methods(http.MethodGet)
+	router.HandleFunc("/api/account", handler.GetMyAccount).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetBankHostAndPort()
 	var err error

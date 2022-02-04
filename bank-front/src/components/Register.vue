@@ -122,6 +122,8 @@ export default {
                   "Password is too weak. Please choose another password.";
               }
             }
+          } else if (response.status === 201) {
+            this.$router.push({ name: "Login" });
           }
         })
         .catch(() => {
