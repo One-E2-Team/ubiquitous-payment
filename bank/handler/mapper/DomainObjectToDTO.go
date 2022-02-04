@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"time"
+	"ubiquitous-payment/bank/bankutil"
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/model"
 )
@@ -43,8 +44,8 @@ func TransactionToTransactionResponseDTO(transaction model.Transaction) dto.Tran
 	return dto.TransactionResponseDTO{
 		Amount:                transaction.Amount,
 		Currency:              transaction.Currency,
-		AcquirerAccountNumber: transaction.MerchantId,
-		IssuerPan:             transaction.IssuerPan,
+		AcquirerAccountNumber: bankutil.CensorPaymentString(transaction.MerchantId),
+		IssuerPan:             bankutil.CensorPaymentString(transaction.IssuerPan),
 		Timestamp:             transaction.MerchantTimestamp,
 		TransactionStatus:     string(transaction.TransactionStatus),
 	}

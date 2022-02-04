@@ -53,3 +53,13 @@ func (repo *Repository) GetRoleByName(name string) (*model.Role, error) {
 	}
 	return role, nil
 }
+
+func (repo *Repository) GetPanNumbersByClientId(clientId uint) ([]string, error) {
+	panNumbers := make([]string, 0)
+	if err := repo.Database.Table("client_accounts").Raw("select cc.pan from credit_cards cc where cc.id in"+
+		"(select ac.credit_card_id from account_cards ac where ac.client_account_id in"+
+		"(select ua.client_account_id from user_accounts ua where ua.client_id = ?))", clientId).Scan(&panNumbers).Error; err != nil {
+		return nil, err
+	}
+	return panNumbers, nil
+}

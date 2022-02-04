@@ -20,7 +20,12 @@ func (service *Service) GetMyTransactions(clientId uint) ([]dto.TransactionRespo
 		return nil, err
 	}
 
-	transactions, err := service.Repository.GetClientTransactions(client.Accounts[0].AccountNumber, []string{""}) //TODO: extract pans
+	panNumbers, err := service.Repository.GetPanNumbersByClientId(clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions, err := service.Repository.GetClientTransactions(client.Accounts[0].AccountNumber, panNumbers)
 	response := make([]dto.TransactionResponseDTO, 0)
 	for _, transaction := range transactions {
 		response = append(response, mapper.TransactionToTransactionResponseDTO(transaction))
