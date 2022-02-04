@@ -25,6 +25,24 @@
           <v-row align="center" justify="center">
             <v-col cols="12" sm="6">
               <v-text-field
+                v-model="credentials.name"
+                label="Name:"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row align="center" justify="center">
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="credentials.surname"
+                label="Surname:"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row align="center" justify="center">
+            <v-col cols="12" sm="6">
+              <v-text-field
                 v-model="credentials.password"
                 :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
                 :rules="[rules.password]"
@@ -71,6 +89,8 @@ export default {
       show: false,
       credentials: {
         username: "",
+        name: "",
+        surname: "",
         password: "",
       },
       password2: "",
@@ -84,6 +104,8 @@ export default {
       let data = {
         username: this.credentials.username,
         password: this.credentials.password,
+        name: this.credentials.name,
+        surname: this.credentials.surname,
       };
       axios({
         method: "post",

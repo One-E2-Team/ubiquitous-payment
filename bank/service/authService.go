@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
-	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
 	"time"
+	"ubiquitous-payment/bank/bankutil"
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/model"
+	"ubiquitous-payment/util"
 )
 
 func (service *Service) Register(request dto.RegistrationDTO, w http.ResponseWriter) error {
@@ -48,10 +49,26 @@ func (service *Service) Register(request dto.RegistrationDTO, w http.ResponseWri
 		Password:  hashAndSalt(request.Password),
 		IsDeleted: false,
 		Roles:     []model.Role{*role},
-		Accounts:  []model.ClientAccount{*createNewClientAccount()},
+		Accounts:  []model.ClientAccount{*createNewClientAccount(request.Name, request.Surname)},
 	}
 
 	return service.Repository.Create(&client)
+}
+
+func (service *Service) LogIn(credentials dto.LoginDTO) (*model.Client, error) {
+	client, err := service.Repository.GetClientByUsername(credentials.Username)
+
+	if err != nil {
+		return nil, fmt.Errorf("'" + credentials.Username + "' " + err.Error())
+	}
+	if client.IsDeleted {
+		return nil, fmt.Errorf(util.Uint2String(client.ID) + " DELETED")
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(client.Password), []byte(credentials.Password))
+	if err != nil {
+		return nil, fmt.Errorf(util.Uint2String(client.ID) + " " + err.Error())
+	}
+	return client, nil
 }
 
 func checkCommonPass(v *validator.Validate) {
@@ -123,28 +140,24 @@ func hashAndSalt(pass string) string {
 	return string(hash)
 }
 
-func createNewClientAccount() *model.ClientAccount {
-	rand.Seed(time.Now().UnixNano())
-	accountNumber := os.Getenv("PAN_PREFIX")
+func createNewClientAccount(name string, surname string) *model.ClientAccount {
 
-	numbers := []rune("0123456789")
-	accountNumberRune := make([]rune, 10)
-	for i := 0; i < 10; i++ {
-		accountNumberRune[i] = numbers[rand.Intn(len(numbers))]
-	}
-	accountNumber += string(accountNumberRune)
+	accountNumber := bankutil.PanPrefix + util.RandomString("0123456789", 10)
+	pan := bankutil.PanPrefix + util.RandomString("0123456789", 10)
+	validUntil := time.Now().AddDate(5, 0, 0).Format(util.MMyyDateFormat)
 
-	secretLetters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
-	secretRune := make([]rune, 10)
-	for i := 0; i < 10; i++ {
-		secretRune[i] = secretLetters[rand.Intn(len(secretLetters))]
+	creditCard := model.CreditCard{
+		Pan:        pan,
+		Cvc:        util.RandomString("0123456789", 3),
+		HolderName: name + " " + surname,
+		ValidUntil: validUntil,
 	}
 
 	return &model.ClientAccount{
 		AccountNumber: accountNumber,
 		Amount:        0,
-		Secret:        string(secretRune),
+		Secret:        util.RandomString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 10),
 		IsActive:      true,
-		CreditCards:   nil,
+		CreditCards:   []model.CreditCard{creditCard},
 	}
 }

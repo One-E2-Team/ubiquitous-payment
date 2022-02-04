@@ -6,6 +6,35 @@ export let BankServer = 'localhost:10001'
 export let WSprotocol = 'http'
 export let BankProtocol = 'http'
 
+export function setJWTToken(jwt) {
+  let new_roles = [];
+  for (let item of jwt.roles) {
+    new_roles.push(item.name);
+  }
+  jwt.roles = new_roles;
+  sessionStorage.setItem("JWT", JSON.stringify(jwt));
+}
+
+export function getJWTToken() {
+  return JSON.parse(sessionStorage.getItem("JWT"));
+}
+
+export function hasRole(role) {
+  const token = JSON.parse(sessionStorage.getItem("JWT"));
+  return token.roles.includes(role);
+}
+
+export function getHeader() {
+  if (getJWTToken()) {
+    return {
+      Authorization: "Bearer " + getJWTToken().token
+    };
+  }
+  return {
+    Authorization: "Bearer "
+  };
+}
+
 export function getUrlVars() {
   var vars = {};
   window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {

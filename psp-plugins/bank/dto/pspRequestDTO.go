@@ -12,4 +12,5 @@ type PspRequestDTO struct {
 	SuccessURL        string    `json:"successURL"`
 	FailURL           string    `json:"failURL"`
 	ErrorURL          string    `json:"errorURL"`
+	Method            string    `json:"method"`
 }

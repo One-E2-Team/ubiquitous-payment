@@ -4,6 +4,14 @@ import (
 	"ubiquitous-payment/bank/model"
 )
 
+func (repo *Repository) GetClientByUsername(username string) (*model.Client, error) {
+	client := &model.Client{}
+	if err := repo.Database.Preload("Roles").Table("clients").First(&client, "username = ?", username).Error; err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
 func (repo *Repository) GetClientAccount(accountNumber string) (*model.ClientAccount, error) {
 	clientAccount := &model.ClientAccount{}
 	if err := repo.Database.First(&clientAccount, "account_number = ?", accountNumber).Error; err != nil {

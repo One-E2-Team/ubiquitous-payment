@@ -20,7 +20,7 @@ func (handler *Handler) PspRequest(w http.ResponseWriter, r *http.Request) {
 		util.HandleErrorInHandler(err, w, loggingClass+"PspRequest", loggingService)
 		return
 	}
-	response, err := handler.BankService.PspRequest(t)
+	response, err := handler.BankService.PspRequest(t, pspRequest.Method)
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"PspRequest", loggingService)
 		return

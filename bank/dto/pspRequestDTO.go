@@ -1,6 +1,8 @@
 package dto
 
-import "time"
+import (
+	"time"
+)
 
 type PspRequestDTO struct {
 	MerchantId        string    `json:"merchantId"`
@@ -12,4 +14,5 @@ type PspRequestDTO struct {
 	SuccessURL        string    `json:"successURL"`
 	FailURL           string    `json:"failURL"`
 	ErrorURL          string    `json:"errorURL"`
+	Method            string    `json:"method"`
 }

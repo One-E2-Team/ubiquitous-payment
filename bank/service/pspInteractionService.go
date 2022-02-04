@@ -8,7 +8,7 @@ import (
 	"ubiquitous-payment/util"
 )
 
-func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspResponseDTO, error) {
+func (service *Service) PspRequest(transaction model.Transaction, paymentMethod string) (*dto.PspResponseDTO, error) {
 	clientAccount, err := service.Repository.GetClientAccount(transaction.MerchantId)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,14 @@ func (service *Service) PspRequest(transaction model.Transaction) (*dto.PspRespo
 	bankFrontHost, bankFrontPort := util.GetBankFrontHostAndPort()
 	bankHost, bankPort := util.GetBankHostAndPort()
 	bankProtocol := util.GetBankProtocol()
-	payTransactionUrl := bankProtocol + "://" + bankFrontHost + ":" + bankFrontPort + "/#/payment?id=" + transaction.PaymentUrlId
+	payTransactionUrl := ""
+	if paymentMethod == "bank" {
+		payTransactionUrl = bankProtocol + "://" + bankFrontHost + ":" + bankFrontPort + "/#/payment?id=" + transaction.PaymentUrlId
+	} else if paymentMethod == "qrcode" {
+		payTransactionUrl = bankProtocol + "://" + bankHost + ":" + bankPort + "/api/pay/" + transaction.PaymentUrlId
+	} else {
+		return nil, errors.New("request for unknown payment method in bank: " + paymentMethod)
+	}
 	paymentCheckUrl := bankProtocol + "://" + bankHost + ":" + bankPort + "/api/payment-check/{id}"
 	return &dto.PspResponseDTO{
 		PaymentId: transaction.PaymentId, PaymentUrl: payTransactionUrl, PaymentCheckUrl: paymentCheckUrl}, nil
