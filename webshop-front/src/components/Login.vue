@@ -82,6 +82,7 @@
               if(response.status==200){
                 comm.setJWTToken(response.data);
                 this.$router.push({name: "HomePage"})
+                location.reload();
               }
             }).catch(() => {
               this.alert = true

@@ -15,6 +15,14 @@ func (repo *Repository) GetWebShopByID(webShopID primitive.ObjectID) (*model.Web
 	return &result, err
 }
 
+func (repo *Repository) GetWebShopByIDString(webShopID string) (*model.WebShop, error) {
+	webShopCollection := repo.getCollection(psputil.WebShopCollectionName)
+	filter := bson.D{{psputil.IDFieldName, webShopID}}
+	var result model.WebShop
+	err := webShopCollection.FindOne(psputil.EmptyContext, filter).Decode(&result)
+	return &result, err
+}
+
 func (repo *Repository) GetWebShopByName(webShopName string) (*model.WebShop, error) {
 	webShopCollection := repo.getCollection(psputil.WebShopCollectionName)
 	filter := bson.D{{psputil.NameFieldName, webShopName}}

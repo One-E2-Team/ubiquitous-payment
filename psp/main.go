@@ -90,6 +90,8 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/psp/login", handler.LogIn).Methods(http.MethodPost)
 	router.HandleFunc("/api/psp/access-uuid", rbac.PspRbac(handler.GetAccessUuidForWebShop, psputil.WebShopTokenPrivilegeName)).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp/web-shop-login", handler.LoginWebShop).Methods(http.MethodPost)
+	router.HandleFunc("/api/transaction/qrcode/{id}", handler.GetDataForQrCode).Methods(http.MethodGet)
+
 	fmt.Println("Starting server..")
 	host, port := util.GetPSPHostAndPort()
 	var err error
