@@ -13,3 +13,12 @@ func (handler *Handler) GetMyAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	util.MarshalResult(w, accounts)
 }
+
+func (handler *Handler) GetMyTransactions(w http.ResponseWriter, r *http.Request) {
+	transactions, err := handler.BankService.GetMyTransactions(util.GetLoggedUserIDFromToken(r))
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"GetMyTransactions", loggingService)
+		return
+	}
+	util.MarshalResult(w, transactions)
+}
