@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "cross-var preprocess generic/communication.js . -WEBSHOP_SERVER_HOST_PORT=$WEBSHOP_SERVER_HOST_PORT -PSP_SERVER_HOST_PORT=$PSP_SERVER_HOST_PORT -BANK_SERVER_HOST_PORT=$BANK_SERVER_HOST_PORT -WEBSHOP_PROTOCOL=$WEBSHOP_PROTOCOL -BANK_PROTOCOL=$BANK_PROTOCOL -PROTOCOL=$PROTOCOL > src/configuration/communication.js && vue-cli-service build"
   },
   "dependencies": {
     "axios": "^0.25.0",
