@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 	"ubiquitous-payment/util"
+	"ubiquitous-payment/webshop/dto"
 	"ubiquitous-payment/webshop/model"
 	"ubiquitous-payment/webshop/wsutil/pspAuth"
 )
@@ -43,6 +44,51 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 	util.Logging(util.SUCCESS, "Service.CreateOrder", logContent, "web-shop")
 
 	return redirectUrl, nil
+}
+
+func (service *Service) GetMyOrders(profileId uint) ([]dto.MyOrderDTO, error) {
+	retOrders := make([]dto.MyOrderDTO, 0)
+	myOrders, err := service.WSRepository.GetMyOrders(profileId)
+	if err != nil{
+		return nil, err
+	}
+	for _, order := range myOrders{
+		newOrderDto := dto.MyOrderDTO{OrderId: order.ID, Timestamp: order.Timestamp}
+
+		product, err := service.WSRepository.GetProduct(order.ProductId)
+		if err != nil {
+			return nil, err
+		}
+		newOrderDto.ProductName = product.Name
+		newOrderDto.ProductPrice = product.Price
+		newOrderDto.Currency = product.Currency
+		newOrderDto.NumberOfInstallments = product.NumOfInstallments
+		newOrderDto.NumberOfInstallments = product.DelayedInstallments
+		newOrderDto.RecurringType = string(product.RecurringType)
+
+		paymentType, err := service.WSRepository.GetPaymentTypeById(order.PaymentTypeId)
+		if err != nil{
+			return nil, err
+		}
+		newOrderDto.PaymentType = paymentType.Name
+
+		pspOrder, err := service.WSRepository.GetPspOrderByOrderId(order.ID)
+		newOrderDto.PSPId = pspOrder.PSPId
+		newOrderDto.OrderStatus = string(pspOrder.OrderStatus)
+
+		retOrders = append(retOrders, newOrderDto)
+	}
+
+	return retOrders, nil
+}
+
+func (service *Service) UpdatePspOrder(pspId string, status string) error {
+	pspOrder, err := service.WSRepository.GetPspOrderByPspId(pspId)
+	if err != nil{
+		return err
+	}
+	pspOrder.OrderStatus = model.OrderStatus(status)
+	return service.WSRepository.Update(pspOrder)
 }
 
 func (service *Service) getOrderIdFromPSP() (string, error) {

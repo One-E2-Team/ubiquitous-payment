@@ -1,25 +1,23 @@
 <template>
   <div id="nav">
-    <v-container>
-      <v-row align="center" justify="space-between">
-        <v-app-bar
-          color="blue"
-          dense
-        >
-        <v-row align="center" justify="space-between">
-          <v-col>
+    <v-app-bar color="blue" dense>
+      <v-container>
+        <v-row align="center" justify="center">
+          <v-col cols="auto">
             <v-btn @click="goToHomePage()" class="mx-2">
-              <v-icon large>
-                mdi-home-outline
-              </v-icon>
+              <v-icon large> mdi-home-outline</v-icon>
             </v-btn>
+          </v-col>
+          <v-col></v-col><v-col></v-col><v-col></v-col>
+          <v-col v-if="hasRole('SELLER')" @click="goToPaymentOptions()" cols="auto"><v-btn>Payment options</v-btn></v-col>
+          <v-col v-if="hasRole('CUSTOMER')" @click="goToMyOrders()" cols="auto"><v-btn>My orders</v-btn></v-col>
+          <v-col cols="auto">
+            <v-btn @click="logout()" class="mx-2"><img width="30" height="30" src="../assets/logout.png"/></v-btn>
             <v-spacer></v-spacer>
           </v-col>
-          <v-col v-if="hasRole('SELLER')" @click="goToPaymentOptions()" cols="12" sm="2"><v-btn>Payment options</v-btn></v-col>
         </v-row>
+        </v-container>
         </v-app-bar>
-      </v-row>
-    </v-container>
   </div>
 </template>
 
@@ -36,10 +34,15 @@ export default {
      goToPaymentOptions(){
         this.$router.push({name: "PaymentOptions"})
      },
+     goToMyOrders(){
+        this.$router.push({name: "MyOrders"})
+     },
      hasRole(role){
        return comm.hasRole(role);
      },
       logout() {
+        comm.logOut();
+        this.$router.push({name: "Welcome"});
       }
     }
 }

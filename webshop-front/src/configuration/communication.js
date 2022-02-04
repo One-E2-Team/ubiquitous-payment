@@ -13,12 +13,19 @@ export function setJWTToken(jwt) {
     sessionStorage.setItem("JWT", JSON.stringify(jwt));
 }
 
+export function logOut(){
+  sessionStorage.removeItem("JWT");
+}
+
 export function getJWTToken() {
     return JSON.parse(sessionStorage.getItem("JWT"));
 }
 
 export function hasRole(role) {
   const token = JSON.parse(sessionStorage.getItem("JWT"));
+  if (token == null || token == undefined){
+    return false;
+  }
   if(token.roles.includes(role)){
     return true;
   }

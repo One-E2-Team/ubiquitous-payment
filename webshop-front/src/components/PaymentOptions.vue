@@ -15,11 +15,43 @@
     <v-row>
         <v-col>
             <v-data-table :headers="this.headers" :items="this.accounts" class="elevation-1">
+                <template v-slot:[`item.accountId`]="">
+                        {{ "**************************" }}
+                </template>
+                <template v-slot:[`item.secret`]="">
+                        {{ "**************************" }}
+                </template>
                 <template v-slot:top>
                 <v-toolbar flat>
-                    <v-toolbar-title>Payment types</v-toolbar-title>
+                    <v-toolbar-title>{{selectedPaymentOption}}</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
+                    <v-dialog v-model="dialogConfirmPassword" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                        <span class="text-h5">Confirm password</span>
+                        </v-card-title>
+
+                        <v-card-text>
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12" sm="8" md="12">
+                                    <v-text-field type="password" v-model="password" label="Password"></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" text @click="closeConfirmPassword()">
+                                Cancel
+                            </v-btn>
+                            <v-btn color="blue darken-1" text @click="confirmPassword()">
+                                Confirm
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    </v-dialog>
                     <v-dialog v-model="dialog" max-width="500px">
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Account</v-btn>
@@ -95,9 +127,11 @@ import * as comm from '../configuration/communication.js'
       selectedPaymentOption: '',
       selectedPaymentOptionId : 0,
       paymentNames: [],
+      dialogConfirmPassword: false,
       dialog: false,
       dialogDelete: false,
       editMode: false,
+      password: '',
       headers: [
         {
           text: 'Accounts',
@@ -238,14 +272,17 @@ import * as comm from '../configuration/communication.js'
               console.log("error")
             })
         this.closeDelete()
+        this.accounts = []
       },
 
       editItem (item) {
         this.editedItem = Object.assign({}, item)
-        this.dialog = true
+        this.dialogConfirmPassword = true
         this.editMode = true;
       },
-
+      closeConfirmPassword(){
+        this.dialogConfirmPassword = false;
+      },
        closeDelete () {
         this.dialogDelete = false
         this.$nextTick(() => {
@@ -253,6 +290,22 @@ import * as comm from '../configuration/communication.js'
           this.editedIndex = -1
         })
       },
+      confirmPassword(){
+        axios({
+                method: "put",
+                url: comm.WSprotocol +'://' + comm.WSserver + '/api/confirm-password',
+                headers: comm.getHeader(),
+                data: JSON.stringify(this.password)
+            }).then(response => {
+                console.log(response.data);
+                this.dialogConfirmPassword = false;
+                this.dialog = true;
+                this.password = '';
+            }).catch(() => {
+              alert("Wrong password!");
+              this.password = '';
+            })
+      }
     }
   }
 </script>

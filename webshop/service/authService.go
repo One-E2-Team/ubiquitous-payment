@@ -70,3 +70,15 @@ func (service *Service) GetPSPAccessToken() (string, error) {
 	}
 	return webShop.PSPAccessToken, nil
 }
+
+func (service *Service) ConfirmPassword(id uint, password string) (bool, error) {
+	user, err := service.WSRepository.GetUserById(id)
+	if err != nil{
+		return false, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil{
+		return false, err
+	}
+	return true, nil
+}
