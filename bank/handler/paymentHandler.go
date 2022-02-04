@@ -20,7 +20,11 @@ func (handler *Handler) Pay(w http.ResponseWriter, r *http.Request) {
 		util.HandleErrorInHandler(errors.New("redirect url is empty"), w, loggingClass+"Pay", loggingService)
 		return
 	}
-	util.MarshalResult(w, redirectUrl)
+	if issuerCard.ImmediateRedirect {
+		http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect) // or http.StatusMovedPermanently
+	} else {
+		util.MarshalResult(w, redirectUrl)
+	}
 }
 
 func (handler *Handler) IssuerPay(w http.ResponseWriter, r *http.Request) {
