@@ -84,6 +84,9 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/accounts/{id}", handler.UpdateAccount).Methods(http.MethodPut)
 	router.HandleFunc("/api/accounts", handler.CreateAccount).Methods(http.MethodPost)
 	router.HandleFunc("/api/accounts/{id}", handler.DeleteAccount).Methods(http.MethodDelete)
+	router.HandleFunc("/api/my-orders", handler.GetMyOrders).Methods(http.MethodGet)
+	router.HandleFunc("/api/psp-order/{id}/{status}", handler.UpdatePspOrder).Methods(http.MethodPut)
+	router.HandleFunc("/api/confirm-password", handler.ConfirmPassword).Methods(http.MethodPut)
 	fmt.Println("Starting server..")
 	host, port := util.GetWebShopHostAndPort()
 	var err error

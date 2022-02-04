@@ -23,6 +23,14 @@ func (repo *Repository) GetUserByEmail(email string) (*model.User, error) {
 	return user, nil
 }
 
+func (repo *Repository) GetUserById(id uint) (*model.User, error) {
+	user := &model.User{}
+	if err := repo.RelationalDatabase.Table("users").First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func (repo *Repository) CreateProfile(profile *model.Profile) error {
 	result := repo.RelationalDatabase.Create(profile)
 	if result.RowsAffected == 0 {

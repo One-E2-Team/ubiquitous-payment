@@ -13,3 +13,9 @@ func (repo *Repository) GetPaymentTypeByName(name string) (model.PaymentType, er
 	result := repo.RelationalDatabase.Table("payment_types").Where("name=?", name).First(&paymentType)
 	return paymentType, result.Error
 }
+
+func (repo *Repository) GetPaymentTypeById(id uint) (model.PaymentType, error) {
+	var paymentType model.PaymentType
+	result := repo.RelationalDatabase.Table("payment_types").Find(&paymentType, "id = ?", id)
+	return paymentType, result.Error
+}

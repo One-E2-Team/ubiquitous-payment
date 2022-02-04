@@ -1,11 +1,11 @@
 package model
 
-type OrderStatus int
+type OrderStatus string
 
 const (
-	PLACED OrderStatus = iota
-	CANCELLED
-	FULFILLED
-	FAILED
-	ERROR
+	PLACED OrderStatus = "PLACED"
+	CANCELLED OrderStatus = "CANCELLED"
+	FULFILLED OrderStatus = "FULFILLED"
+	FAILED OrderStatus = "FAILED"
+	ERROR OrderStatus = "ERROR"
 )

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"strings"
+	"time"
 	"ubiquitous-payment/webshop/model"
 )
 
@@ -21,13 +22,15 @@ func (service *Service) UpdateAccount(newAcc *model.Account, id uint) error {
 	 }
 	 acc.AccountID = newAcc.AccountID
 	 acc.Secret = newAcc.Secret
+	 acc.CreatedAt = time.Now()
 	 return service.WSRepository.Update(acc)
 }
 
 func (service *Service) CreateAccount(account *model.Account) error {
-	account.AccountID = strings.Trim(account.AccountID, "\t")
-	account.Secret = strings.Trim(account.Secret, "\t")
-	return service.WSRepository.CreateAccount(account)
+	newAccount := model.Account{AccountID: strings.Trim(account.AccountID, "\t"),
+		Secret: strings.Trim(account.Secret, "\t"), ProfileId: account.ProfileId,
+		PaymentTypeId: account.PaymentTypeId}
+	return service.WSRepository.CreateAccount(&newAccount)
 }
 
 func (service *Service) DeleteAccount(id uint) error {

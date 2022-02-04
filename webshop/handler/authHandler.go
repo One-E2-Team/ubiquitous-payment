@@ -46,3 +46,19 @@ func (handler *Handler) SetPSPAccessToken(w http.ResponseWriter, r *http.Request
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (handler *Handler) ConfirmPassword(w http.ResponseWriter, r *http.Request) {
+	var password string
+	err := util.UnmarshalRequest(r, &password)
+	if err != nil{
+		util.HandleErrorInHandler(err, w, loggingClass+"ConfirmPassword", loggingService)
+		return
+	}
+	loggedUserId := util.GetLoggedUserIDFromToken(r)
+	res, err := handler.WSService.ConfirmPassword(loggedUserId, password)
+	if err != nil{
+		util.HandleErrorInHandler(err, w, loggingClass+"ConfirmPassword", loggingService)
+		return
+	}
+	util.MarshalResult(w, res)
+}
