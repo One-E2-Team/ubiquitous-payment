@@ -17,3 +17,6 @@
 
 conf/env
 temp/*
+conf/certs/*
+!conf/certs/gen
+!conf/certs/conf
