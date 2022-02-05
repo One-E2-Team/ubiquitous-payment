@@ -2,7 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import ChoosePaymentType from '../components/ChoosePaymentType.vue'
-
+import RegisterWebShop from '../components/RegisterWebShop.vue'
+import Login from '../components/Login.vue'
+import SetPaymentTypes from '../components/SetPaymentTypes.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -17,13 +19,20 @@ const routes = [
     component: ChoosePaymentType
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    path: '/register',
+    name: 'RegisterWebShop',
+    component: RegisterWebShop
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/payment-types',
+    name: 'SetPaymentTypes',
+    component: SetPaymentTypes
+  },
 ]
 
 const router = new VueRouter({
