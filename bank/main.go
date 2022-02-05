@@ -44,7 +44,8 @@ func initDB() *gorm.DB {
 		&model.CreditCard{},
 		&model.ClientAccount{},
 		&model.Client{},
-		&model.Transaction{})
+		&model.Transaction{},
+		&model.Test{})
 	if err != nil {
 		return nil
 	}
@@ -69,6 +70,7 @@ func handleFunc(handler *handler.Handler) {
 
 	//public API
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/test-encryption", handler.TestEncryption).Methods(http.MethodPost)
 	router.HandleFunc("/api/clients", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)

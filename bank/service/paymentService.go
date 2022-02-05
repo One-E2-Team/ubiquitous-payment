@@ -177,7 +177,7 @@ func (service *Service) isCreditCardDataValid(issuerCard dto.IssuerCardDTO) bool
 		return false
 	}
 
-	return creditCard.Cvc == issuerCard.Cvc && creditCard.HolderName == issuerCard.HolderName &&
+	return creditCard.Cvc.Data == issuerCard.Cvc && creditCard.HolderName == issuerCard.HolderName &&
 		creditCard.ValidUntil == issuerCard.ValidUntil //TODO: check valid until
 }
 

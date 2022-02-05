@@ -14,7 +14,7 @@ func (service *Service) PspRequest(transaction model.Transaction, paymentMethod 
 		return nil, err
 	}
 
-	if clientAccount.Secret != transaction.MerchantPassword {
+	if clientAccount.Secret.Data != transaction.MerchantPassword {
 		return nil, errors.New("bad merchant credentials")
 	}
 

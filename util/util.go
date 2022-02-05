@@ -61,7 +61,6 @@ func String2MongoID(stringID string) primitive.ObjectID {
 }
 
 func RandomString(availableCharacters string, length int) string {
-
 	characters := []rune(availableCharacters)
 	result := make([]rune, length)
 	for i := 0; i < length; i++ {
