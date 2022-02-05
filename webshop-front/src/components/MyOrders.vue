@@ -34,7 +34,6 @@ import * as comm from '../configuration/communication.js'
             { text: 'Product', value: 'productName' },
             { text: 'Price', value: 'productPrice' },
             { text: 'Currency', value: 'currency' },
-            { text: 'Payment type', value: 'paymentType' },
             { text: 'Number of installments', value: 'numberOfInstallments' },
             { text: 'Delayed installments', value: 'delayedInstallments' },
             { text: 'Recurring type', value: 'recurringType' },
