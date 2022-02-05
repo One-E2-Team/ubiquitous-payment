@@ -15,7 +15,7 @@ func SetPspAccessToken(accessToken string) {
 
 func PSPRequest(method string, path string, data []byte, headers map[string]string) (*http.Response, error) {
 	client := &http.Client{}
-	pspHost, pspPort := util.GetPSPHostAndPort()
+	pspHost, pspPort := util.GetExternalPSPHostAndPort()
 	pspPrefix := util.GetPSPProtocol() + "://" + pspHost + ":" + pspPort
 	req, err := http.NewRequest(method, pspPrefix+path, bytes.NewBuffer(data))
 	if err != nil {

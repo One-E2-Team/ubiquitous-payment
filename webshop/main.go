@@ -89,17 +89,16 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/confirm-password", handler.ConfirmPassword).Methods(http.MethodPut)
 	router.HandleFunc("/api/my-orders/seller", handler.GetSellersOrders).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
-	host, port := util.GetWebShopHostAndPort()
-	var err error
-	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+	host, port := util.GetInternalWebShopHostAndPort()
+	deploymentHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
-		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
-	/*host, port := util.GetConnectionHostAndPort()
-	if util.DockerChecker() {
-		err = http.ListenAndServeTLS(":"+port, "../cert.pem", "../key.pem", router)
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router)
+	var err error
+	if util.GetBankProtocol() == "https" {
+		err = http.ListenAndServeTLS(host+":"+port, "./conf/certs/pem/"+host+".cert.pem", "./conf/certs/key/"+host+".key.pem", deploymentHandler)
 	} else {
-		err = http.ListenAndServe(host+":"+port, router)
-	}*/
+		err = http.ListenAndServe(host+":"+port, deploymentHandler)
+	}
 	if err != nil {
 		fmt.Println(err)
 		return

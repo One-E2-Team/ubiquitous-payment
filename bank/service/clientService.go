@@ -30,7 +30,7 @@ func (service *Service) GetMyTransactions(clientId uint) ([]dto.TransactionRespo
 		return nil, err
 	}
 
-	acquirerTransactions, err := service.Repository.GetAcquirerTransactions(client.Accounts[0].AccountNumber)
+	acquirerTransactions, err := service.Repository.GetAcquirerTransactions(client.Accounts[0].AccountNumber.Data)
 	issuerTransactions, err := service.Repository.GetIssuerTransactions(panNumbers)
 	response := make([]dto.TransactionResponseDTO, 0)
 

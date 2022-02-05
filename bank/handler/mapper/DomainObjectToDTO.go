@@ -37,9 +37,9 @@ func AccountToAccountResponseDTO(account *model.ClientAccount) *dto.AccountRespo
 	}
 
 	return &dto.AccountResponseDTO{
-		AccountNumber: account.AccountNumber,
+		AccountNumber: account.AccountNumber.Data,
 		Amount:        account.Amount,
-		Secret:        account.Secret,
+		Secret:        account.Secret.Data,
 		CreditCards:   creditCards,
 	}
 }
@@ -57,8 +57,8 @@ func TransactionToTransactionResponseDTO(transaction model.Transaction, amountPr
 
 func CreditCardToCreditCardResponseDTO(creditCard model.CreditCard) dto.CreditCardResponseDTO {
 	return dto.CreditCardResponseDTO{
-		Pan:        creditCard.Pan,
-		Cvc:        creditCard.Cvc,
+		Pan:        creditCard.Pan.Data,
+		Cvc:        creditCard.Cvc.Data,
 		HolderName: creditCard.HolderName,
 		ValidUntil: creditCard.ValidUntil,
 	}

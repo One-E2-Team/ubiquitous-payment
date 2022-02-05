@@ -11,7 +11,7 @@ services:
       MYSQL_DATABASE: webshop
     command: --init-file /data/application/init.sql
     ports:
-      - 3306:3306
+      - ${RDB_PORT}:3306
     volumes:
       - type: volume
         source: data_rdb
@@ -42,6 +42,7 @@ services:
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
       PSP_HOST: ${PSP_HOST}
       PSP_PORT: ${PSP_PORT}
+      RDB_PORT: ${RDB_PORT}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -128,6 +129,8 @@ services:
       BANK_HOST: ${BANK1_HOST}
       PSP_HOST: ${PSP_HOST}
       PSP_PORT: ${PSP_PORT}
+      BANK_EXTERNAL_PORT: 10001
+      RDB_PORT: ${RDB_PORT}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -149,11 +152,14 @@ services:
       RDB_PASSWORD: ${RDB_PASSWORD}
       DOCKER_ENV_SET_DEV: ""
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
+      RDB_PORT: ${RDB_PORT}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
       args:
         ARG_TARGET_GO: pcc
+    ports:
+      - 10000:8080
     depends_on:
       - rdb
 
@@ -169,6 +175,8 @@ services:
       BANK_HOST: ${BANK2_HOST}
       PSP_HOST: ${PSP_HOST}
       PSP_PORT: ${PSP_PORT}
+      BANK_EXTERNAL_PORT: 10002
+      RDB_PORT: ${RDB_PORT}
     build:
       context: .
       dockerfile: GoBuild.dockerfile

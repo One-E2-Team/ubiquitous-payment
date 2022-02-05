@@ -44,7 +44,8 @@ func initDB() *gorm.DB {
 		&model.CreditCard{},
 		&model.ClientAccount{},
 		&model.Client{},
-		&model.Transaction{})
+		&model.Transaction{},
+		&model.Test{})
 	if err != nil {
 		return nil
 	}
@@ -69,6 +70,7 @@ func handleFunc(handler *handler.Handler) {
 
 	//public API
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
+	router.HandleFunc("/test-encryption", handler.TestEncryption).Methods(http.MethodPost)
 	router.HandleFunc("/api/clients", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
@@ -91,11 +93,16 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/all-transactions",
 		rbac.BankRbac(handler.GetAllTransactions, "READ_ALL_TRANSACTIONS")).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
-	host, port := util.GetBankHostAndPort()
-	var err error
-	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+	host, port := util.GetInternalBankHostAndPort()
+	deploymentHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
-		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router)
+	var err error
+	if util.GetBankProtocol() == "https" {
+		err = http.ListenAndServeTLS(host+":"+port, "./conf/certs/pem/"+host+".cert.pem", "./conf/certs/key/"+host+".key.pem", deploymentHandler)
+	} else {
+		err = http.ListenAndServe(host+":"+port, deploymentHandler)
+	}
 	if err != nil {
 		fmt.Println(err)
 		return

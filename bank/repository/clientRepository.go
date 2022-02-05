@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"gorm.io/gorm/clause"
 	"ubiquitous-payment/bank/model"
 )
@@ -31,27 +32,44 @@ func (repo *Repository) GetClientById(clientId uint) (*model.Client, error) {
 }
 
 func (repo *Repository) GetClientAccount(accountNumber string) (*model.ClientAccount, error) {
-	clientAccount := &model.ClientAccount{}
-	if err := repo.Database.First(&clientAccount, "account_number = ?", accountNumber).Error; err != nil {
+	clientAccounts := make([]model.ClientAccount, 0)
+	if err := repo.Database.Raw("select * from client_accounts").Scan(&clientAccounts).Error; err != nil {
 		return nil, err
 	}
-	return clientAccount, nil
+
+	for _, clientAccount := range clientAccounts {
+		if clientAccount.AccountNumber.Data == accountNumber {
+			return &clientAccount, nil
+		}
+	}
+	return nil, errors.New("no client account found")
 }
 
 func (repo *Repository) GetCreditCard(pan string) (*model.CreditCard, error) {
-	creditCard := &model.CreditCard{}
-	if err := repo.Database.First(&creditCard, "pan = ?", pan).Error; err != nil {
+	creditCards := make([]model.CreditCard, 0)
+	if err := repo.Database.Raw("select * from credit_cards").Scan(&creditCards).Error; err != nil {
 		return nil, err
 	}
-	return creditCard, nil
+
+	for _, creditCard := range creditCards {
+		if creditCard.Pan.Data == pan {
+			return &creditCard, nil
+		}
+	}
+	return nil, errors.New("no credit card found")
 }
 
 func (repo *Repository) GetClientAccountByPan(pan string) (*model.ClientAccount, error) {
 	clientAccount := &model.ClientAccount{}
+
+	creditCard, err := repo.GetCreditCard(pan)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := repo.Database.Table("client_accounts").Raw("select * from client_accounts ca where ca.id ="+
 		"(select ac.client_account_id from account_cards ac "+
-		"where ac.credit_card_id = "+
-		"(select cc.id from credit_cards cc where cc.pan = ?))", pan).Scan(&clientAccount).Error; err != nil {
+		"where ac.credit_card_id = ?)", creditCard.ID).Scan(&clientAccount).Error; err != nil {
 		return nil, err
 	}
 	return clientAccount, nil
@@ -66,11 +84,17 @@ func (repo *Repository) GetRoleByName(name string) (*model.Role, error) {
 }
 
 func (repo *Repository) GetPanNumbersByClientId(clientId uint) ([]string, error) {
-	panNumbers := make([]string, 0)
-	if err := repo.Database.Table("client_accounts").Raw("select cc.pan from credit_cards cc where cc.id in"+
-		"(select ac.credit_card_id from account_cards ac where ac.client_account_id in"+
-		"(select ua.client_account_id from user_accounts ua where ua.client_id = ?))", clientId).Scan(&panNumbers).Error; err != nil {
+	client, err := repo.GetClientById(clientId)
+	if err != nil {
 		return nil, err
 	}
+
+	panNumbers := make([]string, 0)
+	for _, account := range client.Accounts {
+		for _, creditCard := range account.CreditCards {
+			panNumbers = append(panNumbers, creditCard.Pan.Data)
+		}
+	}
+
 	return panNumbers, nil
 }
