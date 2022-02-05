@@ -3,6 +3,7 @@ package service
 import (
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/handler/mapper"
+	"ubiquitous-payment/bank/model"
 )
 
 func (service *Service) GetMyAccount(clientId uint) (*dto.AccountResponseDTO, error) {
@@ -10,8 +11,12 @@ func (service *Service) GetMyAccount(clientId uint) (*dto.AccountResponseDTO, er
 	if err != nil {
 		return nil, err
 	}
-
-	return mapper.AccountToAccountResponseDTO(client.Accounts[0]), nil
+	var account *model.ClientAccount
+	account = nil
+	if len(client.Accounts) > 0 {
+		account = &client.Accounts[0]
+	}
+	return mapper.AccountToAccountResponseDTO(account), nil
 }
 
 func (service *Service) GetMyTransactions(clientId uint) ([]dto.TransactionResponseDTO, error) {

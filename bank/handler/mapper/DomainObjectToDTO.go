@@ -26,7 +26,10 @@ func TransactionToPccResponseDTO(transaction model.Transaction) *dto.PccResponse
 	}
 }
 
-func AccountToAccountResponseDTO(account model.ClientAccount) *dto.AccountResponseDTO {
+func AccountToAccountResponseDTO(account *model.ClientAccount) *dto.AccountResponseDTO {
+	if account == nil {
+		return nil
+	}
 	accountCards := account.CreditCards
 	creditCards := make([]dto.CreditCardResponseDTO, len(accountCards))
 	for i := 0; i < len(accountCards); i++ {
