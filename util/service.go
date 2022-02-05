@@ -16,22 +16,38 @@ func DockerChecker() bool {
 }
 
 func GetPSPProtocol() string {
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		return "https"
+	}
+	return "http"
+}
+
+func GetInternalPSPProtocol() string {
 	return "http"
 }
 
 func GetWebShopProtocol() string {
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		return "https"
+	}
 	return "http"
 }
 
 func GetBankProtocol() string {
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		return "https"
+	}
 	return "http"
 }
 
 func GetPccProtocol() string {
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		return "https"
+	}
 	return "http"
 }
 
-func GetPSPHostAndPort() (string, string) {
+func GetInternalPSPHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8002"
 	if DockerChecker() {
 		pspHost = os.Getenv("PSP_HOST")
@@ -40,12 +56,28 @@ func GetPSPHostAndPort() (string, string) {
 	return pspHost, pspPort
 }
 
-func GetPSPFrontHostAndPort() (string, string) {
-	var pspHost, pspPort = "localhost", "3001"
+func GetExternalPSPHostAndPort() (string, string) {
+	var pspHost, pspPort = "localhost", "8002"
+	if DockerChecker() {
+		pspPort = "1081"
+		if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+			pspHost = "host1"
+		} else {
+			pspHost = "localhost"
+		}
+	}
 	return pspHost, pspPort
 }
 
-func GetWebShopHostAndPort() (string, string) {
+func GetPSPFrontHostAndPort() (string, string) {
+	var pspHost, pspPort = "localhost", "3001"
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		pspHost = "host1"
+	}
+	return pspHost, pspPort
+}
+
+func GetInternalWebShopHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8001"
 	if DockerChecker() {
 		pspHost = "webshop"
@@ -55,10 +87,14 @@ func GetWebShopHostAndPort() (string, string) {
 }
 
 func GetWebShopFrontHostAndPort() (string, string) {
-	return "localhost", "3000"
+	var webshopHost, webshopPort = "localhost", "3000"
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		webshopHost = "host2"
+	}
+	return webshopHost, webshopPort
 }
 
-func GetPccHostAndPort() (string, string) {
+func GetInternalPccHostAndPort() (string, string) {
 	var pspHost, pspPort = "localhost", "8003"
 	if DockerChecker() {
 		pspHost = "pcc"
@@ -67,7 +103,20 @@ func GetPccHostAndPort() (string, string) {
 	return pspHost, pspPort
 }
 
-func GetBankHostAndPort() (string, string) {
+func GetExternalPccHostAndPort() (string, string) {
+	var pccHost, pccPort = "localhost", "8003"
+	if DockerChecker() {
+		pccPort = "10000"
+		if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+			pccHost = "host1"
+		} else {
+			pccHost = "localhost"
+		}
+	}
+	return pccHost, pccPort
+}
+
+func GetInternalBankHostAndPort() (string, string) {
 	bankHost, bankPort := "localhost", os.Getenv("BANK_PORT") //TODO: parametrize for docker
 	if DockerChecker() {
 		bankHost = os.Getenv("BANK_HOST")
@@ -76,8 +125,25 @@ func GetBankHostAndPort() (string, string) {
 	return bankHost, bankPort
 }
 
+func GetExternalBankHostAndPort() (string, string) {
+	bankHost, bankPort := "localhost", os.Getenv("BANK_PORT") //TODO: parametrize for docker
+	if DockerChecker() {
+		bankPort = os.Getenv("BANK_EXTERNAL_PORT")
+		if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+			bankHost = "host1"
+		} else {
+			bankHost = "localhost"
+		}
+	}
+	return bankHost, bankPort
+}
+
 func GetBankFrontHostAndPort() (string, string) {
-	return "localhost", "3002"
+	port := "3002"
+	if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
+		return "host1", port
+	}
+	return "localhost", port
 }
 
 func GetNoSQLData() DatabaseData {
@@ -92,7 +158,7 @@ func GetNoSQLData() DatabaseData {
 func GetRDBData() DatabaseData {
 	rdbPort := "3306"
 	if DockerChecker() {
-		return DatabaseData{Host: "rdb", Port: rdbPort,
+		return DatabaseData{Host: "rdb", Port: os.Getenv("RDB_PORT"),
 			Username: os.Getenv("RDB_USERNAME"), Password: os.Getenv("RDB_PASSWORD")}
 	}
 	return DatabaseData{Host: "localhost", Port: rdbPort, Username: "root", Password: "root"}

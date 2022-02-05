@@ -128,7 +128,7 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 	}
 
 	jsonReq, _ := json.Marshal(pccOrder)
-	pccHost, pccPort := util.GetPccHostAndPort()
+	pccHost, pccPort := util.GetExternalPccHostAndPort()
 	resp, err := util.CrossServiceRequest(http.MethodPost, util.GetPccProtocol()+"://"+pccHost+":"+pccPort+"/pcc-order", jsonReq, nil)
 	if err != nil {
 		util.Logging(util.ERROR, "Service.proceedPaymentToPcc", err.Error(), loggingService)

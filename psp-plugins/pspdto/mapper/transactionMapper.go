@@ -5,6 +5,7 @@ import (
 	"ubiquitous-payment/psp-plugins/pspdto"
 	"ubiquitous-payment/psp/model"
 	"ubiquitous-payment/psp/psputil"
+	"ubiquitous-payment/util"
 )
 
 func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.Plugin) (pspdto.TransactionDTO, error) {
@@ -12,12 +13,12 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 	if err != nil {
 		return pspdto.TransactionDTO{}, err
 	}
-	pspHost, pspPort := "localhost", "1081" //util.GetPSPHostAndPort()
+	pspHost, pspPort := util.GetExternalPSPHostAndPort()
 	pspTarget := pspHost + ":" + pspPort
-	if plugin.Name() == "paypal" {
+	/*if plugin.Name() == "paypal" {
 		pspTarget = "igorsikuljak.rs"
-	}
-	initialUrl := "http" + "://" + pspTarget + "/api/psp"
+	}*/
+	initialUrl := util.GetPSPProtocol() + "://" + pspTarget + "/api/psp"
 	pricingPlan, err := transaction.IsPricingPlan(plugin)
 	if err != nil {
 		return pspdto.TransactionDTO{}, err

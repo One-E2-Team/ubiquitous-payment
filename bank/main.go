@@ -77,11 +77,16 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/confirm-password", handler.ConfirmPassword).Methods(http.MethodPost)
 	router.HandleFunc("/api/transactions", handler.GetMyTransactions).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
-	host, port := util.GetBankHostAndPort()
-	var err error
-	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+	host, port := util.GetInternalBankHostAndPort()
+	deploymentHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
-		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router)
+	var err error
+	if util.GetBankProtocol() == "https" {
+		err = http.ListenAndServeTLS(host+":"+port, "./conf/certs/pem/"+host+".cert.pem", "./conf/certs/key/"+host+".key.pem", deploymentHandler)
+	} else {
+		err = http.ListenAndServe(host+":"+port, deploymentHandler)
+	}
 	if err != nil {
 		fmt.Println(err)
 		return

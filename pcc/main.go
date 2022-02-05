@@ -61,11 +61,16 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
 	router.HandleFunc("/pcc-order", pccutil.PccRbac(handler.CreatePccOrder, "bank")).Methods(http.MethodPost)
 	fmt.Println("Starting server..")
-	host, port := util.GetPccHostAndPort()
-	var err error
-	err = http.ListenAndServe(host+":"+port, handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+	host, port := util.GetInternalPccHostAndPort()
+	deploymentHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{util.Authorization, util.ContentType, "Accept"}),
-		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router))
+		handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}))(router)
+	var err error
+	if util.GetBankProtocol() == "https" {
+		err = http.ListenAndServeTLS(host+":"+port, "./conf/certs/pem/"+host+".cert.pem", "./conf/certs/key/"+host+".key.pem", deploymentHandler)
+	} else {
+		err = http.ListenAndServe(host+":"+port, deploymentHandler)
+	}
 	if err != nil {
 		fmt.Println(err)
 		return
