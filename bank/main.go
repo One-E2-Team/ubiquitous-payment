@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"ubiquitous-payment/bank/bankutil"
+	"ubiquitous-payment/bank/bankutil/rbac"
 	"ubiquitous-payment/bank/handler"
 	"ubiquitous-payment/bank/model"
 	"ubiquitous-payment/bank/repository"
@@ -66,17 +66,30 @@ func initHandler(service *service.Service) *handler.Handler {
 
 func handleFunc(handler *handler.Handler) {
 	router := mux.NewRouter().StrictSlash(true)
+
+	//public API
 	router.HandleFunc("/test", handler.Test).Methods(http.MethodGet)
 	router.HandleFunc("/api/clients", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
-	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
-	router.HandleFunc("/pcc-issuer-pay", bankutil.BankRbac(handler.IssuerPay, "pcc")).Methods(http.MethodPost)
+
+	//psp calls
+	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/payment-check/{id}", handler.CheckPayment).Methods(http.MethodGet)
-	router.HandleFunc("/api/account", handler.GetMyAccount).Methods(http.MethodGet)
-	router.HandleFunc("/api/confirm-password", handler.ConfirmPassword).Methods(http.MethodPost)
-	router.HandleFunc("/api/transactions", handler.GetMyTransactions).Methods(http.MethodGet)
-	router.HandleFunc("/api/all-transactions", handler.GetAllTransactions).Methods(http.MethodGet)
+
+	//pcc calls
+	router.HandleFunc("/pcc-issuer-pay",
+		rbac.PccRbac(handler.IssuerPay, "pcc")).Methods(http.MethodPost)
+
+	// logged users API
+	router.HandleFunc("/api/account",
+		rbac.BankRbac(handler.GetMyAccount, "READ_ACCOUNT")).Methods(http.MethodGet)
+	router.HandleFunc("/api/confirm-password",
+		rbac.BankRbac(handler.ConfirmPassword, "CHECK_PASSWORD")).Methods(http.MethodPost)
+	router.HandleFunc("/api/transactions",
+		rbac.BankRbac(handler.GetMyTransactions, "READ_TRANSACTIONS")).Methods(http.MethodGet)
+	router.HandleFunc("/api/all-transactions",
+		rbac.BankRbac(handler.GetAllTransactions, "READ_ALL_TRANSACTIONS")).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetBankHostAndPort()
 	var err error
@@ -96,5 +109,6 @@ func main() {
 	bankService := initService(repo)
 	bankHandler := initHandler(bankService)
 	_ = util.SetupCsAuth("bank")
+	rbac.InitRbacService(bankService)
 	handleFunc(bankHandler)
 }

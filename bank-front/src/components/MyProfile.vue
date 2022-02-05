@@ -7,13 +7,6 @@
           :items="this.account.creditCards"
           class="elevation-1"
         >
-          <template v-slot:top>
-            <v-toolbar flat>
-              <v-toolbar-title>My accounts</v-toolbar-title>
-              <v-divider class="mx-4" inset vertical></v-divider>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-          </template>
           <template v-slot:[`item.accountNumber`]="">
             {{ showSecrets ? account.accountNumber : "****************" }}
           </template>
@@ -29,8 +22,11 @@
           <template v-slot:[`item.cvc`]="{ item }">
             {{ showSecrets ? item.cvc : "***" }}
           </template>
-          <template>
+          <template v-slot:top>
             <v-toolbar flat>
+              <v-toolbar-title>My accounts</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
               <v-dialog v-model="dialogConfirmPassword" max-width="500px">
                 <v-card>
                   <v-card-title>
@@ -198,10 +194,11 @@ export default {
         data: JSON.stringify(this.password),
       })
         .then((response) => {
-          console.log(response.data);
-          this.dialogConfirmPassword = false;
-          this.showSecrets = true;
-          this.password = "";
+          if (response.status === 200 && response.data === true) {
+            this.dialogConfirmPassword = false;
+            this.showSecrets = true;
+            this.password = "";
+          }
         })
         .catch(() => {
           alert("Wrong password!");

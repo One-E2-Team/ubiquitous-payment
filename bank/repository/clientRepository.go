@@ -5,6 +5,17 @@ import (
 	"ubiquitous-payment/bank/model"
 )
 
+func (repo *Repository) GetPrivilegesByClientId(clientId uint) (*[]string, error) {
+	var privileges []string
+	if err := repo.Database.Raw("select p.name from privileges p, role_privileges rp "+
+		"where rp.role_id in (select r.id from roles r, user_roles ur "+
+		"where ur.client_id = ? and ur.role_id = r.id)"+
+		"and p.id = rp.privilege_id", clientId).Scan(&privileges).Error; err != nil {
+		return nil, err
+	}
+	return &privileges, nil
+}
+
 func (repo *Repository) GetClientByUsername(username string) (*model.Client, error) {
 	client := &model.Client{}
 	if err := repo.Database.Preload("Roles").Table("clients").First(&client, "username = ?", username).Error; err != nil {
