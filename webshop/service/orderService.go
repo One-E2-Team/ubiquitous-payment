@@ -175,3 +175,38 @@ func (service *Service) getPaymentData(merchantId uint) (map[string]interface{},
 	}
 	return ret, nil
 }
+
+func (service *Service) GetSellersOrders(id uint) ([]dto.MyOrderDTO, error) {
+	ordersDto := make([]dto.MyOrderDTO, 0)
+
+	myProducts, err := service.WSRepository.GetProductsByMerchantId(id)
+	if err != nil{
+		return nil, err
+	}
+	fmt.Println(myProducts)
+
+	for _, prod := range myProducts{
+		orders, err := service.WSRepository.GetOrdersByProductId(prod.ID)
+		if err != nil{
+			return nil, err
+		}
+		for _, order := range orders{
+			pspOrder, err := service.WSRepository.GetPspOrderByOrderId(order.ID)
+			if err != nil{
+				return nil, err
+			}
+			paymentType, err := service.WSRepository.GetPaymentTypeById(order.PaymentTypeId)
+			if err != nil{
+				return nil, err
+			}
+			orderDto := dto.MyOrderDTO{OrderId: order.ID, Timestamp: order.Timestamp, ProductName: prod.Name,
+				ProductPrice: prod.Price, Currency: prod.Currency, PaymentType: paymentType.Name,
+			PSPId: pspOrder.PSPId, OrderStatus: string(pspOrder.OrderStatus),
+			NumberOfInstallments: prod.NumOfInstallments, DelayedInstallments: prod.DelayedInstallments,
+			RecurringType: string(prod.RecurringType)}
+			ordersDto = append(ordersDto, orderDto)
+		}
+	}
+
+	return ordersDto, nil
+}

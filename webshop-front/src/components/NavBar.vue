@@ -9,6 +9,7 @@
             </v-btn>
           </v-col>
           <v-col></v-col><v-col></v-col><v-col></v-col>
+          <v-col v-if="hasRole('SELLER')" @click="goToOrderedProducts()" cols="auto"><v-btn >Ordered products</v-btn></v-col>
           <v-col v-if="hasRole('SELLER')" @click="goToPaymentOptions()" cols="auto"><v-btn>Payment options</v-btn></v-col>
           <v-col v-if="hasRole('CUSTOMER')" @click="goToMyOrders()" cols="auto"><v-btn>My orders</v-btn></v-col>
           <v-col cols="auto">
@@ -36,6 +37,9 @@ export default {
      },
      goToMyOrders(){
         this.$router.push({name: "MyOrders"})
+     },
+     goToOrderedProducts(){
+        this.$router.push({name: "OrderedProducts"})
      },
      hasRole(role){
        return comm.hasRole(role);
