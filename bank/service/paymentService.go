@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -37,30 +36,30 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) s
 	return service.payInSameBank(issuerCard.Pan, transaction)
 }
 
-func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponseDTO, error) {
+func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) *dto.PccResponseDTO {
 	transaction, err := mapper.PccOrderDTOToTransaction(pccOrderDto)
 	if err != nil {
 		util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.ERROR)
-		return nil, err
+		return mapper.TransactionToPccResponseDTO(*transaction)
 	}
 	if !service.isCreditCardDataValid(mapper.PccOrderDtoToIssuerCardDto(pccOrderDto)) {
 		util.Logging(util.ERROR, "Service.IssuerPay", "bad issuer credit card data", loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.FAILED)
-		return nil, errors.New("bad issuer credit card data")
+		return mapper.TransactionToPccResponseDTO(*transaction)
 	}
 
 	issuerAccount, err := service.Repository.GetClientAccountByPan(pccOrderDto.IssuerPAN)
 	if err != nil {
 		util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.ERROR)
-		return nil, err
+		return mapper.TransactionToPccResponseDTO(*transaction)
 	}
 
 	if issuerAccount.Amount < transaction.AmountRsd {
 		util.Logging(util.ERROR, "Service.IssuerPay", "not enough money on issuer's account", loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.FAILED)
-		return nil, errors.New("not enough money on issuer's account")
+		return mapper.TransactionToPccResponseDTO(*transaction)
 	}
 
 	issuerAccount.Amount -= transaction.AmountRsd
@@ -68,11 +67,10 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) (*dto.PccResponse
 	if err != nil {
 		util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.ERROR)
-		return nil, err
+	} else {
+		transaction = service.saveTransactionStatus(transaction, model.FULFILLED)
 	}
-
-	transaction = service.saveTransactionStatus(transaction, model.FULFILLED)
-	return mapper.TransactionToPccResponseDTO(*transaction), nil
+	return mapper.TransactionToPccResponseDTO(*transaction)
 }
 
 func (service *Service) payInSameBank(issuerPan string, transaction *model.Transaction) string {
@@ -150,6 +148,10 @@ func (service *Service) proceedPaymentToPcc(issuerCard dto.IssuerCardDTO, transa
 	if err != nil {
 		util.Logging(util.ERROR, "Service.proceedPaymentToPcc", err.Error(), loggingService)
 		transaction = service.saveTransactionStatus(transaction, model.ERROR)
+		return transaction.GetURLByStatus()
+	}
+
+	if transaction.TransactionStatus != model.FULFILLED {
 		return transaction.GetURLByStatus()
 	}
 
