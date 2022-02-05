@@ -3,7 +3,7 @@ package dto
 import "time"
 
 type TransactionResponseDTO struct {
-	Amount                float32   `json:"amount"`
+	Amount                string    `json:"amount"`
 	Currency              string    `json:"currency"`
 	AcquirerAccountNumber string    `json:"acquirerAccountNumber"`
 	IssuerPan             string    `json:"issuerPan"`

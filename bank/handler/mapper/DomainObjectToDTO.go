@@ -5,6 +5,7 @@ import (
 	"ubiquitous-payment/bank/bankutil"
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/model"
+	"ubiquitous-payment/util"
 )
 
 func TransactionToPaymentResponseDTO(transaction model.Transaction) *dto.PaymentResponseDTO {
@@ -40,9 +41,9 @@ func AccountToAccountResponseDTO(account model.ClientAccount) *dto.AccountRespon
 	}
 }
 
-func TransactionToTransactionResponseDTO(transaction model.Transaction) dto.TransactionResponseDTO {
+func TransactionToTransactionResponseDTO(transaction model.Transaction, amountPrefix string) dto.TransactionResponseDTO {
 	return dto.TransactionResponseDTO{
-		Amount:                transaction.Amount,
+		Amount:                amountPrefix + util.Float32ToString(transaction.Amount),
 		Currency:              transaction.Currency,
 		AcquirerAccountNumber: bankutil.CensorPaymentString(transaction.MerchantId),
 		IssuerPan:             bankutil.CensorPaymentString(transaction.IssuerPan),
