@@ -43,6 +43,7 @@ services:
       PSP_HOST: ${PSP_HOST}
       PSP_PORT: ${PSP_PORT}
       RDB_PORT: ${RDB_PORT}
+      DB_SEC_ENC: ${DB_SEC_ENC}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -123,6 +124,7 @@ services:
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
       PSP_HOST: psp1
       PSP_PORT: 8080
+      DB_SEC_ENC: ${DB_SEC_ENC}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -150,6 +152,7 @@ services:
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
       PSP_HOST: psp2
       PSP_PORT: 8080
+      DB_SEC_ENC: ${DB_SEC_ENC}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -201,6 +204,7 @@ services:
       PSP_PORT: ${PSP_PORT}
       BANK_EXTERNAL_PORT: 10001
       RDB_PORT: ${RDB_PORT}
+      DB_SEC_ENC: ${DB_SEC_ENC}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -226,6 +230,7 @@ services:
       DOCKER_ENV_SET_PROD: ""
       PUBLIC_JWT_TOKEN_SECRET: ${PUBLIC_JWT_TOKEN_SECRET}
       RDB_PORT: ${RDB_PORT}
+      DB_SEC_ENC: ${DB_SEC_ENC}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
@@ -276,6 +281,7 @@ services:
       PSP_PORT: ${PSP_PORT}
       BANK_EXTERNAL_PORT: 10002
       RDB_PORT: ${RDB_PORT}
+      DB_SEC_ENC: ${DB_SEC_ENC}
     build:
       context: .
       dockerfile: GoBuild.dockerfile
