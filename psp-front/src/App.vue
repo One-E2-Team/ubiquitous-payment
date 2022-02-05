@@ -29,12 +29,24 @@
 
 <script>
 import * as comm from './configuration/communication.js'
+import eventBus from './plugins/eventBus.js'
 export default {
   name: 'App',
 
   data: () => ({
-    //
+    sessionActivationCounter : 0,
+    isUserLogged : true
   }),
+
+  mounted() {
+    eventBus.$on('login', () => {
+      this.isUserLogged = true;
+      this.checkSessionActivity();
+    });
+      eventBus.$on('logout', () => {
+      this.isUserLogged = false;
+    })
+  },
 
   methods : {
     goToRegisterPage(){
@@ -53,6 +65,19 @@ export default {
     },
     goToSetPaymentTypes(){
       this.$router.push({name: "SetPaymentTypes"});
+    },
+    async checkSessionActivity(){
+      var checkInterval = setInterval(function(){ 
+          if (document.hidden) {
+            this.sessionActivationCounter ++;
+          }else{
+            this.sessionActivationCounter = 0;
+          }
+          if (this.sessionActivationCounter == 200){
+            sessionStorage.removeItem("JWT");
+            clearInterval(checkInterval);
+          }
+      }, 3000);
     }
   }
 };

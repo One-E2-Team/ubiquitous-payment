@@ -45,6 +45,7 @@
 import axios from "axios";
 import * as comm from "../configuration/communication.js";
 import * as validator from "../plugins/validator.js";
+import eventBus from "../plugins/eventBus.js"
 export default {
   data() {
     return {
@@ -74,6 +75,7 @@ export default {
           .then((response) => {
             if (response.status == 200) {
               comm.setJWTToken(response.data);
+              eventBus.$emit('login');
               this.$router.push({ name: "MyProfile" });
             }
           })
