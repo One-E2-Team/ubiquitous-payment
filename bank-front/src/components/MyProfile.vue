@@ -3,10 +3,17 @@
     <v-row>
       <v-col>
         <v-data-table
-          :headers="this.headers"
+          :headers="this.accountHeaders"
           :items="this.account.creditCards"
           class="elevation-1"
         >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>My accounts</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
           <template v-slot:[`item.accountNumber`]="">
             {{ showSecrets ? account.accountNumber : "****************" }}
           </template>
@@ -22,7 +29,7 @@
           <template v-slot:[`item.cvc`]="{ item }">
             {{ showSecrets ? item.cvc : "***" }}
           </template>
-          <template v-slot:top>
+          <template>
             <v-toolbar flat>
               <v-dialog v-model="dialogConfirmPassword" max-width="500px">
                 <v-card>
@@ -74,6 +81,23 @@
         </v-data-table>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-data-table
+          :headers="this.transactionHeaders"
+          :items="this.transactions"
+          class="elevation-1"
+        >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>My transactions</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -96,7 +120,17 @@ export default {
           },
         ],
       },
-      headers: [
+      transactions: [
+        {
+          amount: "",
+          currency: "",
+          acquirerAccountNumber: "",
+          issuerPan: "",
+          timestamp: "",
+          transactionStatus: "",
+        },
+      ],
+      accountHeaders: [
         { text: "Account number", value: "accountNumber" },
         { text: "Amount", value: "amount" },
         { text: "Secret", value: "secret" },
@@ -106,23 +140,46 @@ export default {
         { text: "Valid until", value: "validUntil" },
         { text: "Actions", value: "actions" },
       ],
+      transactionHeaders: [
+        { text: "Amount", value: "amount" },
+        { text: "Currency", value: "currency" },
+        { text: "Acquirer account number", value: "acquirerAccountNumber" },
+        { text: "Issuer pan", value: "issuerPan" },
+        { text: "Timestamp", value: "timestamp" },
+        { text: "Transaction status", value: "transactionStatus" },
+      ],
       showSecrets: false,
       dialogConfirmPassword: false,
       password: "",
     };
   },
   mounted() {
-    axios({
-      method: "get",
-      url: comm.BankProtocol + "://" + comm.BankServer + "/api/account",
-      headers: comm.getHeader(),
-    }).then((response) => {
-      if (response.status == 200) {
-        this.account = response.data;
-      }
-    });
+    this.getMyAccount();
+    this.getMyTransactions();
   },
   methods: {
+    getMyAccount() {
+      axios({
+        method: "get",
+        url: comm.BankProtocol + "://" + comm.BankServer + "/api/account",
+        headers: comm.getHeader(),
+      }).then((response) => {
+        if (response.status == 200) {
+          this.account = response.data;
+        }
+      });
+    },
+    getMyTransactions() {
+      axios({
+        method: "get",
+        url: comm.BankProtocol + "://" + comm.BankServer + "/api/transactions",
+        headers: comm.getHeader(),
+      }).then((response) => {
+        if (response.status == 200) {
+          this.transactions = response.data;
+        }
+      });
+    },
     enableSecrets() {
       this.dialogConfirmPassword = true;
     },

@@ -74,7 +74,7 @@ export default {
           .then((response) => {
             if (response.status == 200) {
               comm.setJWTToken(response.data);
-              this.$router.push({ name: "Home" });
+              this.$router.push({ name: "MyProfile" });
             }
           })
           .catch(() => {
