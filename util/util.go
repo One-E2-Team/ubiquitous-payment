@@ -40,6 +40,10 @@ func String2Uint(input string) uint {
 	return uint(u64)
 }
 
+func Float32ToString(input float32) string {
+	return fmt.Sprintf("%.2f", input)
+}
+
 func GetLoggingStringFromID(id uint) string {
 	return "profileId: '" + Uint2String(id) + "'"
 }
@@ -57,7 +61,6 @@ func String2MongoID(stringID string) primitive.ObjectID {
 }
 
 func RandomString(availableCharacters string, length int) string {
-
 	characters := []rune(availableCharacters)
 	result := make([]rune, length)
 	for i := 0; i < length; i++ {

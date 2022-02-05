@@ -1,33 +1,23 @@
 <template>
-    <v-container>
-    <v-row>
-        <v-col> 
-        </v-col>
-    </v-row>
-    <v-row>
-        <v-col>
-            <v-data-table :headers="this.headers" :items="this.myOrders" class="elevation-1">
-                <template v-slot:top>
-                <v-toolbar flat>
-                    <v-toolbar-title>My orders</v-toolbar-title>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
-                </template>
+<v-container>
+    <v-row><v-col></v-col></v-row>
+    <v-row><h2>My ordered products</h2></v-row>
+    <v-row justify="center">
+        <v-col cols="auto">
+            <v-data-table :headers="this.headers" :items="this.orderedProducts" class="elevation-1">
             </v-data-table>
         </v-col>
     </v-row>
 </v-container>
+
 </template>
 
 <script>
 import axios from 'axios'
 import * as comm from '../configuration/communication.js'
- export default {
-    name: 'MyOrders',
-    data() { return {
-         myOrders: [],
-         headers: [
+  export default {
+    data() {return {
+      headers: [
             { text: 'ID', value: 'orderId' },
             { text: 'PSP ID', value: 'pspId' },
             { text: 'Timestamp', value: 'timestamp' },
@@ -39,22 +29,26 @@ import * as comm from '../configuration/communication.js'
             { text: 'Recurring type', value: 'recurringType' },
             { text: 'Order status', value: 'orderStatus' }
             
-        ]
-        }
+        ],
+      orderedProducts: [],
+    }},
+    mounted() {
+        this.getOrderedProducts();
     },
-    mounted(){
-        axios({
+    methods: {
+        getOrderedProducts(){
+            axios({
                 method: "get",
-                url: comm.WSprotocol +'://' + comm.WSserver + '/api/my-orders',
+                url: comm.WSprotocol +'://' + comm.WSserver + '/api/my-orders/seller',
                 headers: comm.getHeader()
             }).then(response => {
               if(response.status==200){
-                this.myOrders = response.data;
-                console.log(response.data);
+                this.orderedProducts = response.data;
               }
-            }).catch((response) => {
-              console.log(response.data);
-            });
+            }).catch(() => {
+              console.log("error")
+            })
+        },
     }
- }
+  }
 </script>

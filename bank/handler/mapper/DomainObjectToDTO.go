@@ -5,6 +5,7 @@ import (
 	"ubiquitous-payment/bank/bankutil"
 	"ubiquitous-payment/bank/dto"
 	"ubiquitous-payment/bank/model"
+	"ubiquitous-payment/util"
 )
 
 func TransactionToPaymentResponseDTO(transaction model.Transaction) *dto.PaymentResponseDTO {
@@ -25,7 +26,10 @@ func TransactionToPccResponseDTO(transaction model.Transaction) *dto.PccResponse
 	}
 }
 
-func AccountToAccountResponseDTO(account model.ClientAccount) *dto.AccountResponseDTO {
+func AccountToAccountResponseDTO(account *model.ClientAccount) *dto.AccountResponseDTO {
+	if account == nil {
+		return nil
+	}
 	accountCards := account.CreditCards
 	creditCards := make([]dto.CreditCardResponseDTO, len(accountCards))
 	for i := 0; i < len(accountCards); i++ {
@@ -33,16 +37,16 @@ func AccountToAccountResponseDTO(account model.ClientAccount) *dto.AccountRespon
 	}
 
 	return &dto.AccountResponseDTO{
-		AccountNumber: account.AccountNumber,
+		AccountNumber: account.AccountNumber.Data,
 		Amount:        account.Amount,
-		Secret:        account.Secret,
+		Secret:        account.Secret.Data,
 		CreditCards:   creditCards,
 	}
 }
 
-func TransactionToTransactionResponseDTO(transaction model.Transaction) dto.TransactionResponseDTO {
+func TransactionToTransactionResponseDTO(transaction model.Transaction, amountPrefix string) dto.TransactionResponseDTO {
 	return dto.TransactionResponseDTO{
-		Amount:                transaction.Amount,
+		Amount:                amountPrefix + util.Float32ToString(transaction.Amount),
 		Currency:              transaction.Currency,
 		AcquirerAccountNumber: bankutil.CensorPaymentString(transaction.MerchantId),
 		IssuerPan:             bankutil.CensorPaymentString(transaction.IssuerPan),
@@ -53,8 +57,8 @@ func TransactionToTransactionResponseDTO(transaction model.Transaction) dto.Tran
 
 func CreditCardToCreditCardResponseDTO(creditCard model.CreditCard) dto.CreditCardResponseDTO {
 	return dto.CreditCardResponseDTO{
-		Pan:        creditCard.Pan,
-		Cvc:        creditCard.Cvc,
+		Pan:        creditCard.Pan.Data,
+		Cvc:        creditCard.Cvc.Data,
 		HolderName: creditCard.HolderName,
 		ValidUntil: creditCard.ValidUntil,
 	}

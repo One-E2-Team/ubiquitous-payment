@@ -5,16 +5,17 @@ import (
 	"ubiquitous-payment/pcc/model"
 )
 
-func PccOrderDtoToPccOrder(dto dto.PccOrderDto) *model.PccOrder{
+func PccOrderDtoToPccOrder(dto dto.PccOrderDto) *model.PccOrder {
 	return &model.PccOrder{
-		AcquirerTransactionId : dto.AcquirerTransactionId,
-		AcquirerTimestamp: dto.AcquirerTimestamp,
-		AcquirerPanPrefix: dto.AcquirerPanPrefix,
-		Amount: dto.Amount,
-		Currency: dto.Currency,
-		IssuerPAN: dto.IssuerPAN,
-		IssuerCVC: dto.IssuerCVC,
-		IssuerValidUntil: dto.IssuerValidUntil,
-		IssuerHolderName: dto.IssuerHolderName,
+		AcquirerTransactionId: dto.AcquirerTransactionId,
+		AcquirerTimestamp:     dto.AcquirerTimestamp,
+		AcquirerPanPrefix:     dto.AcquirerPanPrefix,
+		MerchantId:            dto.MerchantId,
+		Amount:                dto.Amount,
+		Currency:              dto.Currency,
+		IssuerPAN:             dto.IssuerPAN,
+		IssuerCVC:             dto.IssuerCVC,
+		IssuerValidUntil:      dto.IssuerValidUntil,
+		IssuerHolderName:      dto.IssuerHolderName,
 	}
 }

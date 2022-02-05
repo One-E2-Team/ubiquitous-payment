@@ -83,6 +83,14 @@ func (service *Service) ConfirmPassword(clientId uint, password string) (bool, e
 	return true, nil
 }
 
+func (service *Service) GetPrivileges(clientId uint) *[]string {
+	privileges, err := service.Repository.GetPrivilegesByClientId(clientId)
+	if err != nil {
+		return nil
+	}
+	return privileges
+}
+
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
 		f, err := os.Open("common_pass.txt")
@@ -159,16 +167,16 @@ func createNewClientAccount(name string, surname string) *model.ClientAccount {
 	validUntil := time.Now().AddDate(5, 0, 0).Format(util.MMyyDateFormat)
 
 	creditCard := model.CreditCard{
-		Pan:        pan,
-		Cvc:        util.RandomString("0123456789", 3),
+		Pan:        util.GetEncryptedString(pan),
+		Cvc:        util.GetEncryptedString(util.RandomString("0123456789", 3)),
 		HolderName: name + " " + surname,
 		ValidUntil: validUntil,
 	}
 
 	return &model.ClientAccount{
-		AccountNumber: accountNumber,
+		AccountNumber: util.GetEncryptedString(accountNumber),
 		Amount:        0,
-		Secret:        util.RandomString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 10),
+		Secret:        util.GetEncryptedString(util.RandomString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 10)),
 		IsActive:      true,
 		CreditCards:   []model.CreditCard{creditCard},
 	}

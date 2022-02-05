@@ -22,6 +22,7 @@ func (service *Service) Pay(issuerCard dto.IssuerCardDTO, paymentUrlId string) s
 		util.Logging(util.ERROR, "Service.Pay", err.Error(), loggingService)
 		return ""
 	}
+	transaction.IssuerPan = issuerCard.Pan
 
 	if !strings.HasPrefix(issuerCard.Pan, os.Getenv("PAN_PREFIX")) {
 		return service.proceedPaymentToPcc(issuerCard, transaction)
@@ -176,7 +177,7 @@ func (service *Service) isCreditCardDataValid(issuerCard dto.IssuerCardDTO) bool
 		return false
 	}
 
-	return creditCard.Cvc == issuerCard.Cvc && creditCard.HolderName == issuerCard.HolderName &&
+	return creditCard.Cvc.Data == issuerCard.Cvc && creditCard.HolderName == issuerCard.HolderName &&
 		creditCard.ValidUntil == issuerCard.ValidUntil //TODO: check valid until
 }
 

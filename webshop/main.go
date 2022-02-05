@@ -87,6 +87,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/my-orders", handler.GetMyOrders).Methods(http.MethodGet)
 	router.HandleFunc("/api/psp-order/{id}/{status}", handler.UpdatePspOrder).Methods(http.MethodPut)
 	router.HandleFunc("/api/confirm-password", handler.ConfirmPassword).Methods(http.MethodPut)
+	router.HandleFunc("/api/my-orders/seller", handler.GetSellersOrders).Methods(http.MethodGet)
 	fmt.Println("Starting server..")
 	host, port := util.GetInternalWebShopHostAndPort()
 	deploymentHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}),

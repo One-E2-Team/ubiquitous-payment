@@ -41,3 +41,12 @@ func (repo *Repository) GetPspOrderByPspId(pspId string) (model.PSPOrder ,error)
 	result := repo.RelationalDatabase.Table("psp_orders").Last(&pspOrder, "psp_id = ?", pspId)
 	return pspOrder, result.Error
 }
+
+func (repo *Repository) GetOrdersByProductId(productId uint) ([]model.Order ,error) {
+	var orders []model.Order
+	result := repo.RelationalDatabase.Find(&orders, "product_id = ?", productId)
+	if result.Error != nil {
+		return nil, errors.New("error in query for getting my orders")
+	}
+	return orders,nil
+}

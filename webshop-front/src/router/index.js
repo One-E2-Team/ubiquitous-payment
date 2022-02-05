@@ -9,6 +9,7 @@ import Fail from './../components/Fail.vue'
 import Error from './../components/Error.vue'
 import PaymentOptions from './../components/PaymentOptions.vue'
 import MyOrders from './../components/MyOrders.vue'
+import OrderedProducts from './../components/OrderedProducts.vue'
 
 Vue.use(VueRouter)
 
@@ -62,6 +63,11 @@ const routes = [
     path: '/my-orders',
     name: 'MyOrders',
     component: MyOrders
+  },
+  {
+    path: '/ordered-products',
+    name: 'OrderedProducts',
+    component: OrderedProducts
   }
 ]
 

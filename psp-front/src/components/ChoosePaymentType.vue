@@ -15,7 +15,12 @@
           </v-col>
         </v-row>
         <v-row align="center" justify="center" v-if="isQrcode">
-              <v-col cols="12" sm="9">
+              <v-col cols="auto">
+                <template>
+                  <qrcode-vue :value="dataForQrCode" :size="size" level="H" />
+                </template>
+              </v-col>
+              <v-col cols="6" sm="9">
                 <v-form ref="form" v-model="valid" lazy-validation>
                   <v-row align="center" justify="center">
                     <v-col cols="6" sm="6">
@@ -104,6 +109,7 @@
 import axios from 'axios'
 import * as comm from '../configuration/communication.js'
 import * as validator from "../plugins/validator"
+import QrcodeVue from 'qrcode.vue'
   export default {
     name: 'HelloWorld',
     mounted(){
@@ -117,7 +123,8 @@ import * as validator from "../plugins/validator"
       isPaymentSelected : false,
       redirectUrl : '',
       isQrcode : false,
-      dataForQrCode : {},
+      dataForQrCode : "",
+      size : 200,
       valid: true,
       rules: validator.rules,
       creditCard: {
@@ -127,6 +134,9 @@ import * as validator from "../plugins/validator"
         validUntil: "",
       },
     }},
+    components: {
+      QrcodeVue,
+    },
     methods: {
      getPaymentTypes(){
        axios({
@@ -175,7 +185,7 @@ import * as validator from "../plugins/validator"
                 url: comm.Protocol +'://' + comm.PSPserver + '/api/transaction/qrcode/' + this.transactionId,
             }).then(response => {
               if(response.status==200){
-                this.dataForQrCode = response.data;
+                this.dataForQrCode = JSON.stringify(response.data);
                 this.isQrcode = true;
               }
             }).catch((response) => {

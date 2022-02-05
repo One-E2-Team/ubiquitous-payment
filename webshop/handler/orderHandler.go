@@ -35,3 +35,13 @@ func (handler *Handler) UpdatePspOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (handler *Handler) GetSellersOrders(w http.ResponseWriter, r *http.Request) {
+	loggedUserId := util.GetLoggedUserIDFromToken(r)
+	result, err := handler.WSService.GetSellersOrders(loggedUserId)
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"GetSellersOrders", loggingService)
+		return
+	}
+	util.MarshalResult(w, result)
+}
