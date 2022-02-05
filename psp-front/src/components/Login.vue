@@ -53,6 +53,7 @@
     import axios from 'axios'
     import * as comm from '../configuration/communication.js'
     import * as validator from '../plugins/validator.js'
+    import eventBus from "../plugins/eventBus.js"
   export default {
     data() {return {
       showPassword: false,
@@ -80,6 +81,7 @@
                 data: JSON.stringify(credentials)
             }).then(response => {
               if(response.status==200){
+                eventBus.$emit('login');
                 comm.setJWTToken(response.data);
                 this.$router.push({name: "Home"})
                 location.reload();
