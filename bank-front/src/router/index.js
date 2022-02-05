@@ -5,6 +5,7 @@ import Payment from './../components/Payment.vue'
 import Register from './../components/Register.vue'
 import Login from './../components/Login.vue'
 import MyProfile from './../components/MyProfile.vue'
+import Transactions from './../components/Transactions.vue'
 
 Vue.use(VueRouter)
 
@@ -41,6 +42,11 @@ const routes = [{
     path: '/my-profile',
     name: 'MyProfile',
     component: MyProfile
+  },
+  {
+    path: '/transactions',
+    name: 'Transactions',
+    component: Transactions
   },
 ]
 

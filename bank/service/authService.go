@@ -83,6 +83,14 @@ func (service *Service) ConfirmPassword(clientId uint, password string) (bool, e
 	return true, nil
 }
 
+func (service *Service) GetPrivileges(clientId uint) *[]string {
+	privileges, err := service.Repository.GetPrivilegesByClientId(clientId)
+	if err != nil {
+		return nil
+	}
+	return privileges
+}
+
 func checkCommonPass(v *validator.Validate) {
 	_ = v.RegisterValidation("common_pass", func(fl validator.FieldLevel) bool {
 		f, err := os.Open("common_pass.txt")
