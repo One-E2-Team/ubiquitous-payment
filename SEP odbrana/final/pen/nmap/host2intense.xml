@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet href="file:///C:/Program Files (x86)/Nmap/nmap.xsl" type="text/xsl"?><nmaprun start="1644171780" profile_name="Intense scan, all TCP ports" xmloutputversion="1.04" scanner="nmap" version="7.92" startstr="Sun Feb  6 19:23:00 2022" args="nmap -p 1-65535 -T4 -A -v host2"><scaninfo services="1-65535" protocol="tcp" numservices="65535" type="syn"></scaninfo><verbose level="1"></verbose><debugging level="0"></debugging><output type="interactive">Starting Nmap 7.92 ( https://nmap.org ) at 2022-02-06 19:23 Central Europe Standard Time
+NSE: Loaded 155 scripts for scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 19:23
+Completed NSE at 19:23, 0.00s elapsed
+Initiating NSE at 19:23
+Completed NSE at 19:23, 0.00s elapsed
+Initiating NSE at 19:23
+Completed NSE at 19:23, 0.00s elapsed
+Initiating ARP Ping Scan at 19:23
+Scanning host2 (172.16.97.109) [1 port]
+Completed ARP Ping Scan at 19:23, 0.12s elapsed (1 total hosts)
+Initiating SYN Stealth Scan at 19:23
+Scanning host2 (172.16.97.109) [65535 ports]
+Discovered open port 8080/tcp on 172.16.97.109
+Discovered open port 3306/tcp on 172.16.97.109
+SYN Stealth Scan Timing: About 17.83% done; ETC: 19:25 (0:02:23 remaining)
+Discovered open port 3000/tcp on 172.16.97.109
+SYN Stealth Scan Timing: About 37.88% done; ETC: 19:25 (0:01:40 remaining)
+SYN Stealth Scan Timing: About 57.30% done; ETC: 19:25 (0:01:08 remaining)
+SYN Stealth Scan Timing: About 77.87% done; ETC: 19:25 (0:00:34 remaining)
+Discovered open port 45769/tcp on 172.16.97.109
+Discovered open port 1080/tcp on 172.16.97.109
+Completed SYN Stealth Scan at 19:25, 150.09s elapsed (65535 total ports)
+Initiating Service scan at 19:25
+Scanning 5 services on host2 (172.16.97.109)
+Completed Service scan at 19:28, 156.34s elapsed (5 services on 1 host)
+Initiating OS detection (try #1) against host2 (172.16.97.109)
+Retrying OS detection (try #2) against host2 (172.16.97.109)
+NSE: Script scanning 172.16.97.109.
+Initiating NSE at 19:28
+Completed NSE at 19:28, 30.88s elapsed
+Initiating NSE at 19:28
+Completed NSE at 19:28, 2.27s elapsed
+Initiating NSE at 19:28
+Completed NSE at 19:28, 0.00s elapsed
+Nmap scan report for host2 (172.16.97.109)
+Host is up (0.0062s latency).
+Not shown: 65530 filtered tcp ports (no-response)
+PORT      STATE SERVICE  VERSION
+1080/tcp  open  ssl/http Golang net/http server (Go-IPFS json-rpc or InfluxDB API)
+|_http-title: Site doesn't have a title (text/plain; charset=utf-8).
+| ssl-cert: Subject: commonName=webshop/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:webshop, DNS:host2
+| Issuer: commonName=webshop/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:46:18
+| Not valid after:  2023-02-04T15:46:18
+| MD5:   852a 8561 4147 a666 b106 75c3 8ee8 efca
+|_SHA-1: 6515 1767 a7ce 027e de42 ad08 1f06 a8ca a89c f03a
+|_ssl-date: TLS randomness does not represent time
+| http-methods: 
+|_  Supported Methods: OPTIONS
+| tls-alpn: 
+|   h2
+|_  http/1.1
+|_http-cors: PUT DELETE OPTIONS
+3000/tcp  open  ssl/http nginx 1.21.6
+|_http-server-header: nginx/1.21.6
+|_ssl-date: TLS randomness does not represent time
+|_http-title: webshop-front
+| http-methods: 
+|_  Supported Methods: GET HEAD
+| tls-alpn: 
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+| ssl-cert: Subject: commonName=webshop/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:webshop, DNS:host2
+| Issuer: commonName=webshop/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:46:18
+| Not valid after:  2023-02-04T15:46:18
+| MD5:   852a 8561 4147 a666 b106 75c3 8ee8 efca
+|_SHA-1: 6515 1767 a7ce 027e de42 ad08 1f06 a8ca a89c f03a
+|_http-favicon: Unknown favicon MD5: 1BA2AE710D927F13D483FD5D1E548C9B
+3306/tcp  open  mysql    MySQL 8.0.28
+| mysql-info: 
+|   Protocol: 10
+|   Version: 8.0.28
+|   Thread ID: 16
+|   Capabilities flags: 65535
+|   Some Capabilities: SwitchToSSLAfterHandshake, Speaks41ProtocolOld, ConnectWithDatabase, LongPassword, SupportsTransactions, SupportsLoadDataLocal, IgnoreSigpipes, Speaks41ProtocolNew, Support41Auth, InteractiveClient, LongColumnFlag, ODBCClient, FoundRows, IgnoreSpaceBeforeParenthesis, SupportsCompression, DontAllowDatabaseTableColumn, SupportsMultipleResults, SupportsAuthPlugins, SupportsMultipleStatments
+|   Status: Autocommit
+|   Salt: \x06g:p\x14Y\x01^\x1E==
+| \x070~Ov4^\x0E
+|_  Auth Plugin Name: caching_sha2_password
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=MySQL_Server_8.0.28_Auto_Generated_Server_Certificate
+| Issuer: commonName=MySQL_Server_8.0.28_Auto_Generated_CA_Certificate
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-06T18:03:50
+| Not valid after:  2032-02-04T18:03:50
+| MD5:   dfa2 372d 5bae 541c 30bd e56a 63d6 716f
+|_SHA-1: 1cf3 79c0 3a74 a50b e156 068a bbfd d934 f9e1 503c
+8080/tcp  open  http     PHP cli server 5.5 or later (PHP 7.4.27)
+|_http-title: Login - Adminer
+|_http-trane-info: Problem with XML parsing of /evox/about
+| http-open-proxy: Potentially OPEN proxy.
+|_Methods supported:CONNECTION
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+45769/tcp open  unknown
+MAC Address: A8:1E:84:79:3A:B7 (Quanta Computer)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose|specialized
+Running (JUST GUESSING): Microsoft Windows XP (92%), AVtech embedded (87%), FreeBSD 6.X|10.X (86%)
+OS CPE: cpe:/o:microsoft:windows_xp::sp3 cpe:/o:freebsd:freebsd:6.2 cpe:/o:freebsd:freebsd:10.3
+Aggressive OS guesses: Microsoft Windows XP SP3 (92%), AVtech Room Alert 26W environmental monitor (87%), FreeBSD 6.2-RELEASE (86%), FreeBSD 10.3-STABLE (85%), Microsoft Windows XP SP2 (85%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+TCP Sequence Prediction: Difficulty=261 (Good luck!)
+IP ID Sequence Generation: Incremental
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   6.20 ms host2 (172.16.97.109)
+
+NSE: Script Post-scanning.
+Initiating NSE at 19:28
+Completed NSE at 19:28, 0.00s elapsed
+Initiating NSE at 19:28
+Completed NSE at 19:28, 0.00s elapsed
+Initiating NSE at 19:28
+Completed NSE at 19:28, 0.00s elapsed
+Read data files from: C:\Program Files (x86)\Nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 349.33 seconds
+           Raw packets sent: 131264 (5.781MB) | Rcvd: 132514 (5.836MB)
+</output><host comment=""><status state="up"></status><address addrtype="ipv4" vendor="" addr="172.16.97.109"></address><address addrtype="mac" vendor="Quanta Computer" addr="A8:1E:84:79:3A:B7"></address><hostnames><hostname type="user" name="host2"></hostname><hostname type="PTR" name="host2"></hostname></hostnames><ports><extraports count="65530" state="filtered"></extraports><port protocol="tcp" portid="1080"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="Golang net/http server" extrainfo="Go-IPFS json-rpc or InfluxDB API" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="3000"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="nginx" version="1.21.6" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="3306"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="MySQL" version="8.0.28" method="probed" conf="10" name="mysql"></service></port><port protocol="tcp" portid="8080"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="PHP cli server" name="http" extrainfo="PHP 7.4.27" version="5.5 or later" conf="10" method="probed"></service></port><port protocol="tcp" portid="45769"><state reason="syn-ack" state="open" reason_ttl="128"></state><service></service></port></ports><os><portused state="open" portid="1080" proto="tcp"></portused><osmatch line="84874" name="Microsoft Windows XP SP3" accuracy="92"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="XP" accuracy="92"></osclass></osmatch><osmatch line="9134" name="AVtech Room Alert 26W environmental monitor" accuracy="87"><osclass type="specialized" osfamily="embedded" vendor="AVtech" osgen="" accuracy="87"></osclass></osmatch><osmatch line="27738" name="FreeBSD 6.2-RELEASE" accuracy="86"><osclass type="general purpose" osfamily="FreeBSD" vendor="FreeBSD" osgen="6.X" accuracy="86"></osclass></osmatch><osmatch line="26098" name="FreeBSD 10.3-STABLE" accuracy="85"><osclass type="general purpose" osfamily="FreeBSD" vendor="FreeBSD" osgen="10.X" accuracy="85"></osclass></osmatch><osmatch line="81598" name="Microsoft Windows XP SP2" accuracy="85"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="XP" accuracy="85"></osclass></osmatch></os><uptime lastboot="" seconds=""></uptime><tcpsequence index="261" values="6193451B,EB2CB889,16B5E132,DA4990B6,E7E77623,D9FFDB36" difficulty="Good luck!"></tcpsequence><ipidsequence values="6142,6143,6145,6147,614A,614C" class="Incremental"></ipidsequence><tcptssequence values="" class="none returned (unsupported)"></tcptssequence><trace port="" proto=""><hop rtt="6.20" host="host2" ipaddr="172.16.97.109" ttl="1"></hop></trace></host><runstats><finished timestr="Sun Feb  6 19:28:49 2022" time="1644172129"></finished><hosts down="0" total="1" up="1"></hosts></runstats></nmaprun>

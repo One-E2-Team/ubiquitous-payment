@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet href="file:///C:/Program Files (x86)/Nmap/nmap.xsl" type="text/xsl"?><nmaprun start="1644171782" profile_name="Intense scan, all TCP ports" xmloutputversion="1.04" scanner="nmap" version="7.92" startstr="Sun Feb  6 19:23:02 2022" args="nmap -p 1-65535 -T4 -A -v host1"><scaninfo services="1-65535" protocol="tcp" numservices="65535" type="syn"></scaninfo><verbose level="1"></verbose><debugging level="0"></debugging><output type="interactive">Starting Nmap 7.92 ( https://nmap.org ) at 2022-02-06 19:23 Romance Standard Time
+NSE: Loaded 155 scripts for scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 19:23
+Completed NSE at 19:23, 0.00s elapsed
+Initiating NSE at 19:23
+Completed NSE at 19:23, 0.00s elapsed
+Initiating NSE at 19:23
+Completed NSE at 19:23, 0.00s elapsed
+Initiating ARP Ping Scan at 19:23
+Scanning host1 (172.16.103.41) [1 port]
+Completed ARP Ping Scan at 19:23, 0.10s elapsed (1 total hosts)
+Initiating SYN Stealth Scan at 19:23
+Scanning host1 (172.16.103.41) [65535 ports]
+Discovered open port 3306/tcp on 172.16.103.41
+Discovered open port 8080/tcp on 172.16.103.41
+Discovered open port 7680/tcp on 172.16.103.41
+SYN Stealth Scan Timing: About 19.39% done; ETC: 19:25 (0:02:09 remaining)
+Discovered open port 27017/tcp on 172.16.103.41
+Discovered open port 3002/tcp on 172.16.103.41
+SYN Stealth Scan Timing: About 49.23% done; ETC: 19:25 (0:01:03 remaining)
+Discovered open port 10002/tcp on 172.16.103.41
+Discovered open port 10001/tcp on 172.16.103.41
+Discovered open port 10000/tcp on 172.16.103.41
+Discovered open port 18333/tcp on 172.16.103.41
+Discovered open port 1081/tcp on 172.16.103.41
+Discovered open port 8081/tcp on 172.16.103.41
+Discovered open port 3001/tcp on 172.16.103.41
+Discovered open port 18332/tcp on 172.16.103.41
+Discovered open port 3003/tcp on 172.16.103.41
+Completed SYN Stealth Scan at 19:24, 101.72s elapsed (65535 total ports)
+Initiating Service scan at 19:24
+Scanning 14 services on host1 (172.16.103.41)
+Completed Service scan at 19:26, 78.73s elapsed (14 services on 1 host)
+Initiating OS detection (try #1) against host1 (172.16.103.41)
+Retrying OS detection (try #2) against host1 (172.16.103.41)
+NSE: Script scanning 172.16.103.41.
+Initiating NSE at 19:26
+Completed NSE at 19:26, 32.30s elapsed
+Initiating NSE at 19:26
+Completed NSE at 19:26, 1.76s elapsed
+Initiating NSE at 19:26
+Completed NSE at 19:26, 0.01s elapsed
+Nmap scan report for host1 (172.16.103.41)
+Host is up (0.0017s latency).
+Not shown: 65521 filtered tcp ports (no-response)
+PORT      STATE SERVICE         VERSION
+1081/tcp  open  ssl/http        nginx 1.21.6
+|_http-server-header: nginx/1.21.6
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=psp/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:psp, DNS:psp1, DNS:psp2, DNS:psp*, DNS:host1
+| Issuer: commonName=psp/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:47:43
+| Not valid after:  2023-02-04T15:47:43
+| MD5:   a50f 7d5a b587 8d41 bc33 9a37 1408 afef
+|_SHA-1: 3b55 aba2 c246 0137 3e60 ad25 f010 2327 fe1d 5a5a
+| tls-alpn: 
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+|_http-title: Site doesn't have a title (text/plain; charset=utf-8).
+| http-methods: 
+|_  Supported Methods: OPTIONS
+|_http-cors: PUT DELETE OPTIONS
+3001/tcp  open  ssl/http        nginx 1.21.6
+|_ssl-date: TLS randomness does not represent time
+|_http-server-header: nginx/1.21.6
+| tls-alpn: 
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+|_http-title: psp-front
+| ssl-cert: Subject: commonName=psp/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:psp, DNS:psp1, DNS:psp2, DNS:psp*, DNS:host1
+| Issuer: commonName=psp/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:47:43
+| Not valid after:  2023-02-04T15:47:43
+| MD5:   a50f 7d5a b587 8d41 bc33 9a37 1408 afef
+|_SHA-1: 3b55 aba2 c246 0137 3e60 ad25 f010 2327 fe1d 5a5a
+|_http-favicon: Unknown favicon MD5: 1BA2AE710D927F13D483FD5D1E548C9B
+| http-methods: 
+|_  Supported Methods: GET HEAD
+3002/tcp  open  ssl/http        nginx 1.21.6
+|_http-server-header: nginx/1.21.6
+|_http-favicon: Unknown favicon MD5: 1BA2AE710D927F13D483FD5D1E548C9B
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=bank1/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:bank1, DNS:host1
+| Issuer: commonName=bank1/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:49:14
+| Not valid after:  2023-02-04T15:49:14
+| MD5:   847d 5343 9669 e0d9 4af0 f4cf 1fff 20c4
+|_SHA-1: cfd6 db4d 0d05 7f4b fc48 7761 b798 230c 1011 9f0e
+| tls-alpn: 
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+|_http-title: bank-front
+| http-methods: 
+|_  Supported Methods: GET HEAD
+3003/tcp  open  ssl/http        nginx 1.21.6
+|_http-favicon: Unknown favicon MD5: 1BA2AE710D927F13D483FD5D1E548C9B
+|_ssl-date: TLS randomness does not represent time
+|_http-server-header: nginx/1.21.6
+| tls-alpn: 
+|   http/1.1
+|   http/1.0
+|_  http/0.9
+| ssl-cert: Subject: commonName=bank2/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:bank2, DNS:host1
+| Issuer: commonName=bank2/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:50:35
+| Not valid after:  2023-02-04T15:50:35
+| MD5:   0610 6831 c339 485f 3a42 2527 1a90 c68c
+|_SHA-1: 2085 dcc5 0983 cb01 60dd 9c0a 117b a8cc 4a8c 7716
+|_http-title: bank-front
+| http-methods: 
+|_  Supported Methods: GET HEAD
+3306/tcp  open  mysql           MySQL 8.0.28
+| mysql-info: 
+|   Protocol: 10
+|   Version: 8.0.28
+|   Thread ID: 13
+|   Capabilities flags: 65535
+|   Some Capabilities: DontAllowDatabaseTableColumn, LongColumnFlag, ODBCClient, Support41Auth, SwitchToSSLAfterHandshake, Speaks41ProtocolOld, SupportsLoadDataLocal, FoundRows, SupportsTransactions, IgnoreSigpipes, InteractiveClient, Speaks41ProtocolNew, IgnoreSpaceBeforeParenthesis, LongPassword, ConnectWithDatabase, SupportsCompression, SupportsAuthPlugins, SupportsMultipleStatments, SupportsMultipleResults
+|   Status: Autocommit
+|   Salt: wI f\x12@
+| &gt;Wcyw\x01}\x15&lt;*IAM
+|_  Auth Plugin Name: caching_sha2_password
+| ssl-cert: Subject: commonName=MySQL_Server_8.0.28_Auto_Generated_Server_Certificate
+| Issuer: commonName=MySQL_Server_8.0.28_Auto_Generated_CA_Certificate
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-06T18:06:33
+| Not valid after:  2032-02-04T18:06:33
+| MD5:   2aa5 3439 a80a c638 0aa7 b341 4c14 bfe7
+|_SHA-1: cb04 4443 6feb c856 7bc2 f0a2 4cfd a9e1 0b47 a9bf
+|_ssl-date: TLS randomness does not represent time
+7680/tcp  open  pando-pub?
+8080/tcp  open  http            PHP cli server 5.5 or later (PHP 7.4.27)
+| http-open-proxy: Potentially OPEN proxy.
+|_Methods supported:CONNECTION
+|_http-title: Login - Adminer
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-trane-info: Problem with XML parsing of /evox/about
+8081/tcp  open  http            Node.js (Express middleware)
+|_http-title: Home - Mongo Express
+|_http-favicon: Unknown favicon MD5: 6F6256748D679D8684123363BD50A8DD
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+10000/tcp open  ssl/http        Golang net/http server (Go-IPFS json-rpc or InfluxDB API)
+|_ssl-date: TLS randomness does not represent time
+| tls-alpn: 
+|   h2
+|_  http/1.1
+| ssl-cert: Subject: commonName=pcc/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:pcc, DNS:host1
+| Issuer: commonName=pcc/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:48:16
+| Not valid after:  2023-02-04T15:48:16
+| MD5:   c4d9 e8c7 a997 1113 2a16 f65c a696 b805
+|_SHA-1: 374b 13fd 2f41 7ccf 8e9c f858 b3c2 1aa6 e7dc 18b6
+|_http-title: Site doesn't have a title (text/plain; charset=utf-8).
+|_http-cors: PUT DELETE OPTIONS
+| http-methods: 
+|_  Supported Methods: OPTIONS
+10001/tcp open  ssl/http        Golang net/http server (Go-IPFS json-rpc or InfluxDB API)
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=bank1/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:bank1, DNS:host1
+| Issuer: commonName=bank1/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:49:14
+| Not valid after:  2023-02-04T15:49:14
+| MD5:   847d 5343 9669 e0d9 4af0 f4cf 1fff 20c4
+|_SHA-1: cfd6 db4d 0d05 7f4b fc48 7761 b798 230c 1011 9f0e
+| http-methods: 
+|_  Supported Methods: OPTIONS
+| tls-alpn: 
+|   h2
+|_  http/1.1
+|_http-cors: PUT DELETE OPTIONS
+|_http-title: Site doesn't have a title (text/plain; charset=utf-8).
+10002/tcp open  ssl/http        Golang net/http server (Go-IPFS json-rpc or InfluxDB API)
+|_ssl-date: TLS randomness does not represent time
+| tls-alpn: 
+|   h2
+|_  http/1.1
+| ssl-cert: Subject: commonName=bank2/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Subject Alternative Name: DNS:localhost, DNS:bank2, DNS:host1
+| Issuer: commonName=bank2/organizationName=ubiquitous-payment/stateOrProvinceName=Vojvodina/countryName=RS
+| Public Key type: rsa
+| Public Key bits: 4096
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2022-02-04T15:50:35
+| Not valid after:  2023-02-04T15:50:35
+| MD5:   0610 6831 c339 485f 3a42 2527 1a90 c68c
+|_SHA-1: 2085 dcc5 0983 cb01 60dd 9c0a 117b a8cc 4a8c 7716
+| http-methods: 
+|_  Supported Methods: OPTIONS
+|_http-title: Site doesn't have a title (text/plain; charset=utf-8).
+|_http-cors: PUT DELETE OPTIONS
+18332/tcp open  bitcoin-jsonrpc Bitcoin or Litecoin JSON-RPC
+18333/tcp open  bitcoin?
+27017/tcp open  mongodb         MongoDB 5.0.6
+| fingerprint-strings: 
+|   FourOhFourRequest, GetRequest: 
+|     HTTP/1.0 200 OK
+|     Connection: close
+|     Content-Type: text/plain
+|     Content-Length: 85
+|     looks like you are trying to access MongoDB over HTTP on the native driver port.
+|   mongodb: 
+|     errmsg
+|     command serverStatus requires authentication
+|     code
+|     codeName
+|_    Unauthorized
+| mongodb-databases: 
+|   codeName = Unauthorized
+|   ok = 0.0
+|   errmsg = command listDatabases requires authentication
+|_  code = 13
+| mongodb-info: 
+|   MongoDB Build info
+|     storageEngines
+|       1 = ephemeralForTest
+|       0 = devnull
+|       2 = wiredTiger
+|     javascriptEngine = mozjs
+|     sysInfo = deprecated
+|     ok = 1.0
+|     versionArray
+|       1 = 0
+|       0 = 5
+|       3 = 0
+|       2 = 6
+|     openssl
+|       running = OpenSSL 1.1.1f  31 Mar 2020
+|       compiled = OpenSSL 1.1.1f  31 Mar 2020
+|     debug = false
+|     maxBsonObjectSize = 16777216
+|     allocator = tcmalloc
+|     bits = 64
+|     modules
+|     buildEnvironment
+|       target_arch = x86_64
+|       cxxflags = -Woverloaded-virtual -Wno-maybe-uninitialized -fsized-deallocation -std=c++17
+|       ccflags = -Werror -include mongo/platform/basic.h -fasynchronous-unwind-tables -ggdb -Wall -Wsign-compare -Wno-unknown-pragmas -Winvalid-pch -fno-omit-frame-pointer -fno-strict-aliasing -O2 -march=sandybridge -mtune=generic -mprefer-vector-width=128 -Wno-unused-local-typedefs -Wno-unused-function -Wno-deprecated-declarations -Wno-unused-const-variable -Wno-unused-but-set-variable -Wno-missing-braces -fstack-protector-strong -Wa,--nocompress-debug-sections -fno-builtin-memcmp
+|       linkflags = -Wl,--fatal-warnings -pthread -Wl,-z,now -fuse-ld=gold -fstack-protector-strong -Wl,--no-threads -Wl,--build-id -Wl,--hash-style=gnu -Wl,-z,noexecstack -Wl,--warn-execstack -Wl,-z,relro -Wl,--compress-debug-sections=none -Wl,-z,origin -Wl,--enable-new-dtags
+|       distarch = x86_64
+|       cc = /opt/mongodbtoolchain/v3/bin/gcc: gcc (GCC) 8.5.0
+|       cppdefines = SAFEINT_USE_INTRINSICS 0 PCRE_STATIC NDEBUG _XOPEN_SOURCE 700 _GNU_SOURCE _FORTIFY_SOURCE 2 BOOST_THREAD_VERSION 5 BOOST_THREAD_USES_DATETIME BOOST_SYSTEM_NO_DEPRECATED BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS BOOST_ENABLE_ASSERT_DEBUG_HANDLER BOOST_LOG_NO_SHORTHAND_NAMES BOOST_LOG_USE_NATIVE_SYSLOG BOOST_LOG_WITHOUT_THREAD_ATTR ABSL_FORCE_ALIGNED_ACCESS
+|       target_os = linux
+|       distmod = ubuntu2004
+|       cxx = /opt/mongodbtoolchain/v3/bin/g++: g++ (GCC) 8.5.0
+|     version = 5.0.6
+|     gitVersion = 212a8dbb47f07427dae194a9c75baec1d81d9259
+|   Server status
+|     codeName = Unauthorized
+|     ok = 0.0
+|     errmsg = command serverStatus requires authentication
+|_    code = 13
+MAC Address: 54:E1:AD:FB:D3:1B (Lcfc(hefei) Electronics Technology)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose|firewall|router
+Running (JUST GUESSING): FreeBSD 6.X (95%), Microsoft Windows 10|2008 (93%), Juniper JUNOS 12.X|9.X|10.X (86%)
+OS CPE: cpe:/o:freebsd:freebsd:6.2 cpe:/o:microsoft:windows_10 cpe:/o:microsoft:windows_server_2008::beta3 cpe:/o:microsoft:windows_server_2008 cpe:/o:freebsd:freebsd:6.3 cpe:/o:juniper:junos:12 cpe:/o:juniper:junos:9.0r2.10 cpe:/o:juniper:junos:10
+Aggressive OS guesses: FreeBSD 6.2-RELEASE (95%), Microsoft Windows 10 (93%), Microsoft Windows Server 2008 or 2008 Beta 3 (91%), Microsoft Windows Server 2008 SP1 (87%), m0n0wall 1.3b11 - 1.3b15 (FreeBSD 6.3) (86%), Juniper Networks JUNOS 12 (86%), Juniper Networks JUNOS 9.0R2.10 (86%), Microsoft Windows 10 1703 (86%), Microsoft Windows 10 1511 - 1607 (86%), Juniper SRX100-series or SRX200-series firewall (JUNOS 10.4 - 12.1) (85%)
+No exact OS matches for host (test conditions non-ideal).
+Uptime guess: 1.180 days (since Sat Feb  5 15:07:43 2022)
+Network Distance: 1 hop
+TCP Sequence Prediction: Difficulty=255 (Good luck!)
+IP ID Sequence Generation: Incremental
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   1.70 ms host1 (172.16.103.41)
+
+NSE: Script Post-scanning.
+Initiating NSE at 19:26
+Completed NSE at 19:26, 0.00s elapsed
+Initiating NSE at 19:26
+Completed NSE at 19:26, 0.00s elapsed
+Initiating NSE at 19:26
+Completed NSE at 19:26, 0.00s elapsed
+Read data files from: C:\Program Files (x86)\Nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 222.66 seconds
+           Raw packets sent: 131216 (5.779MB) | Rcvd: 84531 (3.721MB)
+</output><host comment=""><status state="up"></status><address addrtype="ipv4" vendor="" addr="172.16.103.41"></address><address addrtype="mac" vendor="Lcfc(hefei) Electronics Technology" addr="54:E1:AD:FB:D3:1B"></address><hostnames><hostname type="user" name="host1"></hostname><hostname type="PTR" name="host1"></hostname></hostnames><ports><extraports count="65521" state="filtered"></extraports><port protocol="tcp" portid="1081"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="nginx" version="1.21.6" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="3001"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="nginx" version="1.21.6" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="3002"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="nginx" version="1.21.6" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="3003"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="nginx" version="1.21.6" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="3306"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="MySQL" version="8.0.28" method="probed" conf="10" name="mysql"></service></port><port protocol="tcp" portid="7680"><state reason="syn-ack" state="open" reason_ttl="128"></state><service method="table" conf="3" name="pando-pub"></service></port><port protocol="tcp" portid="8080"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="PHP cli server" name="http" extrainfo="PHP 7.4.27" version="5.5 or later" conf="10" method="probed"></service></port><port protocol="tcp" portid="8081"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="Node.js" extrainfo="Express middleware" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="10000"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="Golang net/http server" extrainfo="Go-IPFS json-rpc or InfluxDB API" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="10001"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="Golang net/http server" extrainfo="Go-IPFS json-rpc or InfluxDB API" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="10002"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="Golang net/http server" extrainfo="Go-IPFS json-rpc or InfluxDB API" method="probed" conf="10" name="http"></service></port><port protocol="tcp" portid="18332"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="Bitcoin or Litecoin JSON-RPC" method="probed" conf="10" name="bitcoin-jsonrpc"></service></port><port protocol="tcp" portid="18333"><state reason="syn-ack" state="open" reason_ttl="128"></state><service method="table" conf="3" name="bitcoin"></service></port><port protocol="tcp" portid="27017"><state reason="syn-ack" state="open" reason_ttl="128"></state><service product="MongoDB 5.0.6" method="probed" conf="10" name="mongodb"></service></port></ports><os><portused state="open" portid="1081" proto="tcp"></portused><osmatch line="27738" name="FreeBSD 6.2-RELEASE" accuracy="95"><osclass type="general purpose" osfamily="FreeBSD" vendor="FreeBSD" osgen="6.X" accuracy="95"></osclass></osmatch><osmatch line="69397" name="Microsoft Windows 10" accuracy="93"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="10" accuracy="93"></osclass></osmatch><osmatch line="74533" name="Microsoft Windows Server 2008 or 2008 Beta 3" accuracy="91"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="2008" accuracy="91"></osclass></osmatch><osmatch line="75136" name="Microsoft Windows Server 2008 SP1" accuracy="87"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="2008" accuracy="87"></osclass></osmatch><osmatch line="27421" name="m0n0wall 1.3b11 - 1.3b15 (FreeBSD 6.3)" accuracy="86"><osclass type="firewall" osfamily="FreeBSD" vendor="FreeBSD" osgen="6.X" accuracy="86"></osclass></osmatch><osmatch line="41333" name="Juniper Networks JUNOS 12" accuracy="86"><osclass type="router" osfamily="JUNOS" vendor="Juniper" osgen="12.X" accuracy="86"></osclass></osmatch><osmatch line="41602" name="Juniper Networks JUNOS 9.0R2.10" accuracy="86"><osclass type="router" osfamily="JUNOS" vendor="Juniper" osgen="9.X" accuracy="86"></osclass></osmatch><osmatch line="69877" name="Microsoft Windows 10 1703" accuracy="86"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="10" accuracy="86"></osclass></osmatch><osmatch line="69589" name="Microsoft Windows 10 1511 - 1607" accuracy="86"><osclass type="general purpose" osfamily="Windows" vendor="Microsoft" osgen="10" accuracy="86"></osclass></osmatch><osmatch line="41204" name="Juniper SRX100-series or SRX200-series firewall (JUNOS 10.4 - 12.1)" accuracy="85"><osclass type="firewall" osfamily="JUNOS" vendor="Juniper" osgen="12.X" accuracy="85"></osclass></osmatch></os><uptime lastboot="Sat Feb  5 15:07:43 2022" seconds="101941"></uptime><tcpsequence index="255" values="E7A72694,D94DA7BC,8A206471,D527EE6B,E28B7E1,5728AA53" difficulty="Good luck!"></tcpsequence><ipidsequence values="6D37,6D38,6D3A,6D3C,6D3E,6D40" class="Incremental"></ipidsequence><tcptssequence values="612F633,612F69F,612F70C,612F779,612F7ED,612F85C" class="1000HZ"></tcptssequence><trace port="" proto=""><hop rtt="1.70" host="host1" ipaddr="172.16.103.41" ttl="1"></hop></trace></host><runstats><finished timestr="Sun Feb  6 19:26:44 2022" time="1644172004"></finished><hosts down="0" total="1" up="1"></hosts></runstats></nmaprun>
