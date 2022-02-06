@@ -15,14 +15,16 @@ func TransactionToTransactionDTO(transaction model.Transaction, plugin psputil.P
 	}
 	pspHost, pspPort := util.GetExternalPSPHostAndPort()
 	pspTarget := pspHost + ":" + pspPort
-	/*if plugin.Name() == "paypal" {
-		pspTarget = "igorsikuljak.rs"
-	}*/
-	initialUrl := util.GetPSPProtocol() + "://" + pspTarget + "/api/psp"
+
 	pricingPlan, err := transaction.IsPricingPlan(plugin)
 	if err != nil {
 		return pspdto.TransactionDTO{}, err
 	}
+
+	if plugin.Name() == "paypal" && pricingPlan {
+		pspTarget = "igorsikuljak.rs"
+	}
+	initialUrl := util.GetPSPProtocol() + "://" + pspTarget + "/api/psp"
 
 	numberOfInstallments := 1
 	installmentUnit := pspdto.Month
