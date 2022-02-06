@@ -2,12 +2,13 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"ubiquitous-payment/util"
 )
 
 type Account struct {
 	gorm.Model
-	AccountID     string `json:"accountId" gorm:"not null"`
-	Secret        string `json:"secret"`
-	PaymentTypeId uint   `json:"paymentTypeId" gorm:"not null"`
-	ProfileId     uint   `json:"profileId" gorm:"not null"`
+	AccountID     util.EncryptedString `json:"accountId"`
+	Secret        util.EncryptedString `json:"secret"`
+	PaymentTypeId uint                 `json:"paymentTypeId" gorm:"not null"`
+	ProfileId     uint                 `json:"profileId" gorm:"not null"`
 }

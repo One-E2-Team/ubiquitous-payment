@@ -63,7 +63,7 @@ func GetExternalPSPHostAndPort() (string, string) {
 		if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
 			pspHost = "host1"
 		} else {
-			pspHost = "localhost"
+			pspHost = "host.docker.internal"
 		}
 	}
 	return pspHost, pspPort
@@ -110,7 +110,7 @@ func GetExternalPccHostAndPort() (string, string) {
 		if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
 			pccHost = "host1"
 		} else {
-			pccHost = "localhost"
+			pccHost = "host.docker.internal"
 		}
 	}
 	return pccHost, pccPort
@@ -126,13 +126,13 @@ func GetInternalBankHostAndPort() (string, string) {
 }
 
 func GetExternalBankHostAndPort() (string, string) {
-	bankHost, bankPort := "localhost", os.Getenv("BANK_PORT") //TODO: parametrize for docker
+	bankHost, bankPort := "localhost", os.Getenv("BANK_PORT")
 	if DockerChecker() {
 		bankPort = os.Getenv("BANK_EXTERNAL_PORT")
 		if _, ok := os.LookupEnv("DOCKER_ENV_SET_PROD"); ok {
 			bankHost = "host1"
 		} else {
-			bankHost = "localhost"
+			bankHost = "host.docker.internal"
 		}
 	}
 	return bankHost, bankPort

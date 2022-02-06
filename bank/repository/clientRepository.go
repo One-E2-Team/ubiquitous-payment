@@ -101,7 +101,7 @@ func (repo *Repository) GetPanNumbersByClientId(clientId uint) ([]string, error)
 
 func (repo *Repository) GetClientIdByClientAccountId(clientAccountId uint) (uint, error) {
 	var clientId uint
-	result := repo.Database.Table("user_accounts").First(&clientId, "client_account_id = ?", clientAccountId)
+	result := repo.Database.Raw("select ua.client_id from user_accounts ua where client_account_id = ?", clientAccountId).Scan(&clientId)
 	return clientId, result.Error
 }
 

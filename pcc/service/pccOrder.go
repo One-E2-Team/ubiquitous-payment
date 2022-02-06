@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 	"ubiquitous-payment/pcc/dto"
+	"ubiquitous-payment/pcc/handler/mapper"
 	"ubiquitous-payment/pcc/model"
 	"ubiquitous-payment/util"
 )
@@ -20,14 +21,14 @@ func (service *Service) CreatePccOrder(pccOrder *model.PccOrder) (*dto.IssuerBan
 }
 
 func (service *Service) forwardOrderToIssuersBank(pccOrder *model.PccOrder) (*dto.IssuerBankResponseDto, error) {
-	issuerPanPrefix := pccOrder.IssuerPAN[0:6]
+	issuerPanPrefix := pccOrder.IssuerPAN.Data[0:6]
 	issuersBank, err := service.GetBankByPanPrefix(issuerPanPrefix)
 
 	if err != nil {
 		return nil, err
 	}
 
-	jsonReq, _ := json.Marshal(pccOrder)
+	jsonReq, _ := json.Marshal(mapper.PccOrderToIssuerBankRequestDTO(*pccOrder))
 	resp, err := util.CrossServiceRequest(http.MethodPost, issuersBank.URL+"/pcc-issuer-pay", jsonReq, nil)
 	if err != nil {
 		return nil, err

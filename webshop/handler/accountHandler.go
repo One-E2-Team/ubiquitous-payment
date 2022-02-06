@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"ubiquitous-payment/util"
-	"ubiquitous-payment/webshop/model"
+	"ubiquitous-payment/webshop/dto"
+	"ubiquitous-payment/webshop/handler/mapper"
 )
 
 func (handler *Handler) GetAccountsByPaymentType(w http.ResponseWriter, r *http.Request) {
@@ -20,9 +21,9 @@ func (handler *Handler) GetAccountsByPaymentType(w http.ResponseWriter, r *http.
 
 func (handler *Handler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	id := util.String2Uint(util.GetPathVariable(r, "id"))
-	var account model.Account
+	var account dto.UpdateAccountDTO
 	err := json.NewDecoder(r.Body).Decode(&account)
-	if err != nil{
+	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"UpdateAccount", loggingService)
 	}
 	err = handler.WSService.UpdateAccount(&account, id)
@@ -35,13 +36,12 @@ func (handler *Handler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
 
 func (handler *Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	loggedUserId := util.GetLoggedUserIDFromToken(r)
-	var account model.Account
+	var account dto.UpdateAccountDTO
 	err := json.NewDecoder(r.Body).Decode(&account)
-	if err != nil{
+	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"CreateAccount", loggingService)
 	}
-	account.ProfileId = loggedUserId
-	err = handler.WSService.CreateAccount(&account)
+	err = handler.WSService.CreateAccount(mapper.UpdateAccountDTOToAccount(account, loggedUserId))
 	if err != nil {
 		util.HandleErrorInHandler(err, w, loggingClass+"CreateAccount", loggingService)
 		return

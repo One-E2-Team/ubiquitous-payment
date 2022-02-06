@@ -1,83 +1,70 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+    <v-app-bar app color="warning" dark>
+      <v-container>
+        <v-row justify="space-between">
+          <v-col cols="auto">
+            <h2>BANK</h2>
+          </v-col>
+          <v-col cols="auto">
+            <v-btn @click="logout()" outlined v-if="getJwtToken() != null"
+              ><img width="30" height="30" src="./assets/logout.png"
+            /></v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-app-bar>
 
     <v-main>
-      <router-view/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import eventBus from './plugins/eventBus.js'
+import eventBus from "./plugins/eventBus.js";
+import * as comm from "./configuration/communication.js";
 
 export default {
-  name: 'App',
+  name: "App",
 
   data: () => ({
-    sessionActivationCounter : 0,
-    isUserLogged : true
+    sessionActivationCounter: 0,
+    isUserLogged: true,
   }),
 
   mounted() {
-     eventBus.$on('login', () => {
+    eventBus.$on("login", () => {
       this.isUserLogged = true;
       this.checkSessionActivity();
     });
-      eventBus.$on('logout', () => {
+    eventBus.$on("logout", () => {
       this.isUserLogged = false;
-    })
+    });
   },
 
-  methods : {
-    async checkSessionActivity(){
-      var checkInterval = setInterval(function(){ 
-          if (document.hidden) {
-            this.sessionActivationCounter ++;
-          }else{
-            this.sessionActivationCounter = 0;
-          }
-          if (this.sessionActivationCounter == 200){
-            sessionStorage.removeItem("JWT");
-            clearInterval(checkInterval);
-          }
+  methods: {
+    logout() {
+      comm.logOut();
+      this.$router.push({ name: "Welcome" });
+      location.reload();
+    },
+    getJwtToken() {
+      return comm.getJWTToken();
+    },
+    async checkSessionActivity() {
+      var checkInterval = setInterval(function () {
+        if (document.hidden) {
+          this.sessionActivationCounter++;
+        } else {
+          this.sessionActivationCounter = 0;
+        }
+        if (this.sessionActivationCounter == 200) {
+          sessionStorage.removeItem("JWT");
+          clearInterval(checkInterval);
+        }
       }, 3000);
     },
-  }
+  },
 };
 </script>

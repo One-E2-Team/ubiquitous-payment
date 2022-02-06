@@ -49,10 +49,10 @@ func (service *Service) CreateOrder(productID uint, loggedUserId uint) (string, 
 func (service *Service) GetMyOrders(profileId uint) ([]dto.MyOrderDTO, error) {
 	retOrders := make([]dto.MyOrderDTO, 0)
 	myOrders, err := service.WSRepository.GetMyOrders(profileId)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
-	for _, order := range myOrders{
+	for _, order := range myOrders {
 		newOrderDto := dto.MyOrderDTO{OrderId: order.ID, Timestamp: order.Timestamp}
 
 		product, err := service.WSRepository.GetProduct(order.ProductId)
@@ -67,7 +67,7 @@ func (service *Service) GetMyOrders(profileId uint) ([]dto.MyOrderDTO, error) {
 		newOrderDto.RecurringType = string(product.RecurringType)
 
 		paymentType, err := service.WSRepository.GetPaymentTypeById(order.PaymentTypeId)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		newOrderDto.PaymentType = paymentType.Name
@@ -84,7 +84,7 @@ func (service *Service) GetMyOrders(profileId uint) ([]dto.MyOrderDTO, error) {
 
 func (service *Service) UpdatePspOrder(pspId string, status string) error {
 	pspOrder, err := service.WSRepository.GetPspOrderByPspId(pspId)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	pspOrder.OrderStatus = model.OrderStatus(status)
@@ -168,7 +168,7 @@ func (service *Service) getPaymentData(merchantId uint) (map[string]interface{},
 	for _, pt := range validPaymentTypes {
 		for _, acc := range merchantAccounts {
 			if pt.ID == acc.PaymentTypeId {
-				ret[pt.Name] = [2]string{acc.AccountID, acc.Secret}
+				ret[pt.Name] = [2]string{acc.AccountID.Data, acc.Secret.Data}
 				continue
 			}
 		}
@@ -180,30 +180,30 @@ func (service *Service) GetSellersOrders(id uint) ([]dto.MyOrderDTO, error) {
 	ordersDto := make([]dto.MyOrderDTO, 0)
 
 	myProducts, err := service.WSRepository.GetProductsByMerchantId(id)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	fmt.Println(myProducts)
 
-	for _, prod := range myProducts{
+	for _, prod := range myProducts {
 		orders, err := service.WSRepository.GetOrdersByProductId(prod.ID)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
-		for _, order := range orders{
+		for _, order := range orders {
 			pspOrder, err := service.WSRepository.GetPspOrderByOrderId(order.ID)
-			if err != nil{
+			if err != nil {
 				return nil, err
 			}
 			paymentType, err := service.WSRepository.GetPaymentTypeById(order.PaymentTypeId)
-			if err != nil{
+			if err != nil {
 				return nil, err
 			}
 			orderDto := dto.MyOrderDTO{OrderId: order.ID, Timestamp: order.Timestamp, ProductName: prod.Name,
 				ProductPrice: prod.Price, Currency: prod.Currency, PaymentType: paymentType.Name,
-			PSPId: pspOrder.PSPId, OrderStatus: string(pspOrder.OrderStatus),
-			NumberOfInstallments: prod.NumOfInstallments, DelayedInstallments: prod.DelayedInstallments,
-			RecurringType: string(prod.RecurringType)}
+				PSPId: pspOrder.PSPId, OrderStatus: string(pspOrder.OrderStatus),
+				NumberOfInstallments: prod.NumOfInstallments, DelayedInstallments: prod.DelayedInstallments,
+				RecurringType: string(prod.RecurringType)}
 			ordersDto = append(ordersDto, orderDto)
 		}
 	}

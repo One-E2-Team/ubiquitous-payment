@@ -15,7 +15,14 @@ export function setJWTToken(jwt) {
   sessionStorage.setItem("JWT", JSON.stringify(jwt));
 }
 
+export function logOut() {
+  sessionStorage.removeItem("JWT");
+}
+
 export function getJWTToken() {
+  if (sessionStorage.getItem("JWT") == null || sessionStorage.getItem("JWT") == undefined) {
+    return null;
+  }
   return JSON.parse(sessionStorage.getItem("JWT"));
 }
 
