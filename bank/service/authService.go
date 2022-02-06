@@ -50,6 +50,7 @@ func (service *Service) Register(request dto.RegistrationDTO, w http.ResponseWri
 		IsDeleted: false,
 		Roles:     []model.Role{*role},
 		Accounts:  []model.ClientAccount{*createNewClientAccount(request.Name, request.Surname)},
+		LastActivityTimestamp: time.Now(),
 	}
 
 	return service.Repository.Create(&client)

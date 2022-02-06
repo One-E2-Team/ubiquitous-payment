@@ -70,6 +70,19 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) *dto.PccResponseD
 	} else {
 		transaction = service.saveTransactionStatus(transaction, model.FULFILLED)
 	}
+
+	issuerClientId, err := service.Repository.GetClientIdByClientAccountId(issuerAccount.ID)
+	if err != nil{
+		util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
+	}else{
+		issuerClient, err := service.Repository.GetClientById(issuerClientId)
+		if err != nil{
+			util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
+		}else{
+			issuerClient.LastActivityTimestamp = time.Now()
+		}
+	}
+
 	return mapper.TransactionToPccResponseDTO(*transaction)
 }
 
@@ -109,6 +122,19 @@ func (service *Service) payInSameBank(issuerPan string, transaction *model.Trans
 	} else {
 		transaction = service.saveTransactionStatus(transaction, model.FULFILLED)
 	}
+
+	issuerClientId, err := service.Repository.GetClientIdByClientAccountId(issuerAccount.ID)
+	if err != nil{
+		util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
+	}else{
+		issuerClient, err := service.Repository.GetClientById(issuerClientId)
+		if err != nil{
+			util.Logging(util.ERROR, "Service.IssuerPay", err.Error(), loggingService)
+		}else{
+			issuerClient.LastActivityTimestamp = time.Now()
+		}
+	}
+
 	return transaction.GetURLByStatus()
 }
 

@@ -98,3 +98,17 @@ func (repo *Repository) GetPanNumbersByClientId(clientId uint) ([]string, error)
 
 	return panNumbers, nil
 }
+
+func (repo *Repository) GetClientIdByClientAccountId(clientAccountId uint) (uint, error) {
+	var clientId uint
+	result := repo.Database.Table("user_accounts").First(&clientId, "client_account_id = ?", clientAccountId)
+	return clientId, result.Error
+}
+
+func (repo *Repository) GetAllClients() ([]model.Client, error) {
+	var clients []model.Client
+	if err := repo.Database.Find(&clients).Error; err != nil {
+		return nil, err
+	}
+	return clients, nil
+}

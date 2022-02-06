@@ -109,6 +109,26 @@ func handleFunc(handler *handler.Handler) {
 	}
 }
 
+func checkAccountsActivity(repo *repository.Repository){
+	for{
+		allClients, err := repo.GetAllClients()
+		if err != nil{
+			fmt.Println(err)
+		}else{
+			for i, client := range allClients{
+				if client.LastActivityTimestamp.Before(time.Now().Add(-(time.Hour * 2160))){ //90 days
+					allClients[i].IsDeleted = true
+					err = repo.Update(&allClients[i])
+					if err != nil{
+						fmt.Println(err)
+					}
+				}
+			}
+		}
+		time.Sleep(time.Hour * 24)
+	}
+}
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	db := initDB()
@@ -117,5 +137,8 @@ func main() {
 	bankHandler := initHandler(bankService)
 	_ = util.SetupCsAuth("bank")
 	rbac.InitRbacService(bankService)
+
+	go checkAccountsActivity(repo)
+
 	handleFunc(bankHandler)
 }
