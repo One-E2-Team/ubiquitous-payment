@@ -90,6 +90,14 @@ func (service *Service) IssuerPay(pccOrderDto dto.PccOrderDTO) *dto.PccResponseD
 	return mapper.TransactionToPccResponseDTO(*transaction)
 }
 
+func (service *Service) GetPaymentDetails(paymentUrlId string) (*dto.PaymentDetailsDTO, error) {
+	transaction, err := service.Repository.GetTransactionByPaymentUrlId(paymentUrlId)
+	if err != nil {
+		return nil, err
+	}
+	return mapper.TransactionToPaymentDetailsDTO(*transaction), nil
+}
+
 func (service *Service) payInSameBank(issuerPan string, transaction *model.Transaction) string {
 	issuerAccount, err := service.Repository.GetClientAccountByPan(issuerPan)
 	if err != nil {

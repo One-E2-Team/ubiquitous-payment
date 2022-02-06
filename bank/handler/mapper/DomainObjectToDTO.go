@@ -63,3 +63,11 @@ func CreditCardToCreditCardResponseDTO(creditCard model.CreditCard) dto.CreditCa
 		ValidUntil: creditCard.ValidUntil,
 	}
 }
+
+func TransactionToPaymentDetailsDTO(transaction model.Transaction) *dto.PaymentDetailsDTO {
+	return &dto.PaymentDetailsDTO{
+		Amount:    transaction.Amount,
+		AmountRsd: transaction.AmountRsd,
+		Currency:  transaction.Currency,
+	}
+}

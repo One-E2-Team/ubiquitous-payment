@@ -74,6 +74,7 @@ func handleFunc(handler *handler.Handler) {
 	router.HandleFunc("/api/clients", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/api/login", handler.LogIn).Methods(http.MethodPost)
 	router.HandleFunc("/api/pay/{payment-url-id}", handler.Pay).Methods(http.MethodPost)
+	router.HandleFunc("/api/payment-details/{payment-url-id}", handler.GetPaymentDetails).Methods(http.MethodGet)
 
 	//psp calls
 	router.HandleFunc("/psp-request", handler.PspRequest).Methods(http.MethodPost)
@@ -109,17 +110,17 @@ func handleFunc(handler *handler.Handler) {
 	}
 }
 
-func checkAccountsActivity(repo *repository.Repository){
-	for{
+func checkAccountsActivity(repo *repository.Repository) {
+	for {
 		allClients, err := repo.GetAllClients()
-		if err != nil{
+		if err != nil {
 			fmt.Println(err)
-		}else{
-			for i, client := range allClients{
-				if client.LastActivityTimestamp.Before(time.Now().Add(-(time.Hour * 2160))){ //90 days
+		} else {
+			for i, client := range allClients {
+				if client.LastActivityTimestamp.Before(time.Now().Add(-(time.Hour * 2160))) { //90 days
 					allClients[i].IsDeleted = true
 					err = repo.Update(&allClients[i])
-					if err != nil{
+					if err != nil {
 						fmt.Println(err)
 					}
 				}

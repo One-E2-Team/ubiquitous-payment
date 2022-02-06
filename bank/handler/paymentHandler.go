@@ -34,3 +34,13 @@ func (handler *Handler) IssuerPay(w http.ResponseWriter, r *http.Request) {
 	pccResponse := handler.BankService.IssuerPay(pccOrderDto)
 	util.MarshalResult(w, pccResponse)
 }
+
+func (handler *Handler) GetPaymentDetails(w http.ResponseWriter, r *http.Request) {
+	paymentDetails, err := handler.BankService.GetPaymentDetails(util.GetPathVariable(r, "payment-url-id"))
+	if err != nil {
+		util.HandleErrorInHandler(err, w, loggingClass+"GetPaymentDetails", loggingService)
+		return
+	}
+
+	util.MarshalResult(w, paymentDetails)
+}

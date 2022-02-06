@@ -139,7 +139,7 @@ export default {
             this.alertText =
               "Chosen e-mail already exists.Please choose another mail.";
           }
-        } else if (response == 201) {
+        } else if (response.status == 201) {
           this.$router.push({ name: "Login" });
         }
       });
