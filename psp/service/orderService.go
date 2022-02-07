@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -69,6 +70,9 @@ func (service *Service) SelectPaymentType(request dto.SelectedPaymentTypeDTO) (*
 	t, err := service.PSPRepository.GetTransactionById(id)
 	if err != nil {
 		return nil, err
+	}
+	if t.SelectedPaymentType.Name != "" {
+		return nil, errors.New("payment type already chosen")
 	}
 	pt, err := service.PSPRepository.GetPaymentTypeByName(request.PaymentTypeName)
 	if err != nil {
