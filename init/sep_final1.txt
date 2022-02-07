@@ -1,0 +1,197 @@
+docker build  --output temp --progress=plain -f GoPluginBuild.dockerfile .
+.\bitcoind.exe -bind="0.0.0.0:18333" -rest -rpcbind="0.0.0.0:18332" -chain=test -debug=rpc -server -listen -rpcallowip="0.0.0.0/0"
+docker-compose --env-file .\conf\env up
+docker-compose --env-file .\conf\env -f .\docker-compose.dev.yml up --build
+docker-compose --env-file .\conf\env -f .\docker-compose.dev.yml down
+//psp front
+npm run serve -- --port 3001
+//webshop front 
+npm run serve -- --port 3000
+
+
+//web shop
+insert into roles (name) values ('ADMIN');
+insert into roles (name) values ('SELLER');
+insert into roles (name) values ('CUSTOMER');
+
+insert into privileges (name) values ('CREATE_PRODUCT');
+insert into privileges (name) values ('UPDATE_PRODUCT');
+insert into privileges (name) values ('CREATE_ORDER');
+
+insert into role_privileges (role_id, privilege_id) values (2, 1);
+insert into role_privileges (role_id, privilege_id) values (2, 2);
+insert into role_privileges (role_id, privilege_id) values (2, 3);
+insert into role_privileges (role_id, privilege_id) values (3, 3);
+
+insert into profiles (name, created_at, updated_at) 
+values ('admin name', '2021-06-28', '2021-06-28');
+
+insert into users (profile_id, password, is_deleted, is_validated, email, username, validation_uuid, validation_expire)
+values (1, '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, true, 'adminko@gmail.com', 'adminko', '', '2021-06-15 11:39:08.096');
+
+insert into profiles (name, created_at, updated_at) 
+values ('seller name', '2021-06-28', '2021-06-28');
+
+insert into users (profile_id, password, is_deleted, is_validated, email, username, validation_uuid, validation_expire)
+values (2, '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, true, 'seller@gmail.com', 'seller', '', '2021-06-15 11:39:08.096');
+
+insert into profiles (name, created_at, updated_at) 
+values ('customer name', '2021-06-28', '2021-06-28');
+
+insert into users (profile_id, password, is_deleted, is_validated, email, username, validation_uuid, validation_expire)
+values (3, '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, true, 'customer@gmail.com', 'customer', '', '2021-06-15 11:39:08.096');
+
+insert into profiles (name, created_at, updated_at) 
+values ('seller2 name', '2021-06-28', '2021-06-28');
+
+insert into users (profile_id, password, is_deleted, is_validated, email, username, validation_uuid, validation_expire)
+values (4, '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, true, 'seller2@gmail.com', 'seller2', '', '2021-06-15 11:39:08.096');
+
+
+insert into user_roles (user_id, role_id) values (1, 1);
+insert into user_roles (user_id, role_id) values (1, 2);
+insert into user_roles (user_id, role_id) values (1, 3);
+insert into user_roles (user_id, role_id) values (2, 2);
+insert into user_roles (user_id, role_id) values (3, 3);
+insert into user_roles (user_id, role_id) values (4, 2);
+
+insert into payment_types (name, is_valid) values ('bank', true);
+insert into payment_types (name, is_valid) values ('paypal', true);
+insert into payment_types (name, is_valid) values ('bitcoin', true);
+insert into payment_types (name, is_valid) values ('qrcode', true);
+
+insert into accounts (account_id, secret, payment_type_id, profile_id)
+values (x'E845ABF010CDC7E718EE0C0C96766BE7AEFDD439D055F0A971424EA33F0A0A06F3052B8891121BE759D073ECC6E987D238191E69744587E4824EE0B5080237B69BBD', x'7C5D6F08F7199A4066EB233C4FC9614D17D395FDFA5A0E429AFE24B14FDD8E64AE686132BF9A6688A3', 2, 2);
+insert into accounts (account_id, secret, payment_type_id, profile_id)
+values (x'2BCF7A01B630E0CA3E91D6BF67ABA77D008427796FB7F4EA0CB318EACDDCC91A3C39D3FB18232770688BCA6806125A1146F544CBD2E5FA3F758F27655D06A2A86CE6D8073997', x'A7C2EF34898CDCCEEE78A9DCFFE41C943FAAADF4C5534912572EF23B558B2D6248ADF840120980D38E', 3, 2);
+insert into accounts (account_id, secret, payment_type_id, profile_id)
+values (x'C346BAAA69EA792D21BFC118FC1D4EEC3CAE9F3E6953C2F206C06BB10DCFD4E8FD945500EDC9BC7172F1A8CC', x'E9D25DAC42DE851DF2D74792027DAA02815C5B324057B747D39B574F14E533EBC905B1', 1, 2);
+insert into accounts (account_id, secret, payment_type_id, profile_id)
+values (x'C346BAAA69EA792D21BFC118FC1D4EEC3CAE9F3E6953C2F206C06BB10DCFD4E8FD945500EDC9BC7172F1A8CC', x'E9D25DAC42DE851DF2D74792027DAA02815C5B324057B747D39B574F14E533EBC905B1', 4, 2);
+
+insert into accounts (account_id, secret, payment_type_id, profile_id)
+values (x'482CFEE961EE24786E34FB31FB80C5A8F03B30A3FEC5D3958F8F28AAADFBF119E883B6829F3A54014D781424', x'7EE2099093B91DB04536A933B5441AC24ACDCB7C8994F74B91BAB224CBE6FBDDC1C9C4', 4, 4);
+
+insert into web_shops(name, created_at, updated_at, psp_access_token) 
+values ('our web shop', '2021-06-28', '2021-06-28', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dnZWRVc2VySWQiOiI2MWY5NjBmMGJjZDI1NGE2YzM5NTRkMTYiLCJleHAiOjE2NzUyNjk1ODMsImlhdCI6MTY0MzczMzU4MywiaXNzIjoicHNwIn0.7O4MGSiyxHoUmQT6Z8PcakhNUgCbUisjG6xBO_8Sk8o');
+
+insert into products (created_at, updated_at, name, price, currency, description, media_path, is_active, num_of_installments, delayed_installments, merchant_profile_id, recurring_type)
+values ('2021-06-28', '2021-06-28', 'stolica', 20, 'EUR', 'Najbolja stolica ikad.', 'stolica.jpg', 1, 1, 0, 2, 'YEARLY');
+insert into products (created_at, updated_at, name, price, currency, description, media_path, is_active, num_of_installments, delayed_installments, merchant_profile_id, recurring_type)
+values ('2021-06-28', '2021-06-28', 'stolica na rate', 20, 'EUR', 'Najbolja stolica ikad.', 'stolica.jpg', 1, 5, 0, 2, 'MONTHLY');
+insert into products (created_at, updated_at, name, price, currency, description, media_path, is_active, num_of_installments, delayed_installments, merchant_profile_id, recurring_type)
+values ('2021-06-28', '2021-06-28', 'stolica na odlozene rate', 20, 'EUR', 'Najbolja stolica ikad.', 'stolica.jpg', 1, 6, 3, 2, 'MONTHLY');
+insert into products (created_at, updated_at, name, price, currency, description, media_path, is_active, num_of_installments, delayed_installments, merchant_profile_id, recurring_type)
+values ('2021-06-28', '2021-06-28', 'stolica kao subskripcija', 15, 'EUR', 'Najbolja stolica ikad.', 'stolica.jpg', 1, 0, 0, 2, 'YEARLY');
+insert into products (created_at, updated_at, name, price, currency, description, media_path, is_active, num_of_installments, delayed_installments, merchant_profile_id, recurring_type)
+values ('2021-06-28', '2021-06-28', 'nova stolica', 12, 'EUR', 'Najnajbolja stolica ikad.', 'stolica1.jpg', 1, 1, 0, 4, 'YEARLY');
+
+//bank_000001
+insert into roles (name) values ('CLIENT');
+insert into roles (name) values ('ADMIN');
+
+insert into privileges (name) values ('ONLINE_PAYMENT');
+insert into privileges (name) values ('READ_ALL_TRANSACTIONS');
+insert into privileges (name) values ('READ_ACCOUNT');
+insert into privileges (name) values ('READ_TRANSACTIONS');
+insert into privileges (name) values ('CHECK_PASSWORD');
+
+insert into role_privileges (role_id, privilege_id) values (1, 1);
+insert into role_privileges (role_id, privilege_id) values (1, 3);
+insert into role_privileges (role_id, privilege_id) values (1, 4);
+insert into role_privileges (role_id, privilege_id) values (1, 5);
+insert into role_privileges (role_id, privilege_id) values (2, 2);
+
+insert into clients (created_at, updated_at, username, password, is_deleted, last_activity_timestamp) values ('2021-06-28', '2021-06-28', 'erste1', '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, '2022-02-6 11:20:00.000');
+insert into clients (created_at, updated_at, username, password, is_deleted, last_activity_timestamp) values ('2021-06-28', '2021-06-28', 'admin', '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, '2022-02-6 11:20:00.000');
+insert into client_accounts (created_at, updated_at, account_number, amount, secret, is_active) values ('2021-06-28', '2021-06-28', x'44D1E978052034F97808DEAFBA203FB3BAB311E0DA4B929E622756947EAA091D5F1ADC72611A75D28262FCEA', 100000, x'7EE2099093B91DB04536A933B5441AC24ACDCB7C8994F74B91BAB224CBE6FBDDC1C9C4', true); #'0000010000000000', 'secret1'
+insert into client_accounts (created_at, updated_at, account_number, amount, secret, is_active) values ('2021-06-28', '2021-06-28', x'AA739205E3C7A182852E8AB41EC076BCAB3A62C6F6A26EB83BCB3C30DD80798CF2A52FF555109ED417D043E3', 100000, x'18E484EC5EFFAE593B745A278EE17404248A35D886EF463DB9CFC5182FD1728B6E131166F16234', true); #'0000010000000001', 'secretAdmin'
+insert into user_accounts (client_id, client_account_id) values (1, 1);
+insert into user_accounts (client_id, client_account_id) values (2, 2);
+
+insert into credit_cards (pan, cvc, holder_name, valid_until) values (x'DD5C017AEEC2AEB53AF1C2C5D4B8AEFC3EA873CEF58DB965AFAA3548D6C765EDB6C080C37C6D372235A0F36E', x'480E2F73552F0EDD91036123209851188088F5A9FB90D9C392349308581EF1', 'Erste Erstic', '12/30'); #'0000011234567890', '123'
+insert into credit_cards (pan, cvc, holder_name, valid_until) values (x'F427645F51DDB3D11FA9ABD2F84E663D2A876043234B1062C65BC39BA8B6E38058150251F34B167C8A226CBC', x'2BF7157D122A92D65EDFA2748AF773DCED91035ED6054F7086B89C8B48E670', 'Admin Adminic', '12/30'); #'0000012345678901', '000'
+insert into account_cards (client_account_id, credit_card_id) values (1, 1);
+insert into account_cards (client_account_id, credit_card_id) values (2, 2);
+
+insert into user_roles (client_id, role_id) values (1,1);
+insert into user_roles (client_id, role_id) values (2,1);
+insert into user_roles (client_id, role_id) values (2,2);
+
+//bank_000002
+insert into roles (name) values ('CLIENT');
+insert into roles (name) values ('ADMIN');
+
+insert into privileges (name) values ('ONLINE_PAYMENT');
+insert into privileges (name) values ('READ_ALL_TRANSACTIONS');
+insert into privileges (name) values ('READ_ACCOUNT');
+insert into privileges (name) values ('READ_TRANSACTIONS');
+insert into privileges (name) values ('CHECK_PASSWORD');
+
+insert into role_privileges (role_id, privilege_id) values (1, 1);
+insert into role_privileges (role_id, privilege_id) values (1, 3);
+insert into role_privileges (role_id, privilege_id) values (1, 4);
+insert into role_privileges (role_id, privilege_id) values (1, 5);
+insert into role_privileges (role_id, privilege_id) values (2, 2);
+
+insert into clients (created_at, updated_at, username, password, is_deleted, last_activity_timestamp) values ('2021-06-28', '2021-06-28', 'intesa1', '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, '2022-02-6 11:20:00.000');
+insert into clients (created_at, updated_at, username, password, is_deleted, last_activity_timestamp) values ('2021-06-28', '2021-06-28', 'admin', '$2a$10$jCwJiXDMLzUglx/mXrvijORONatYrl8Z7IeTjRBlV8RMIdLYuWt8W', false, '2022-02-6 11:20:00.000');
+insert into client_accounts (created_at, updated_at, account_number, amount, secret, is_active) values ('2021-06-28', '2021-06-28', x'482CFEE961EE24786E34FB31FB80C5A8F03B30A3FEC5D3958F8F28AAADFBF119E883B6829F3A54014D781424', 100000, x'7EE2099093B91DB04536A933B5441AC24ACDCB7C8994F74B91BAB224CBE6FBDDC1C9C4', true); #'0000020000000000', 'secret1'
+insert into client_accounts (created_at, updated_at, account_number, amount, secret, is_active) values ('2021-06-28', '2021-06-28', x'525E22933F82AB835702048D86F1B6DA00002AB5DDA707A45DF257525568A40DA804D00DA0D20E4F2B20F8EC', 100000, x'18E484EC5EFFAE593B745A278EE17404248A35D886EF463DB9CFC5182FD1728B6E131166F16234', true); #'0000020000000001', 'secretAdmin'
+insert into user_accounts (client_id, client_account_id) values (1, 1);
+insert into user_accounts (client_id, client_account_id) values (2, 2);
+
+insert into credit_cards (pan, cvc, holder_name, valid_until) values (x'3A3057DF32A4BC40C2F4FF12D76DFD84A0609B191004FF3539AE6B8ED823F81788E321E78E327A925C26DC85', x'480E2F73552F0EDD91036123209851188088F5A9FB90D9C392349308581EF1', 'Intesa Intesic', '12/30'); #'0000021234567890', '123'
+insert into credit_cards (pan, cvc, holder_name, valid_until) values (x'CDFA0DCC4F2A7F1ED51EF68BA81EE5FB8FFC93A51AD06FFEBC3FA673DDFA7071846FD6BAEB762E9544B0BD3B', x'2BF7157D122A92D65EDFA2748AF773DCED91035ED6054F7086B89C8B48E670', 'Admin Adminic', '12/30'); #'0000022345678901', '000'
+insert into account_cards (client_account_id, credit_card_id) values (1, 1);
+insert into account_cards (client_account_id, credit_card_id) values (2, 2);
+
+insert into user_roles (client_id, role_id) values (1,1);
+insert into user_roles (client_id, role_id) values (2,1);
+insert into user_roles (client_id, role_id) values (2,2);
+
+//pcc
+
+/// DEV /// insert into banks (pan_prefix, url, is_active) values ('000001', 'http://bank1:8080', true);
+/// DEV /// insert into banks (pan_prefix, url, is_active) values ('000002', 'http://bank2:8080', true);
+
+
+/// PROD /// insert into banks (pan_prefix, url, is_active) values ('000001', 'https://host1:10001', true);
+/// PROD /// insert into banks (pan_prefix, url, is_active) values ('000002', 'https://host1:10002', true);
+
+
+
+//psp 
+
+paymentTypes
+{
+        "_id": ObjectID("61f9683d53acafe66fb38b2b"),
+        "name":"paypal"
+}
+{
+        "_id": ObjectID("61f9684853acafe66fb38b2d"),
+        "name":"bitcoin"
+}
+{
+        "_id": ObjectID("61f9685353acafe66fb38b2f"),
+        "name":"bank"
+}
+{
+        "_id": ObjectID("61f9685353acafe66fb38b31"),
+        "name":"qrcode"
+}
+
+banks
+
+/// DEV /// {"_id":ObjectID("61f967db53acafe66fb38b27"),"panPrefix":"000001","url":"http://bank1:8080/psp-request","isactive":true}
+/// DEV /// {"_id":ObjectID("61f967db53acafe66fb38b29"),"panPrefix":"000002","url":"http://bank2:8080/psp-request","isactive":true}
+
+/// PROD /// {"_id":ObjectID("61f967db53acafe66fb38b31"),"panPrefix":"000001","url":"https://host1:10001/psp-request","isactive":true}
+/// PROD /// {"_id":ObjectID("61f967db53acafe66fb38b33"),"panPrefix":"000002","url":"https://host1:10002/psp-request","isactive":true}
+
+
+psp-clients
+{"_id":ObjectId("61f960f0bcd254a6c3954d15"),"name":"our web shop","pspaccessuuid":"$2a$10$0kQoQexBAYFgfc117URmi.xtSSRM1a3teWGum3V.YqIf4SCFUtPaa","accepted":true,"paymenttypes":[{"_id":ObjectId("61f9683d53acafe66fb38b2b"),"name":"paypal"},{"_id":ObjectId("61f9684853acafe66fb38b2d"),"name":"bitcoin"},{"_id":ObjectId("61f9685353acafe66fb38b2f"),"name":"bank"},{"_id": ObjectID("61f9685353acafe66fb38b31"),"name":"qrcode"}],"accounts":null}
+
+users
+{"_id":ObjectID("61f960f0bcd254a6c3954d16"),"username":"pera","password":"$2a$10$q3CC8T7fBuTgAb0TIJkvlOeK/ENzoi2RXV0TQGTiEYThoxfhhkI.C","isdeleted":false,"validationuuid":"","validationexpire":null,"roles":[{"name":"WebShop","privileges":[{"name":"READ_ACCESS_TOKEN"},{"name":"CREATE_ORDER_FROM_WEB_SHOP"}]}],"webshopid":"61f960f0bcd254a6c3954d15"}
