@@ -1,0 +1,11 @@
+GORM uses the database/sql‘s argument placeholders to construct the SQL statement, which will automatically escape arguments to avoid SQL injection
+
+Mongodb: Ne koristimo operator $where koji može da prosleđuje string ili java script expression, 
+niti koristimo map-reduce paradigmu, niti operator $group koji nisu preporučljivi za izvršavanje upita 
+nad ovom bazom. Koristimo tipiziran model tako da korisnički unos se konvertuje u tipove 
+(npr int, string..) i na taj način se sprecava noSql injection. (trebalo bi postaviti 
+javascriptEnabled na false u mongod.conf fajlu, ovo sprečava izvršavanje JS koda.
+
+Vue.js : prilikom korišćenja templejta, pr. (<h1> {{ userInput }} </h1>), korisnički unos se automatski
+escape-uje, tj. znakovi kao sto su '<' ili '>' se transliraju u '&lt;' i '&gt'. Na taj način smo zaštićeni od 
+injektovanja <script> taga.
